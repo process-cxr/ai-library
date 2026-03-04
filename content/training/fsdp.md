@@ -525,9 +525,4 @@ accelerate launch --config_file accelerate_config.yaml train.py
 | 社区趋势 | Meta 主推，与 PyTorch 路线图一致 | 微软持续维护，生态广泛 |
 
 > 两者功能上高度重叠，选哪个主要看团队技术栈和上层框架的支持情况。
-
 ---
-
-**文档版本**: 1.4
-**最后更新**: 2026-03-04
-
