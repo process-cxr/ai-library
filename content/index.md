@@ -12,11 +12,11 @@ title: "XR Lab"
 
 |  | 方向 | 关键词 |
 |--|------|--------|
-| **Arch** | 模型架构 | Transformer, GPT, LLaMA, Mamba, MoE |
-| **Training** | 训练方法 | Pre-training, SFT, RLHF, DPO |
-| **Reasoning** | 推理与思维链 | CoT, ToT, Self-Consistency, Agent |
-| **Scaling** | 规模法则 | Scaling Law, Chinchilla, Emergent Ability |
-| **Infra** | 工程实践 | vLLM, Quantization, KV Cache, Serving |
+| [[fundamentals/\|**Fundamentals**]] | 数学与 ML 基础 | 反向传播, 交叉熵, KL 散度 |
+| [[architecture/\|**Architecture**]] | 模型架构 | Transformer, GPT, LLaMA, Mamba, MoE |
+| [[training/\|**Training**]] | 预训练与后训练 | SFT, RLHF, DPO, FSDP, Scaling Law |
+| [[inference/\|**Inference**]] | 推理与部署 | KV Cache, 量化, vLLM, FlashAttention |
+| [[application/\|**Application**]] | 应用与评测 | RAG, Agent, Prompt Engineering |
 
 ## How to Navigate
 
