@@ -10,13 +10,11 @@ title: "XR Lab"
 
 ## Lab Sections
 
-|  | 方向 | 关键词 |
-|--|------|--------|
-| [**Fundamentals**](fundamentals/) | 数学与 ML 基础 | 反向传播, 交叉熵, KL 散度 |
-| [**Architecture**](architecture/) | 模型架构 | Transformer, GPT, LLaMA, Mamba, MoE |
-| [**Training**](training/) | 预训练与后训练 | SFT, RLHF, DPO, FSDP, Scaling Law |
-| [**Inference**](inference/) | 推理与部署 | KV Cache, 量化, vLLM, FlashAttention |
-| [**Application**](application/) | 应用与评测 | RAG, Agent, Prompt Engineering |
+- **[[fundamentals/|Fundamentals]]** — 数学与 ML 基础：反向传播, 交叉熵, KL 散度
+- **[[architecture/|Architecture]]** — 模型架构：Transformer, GPT, LLaMA, Mamba, MoE
+- **[[training/|Training]]** — 预训练与后训练：SFT, RLHF, DPO, FSDP, Scaling Law
+- **[[inference/|Inference]]** — 推理与部署：KV Cache, 量化, vLLM, FlashAttention
+- **[[application/|Application]]** — 应用与评测：RAG, Agent, Prompt Engineering
 
 ## How to Navigate
 
