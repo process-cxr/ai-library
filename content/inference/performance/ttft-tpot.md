@@ -1,5 +1,8 @@
 ---
 title: TTFT and TPOT
+created: 2026-04-28
+published: 2026-04-28
+modified: 2026-05-05
 type: topic
 status: seed
 area: inference

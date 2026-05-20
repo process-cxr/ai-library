@@ -1,5 +1,8 @@
 ---
-title: Attention 机制
+title: Attention
+created: 2026-02-15
+published: 2026-02-15
+modified: 2026-02-22
 tags:
   - architecture
   - attention

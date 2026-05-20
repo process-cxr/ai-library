@@ -1,5 +1,8 @@
 ---
-title: Megatron-LM 与 3D 并行
+title: Megatron-LM and 3D Parallelism
+created: 2026-04-03
+published: 2026-04-03
+modified: 2026-04-10
 tags:
   - distributed-training
   - megatron

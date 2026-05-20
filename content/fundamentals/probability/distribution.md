@@ -1,5 +1,8 @@
 ---
-title: 概率分布
+title: Probability Distribution
+created: 2026-01-23
+published: 2026-01-23
+modified: 2026-01-30
 type: topic
 status: growing
 area: fundamentals

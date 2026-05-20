@@ -1,5 +1,8 @@
 ---
-title: 内积与相似度
+title: Dot Product and Similarity
+created: 2026-01-10
+published: 2026-01-10
+modified: 2026-01-17
 type: topic
 status: growing
 area: fundamentals

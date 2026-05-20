@@ -1,5 +1,8 @@
 ---
 title: Chunking
+created: 2026-04-27
+published: 2026-04-27
+modified: 2026-05-04
 type: topic
 status: seed
 area: application

@@ -1,5 +1,8 @@
 ---
-title: 参数初始化
+title: Initialization
+created: 2026-02-06
+published: 2026-02-06
+modified: 2026-02-13
 type: topic
 status: seed
 area: fundamentals

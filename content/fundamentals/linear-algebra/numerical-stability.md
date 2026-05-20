@@ -1,5 +1,8 @@
 ---
-title: 数值稳定性
+title: Numerical Stability
+created: 2026-01-11
+published: 2026-01-11
+modified: 2026-01-18
 type: topic
 status: growing
 area: fundamentals

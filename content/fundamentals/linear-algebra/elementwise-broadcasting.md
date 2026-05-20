@@ -1,5 +1,8 @@
 ---
-title: 逐元素运算与广播
+title: Elementwise Operations and Broadcasting
+created: 2026-01-14
+published: 2026-01-14
+modified: 2026-01-21
 type: topic
 status: growing
 area: fundamentals

@@ -1,5 +1,8 @@
 ---
 title: "Inference"
+created: 2025-12-27
+published: 2025-12-27
+modified: 2026-01-03
 ---
 
 大模型推理优化与部署，从解码链路、KV Cache、Attention 加速到量化、Serving、压缩和性能评测。

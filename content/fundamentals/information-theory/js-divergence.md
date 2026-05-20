@@ -1,5 +1,8 @@
 ---
-title: JS 散度
+title: JS Divergence
+created: 2026-01-30
+published: 2026-01-30
+modified: 2026-02-06
 type: topic
 status: seed
 area: fundamentals

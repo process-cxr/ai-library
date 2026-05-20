@@ -1,5 +1,8 @@
 ---
-title: 训练稳定性
+title: Training Stability
+created: 2026-04-03
+published: 2026-04-03
+modified: 2026-04-10
 type: topic
 status: seed
 area: training

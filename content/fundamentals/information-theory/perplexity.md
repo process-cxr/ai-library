@@ -1,5 +1,8 @@
 ---
-title: 困惑度
+title: Perplexity
+created: 2026-01-31
+published: 2026-01-31
+modified: 2026-02-07
 type: topic
 status: growing
 area: fundamentals

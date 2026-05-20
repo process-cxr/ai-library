@@ -1,5 +1,8 @@
 ---
 title: Softmax
+created: 2026-02-07
+published: 2026-02-07
+modified: 2026-02-14
 type: topic
 status: growing
 area: fundamentals

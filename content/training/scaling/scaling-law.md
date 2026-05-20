@@ -1,5 +1,8 @@
 ---
 title: Scaling Law
+created: 2026-04-06
+published: 2026-04-06
+modified: 2026-04-13
 tags:
   - training
   - scaling

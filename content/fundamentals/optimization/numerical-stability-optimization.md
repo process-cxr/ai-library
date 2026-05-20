@@ -1,5 +1,8 @@
 ---
-title: 优化中的数值稳定性
+title: Numerical Stability in Optimization
+created: 2026-02-13
+published: 2026-02-13
+modified: 2026-02-20
 type: topic
 status: seed
 area: fundamentals

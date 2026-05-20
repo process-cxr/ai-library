@@ -1,5 +1,8 @@
 ---
-title: 条件概率
+title: Conditional Probability
+created: 2026-01-21
+published: 2026-01-21
+modified: 2026-01-28
 type: topic
 status: growing
 area: fundamentals

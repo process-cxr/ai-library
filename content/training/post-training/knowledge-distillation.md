@@ -1,5 +1,8 @@
 ---
 title: Knowledge Distillation
+created: 2026-03-22
+published: 2026-03-22
+modified: 2026-03-29
 type: topic
 status: seed
 area: training

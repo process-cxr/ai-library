@@ -1,5 +1,8 @@
 ---
-title: 模型、数据与算力
+title: Model Data and Compute
+created: 2026-04-04
+published: 2026-04-04
+modified: 2026-04-11
 type: topic
 status: seed
 area: training

@@ -1,5 +1,8 @@
 ---
-title: 率失真思想
+title: Rate-Distortion
+created: 2026-01-22
+published: 2026-01-22
+modified: 2026-01-29
 type: topic
 status: seed
 area: fundamentals

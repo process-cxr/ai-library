@@ -1,5 +1,8 @@
 ---
-title: 期望与方差
+title: Expectation and Variance
+created: 2026-01-16
+published: 2026-01-16
+modified: 2026-01-23
 type: topic
 status: growing
 area: fundamentals

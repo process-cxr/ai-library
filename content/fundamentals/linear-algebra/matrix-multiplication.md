@@ -1,5 +1,8 @@
 ---
-title: 矩阵乘法
+title: Matrix Multiplication
+created: 2026-01-18
+published: 2026-01-18
+modified: 2026-01-25
 type: topic
 status: growing
 area: fundamentals

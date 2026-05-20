@@ -1,5 +1,8 @@
 ---
-title: 学习率调度
+title: Learning Rate Scheduler
+created: 2026-02-11
+published: 2026-02-11
+modified: 2026-02-18
 type: topic
 status: growing
 area: fundamentals

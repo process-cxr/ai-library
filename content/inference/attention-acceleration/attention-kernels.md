@@ -1,5 +1,8 @@
 ---
 title: Attention Kernels
+created: 2026-04-10
+published: 2026-04-10
+modified: 2026-04-17
 type: topic
 status: seed
 area: inference

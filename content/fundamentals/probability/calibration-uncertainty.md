@@ -1,5 +1,8 @@
 ---
-title: 校准与不确定性
+title: Calibration and Uncertainty
+created: 2026-01-17
+published: 2026-01-17
+modified: 2026-01-24
 type: topic
 status: growing
 area: fundamentals

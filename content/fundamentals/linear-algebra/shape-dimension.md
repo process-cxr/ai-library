@@ -1,5 +1,8 @@
 ---
-title: 形状与维度
+title: Shape and Dimension
+created: 2026-01-15
+published: 2026-01-15
+modified: 2026-01-22
 type: topic
 status: growing
 area: fundamentals

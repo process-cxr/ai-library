@@ -1,5 +1,8 @@
 ---
 title: DPO
+created: 2026-03-16
+published: 2026-03-16
+modified: 2026-03-23
 tags:
   - training
   - post-training

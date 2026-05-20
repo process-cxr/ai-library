@@ -1,5 +1,8 @@
 ---
-title: 分布式训练
+title: Distributed Training
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-10
 ---
 
 分布式训练负责把大模型训练拆分到多 GPU / 多节点执行，包括数据并行、张量并行、流水线并行、ZeRO、FSDP 和 Megatron。

@@ -1,5 +1,8 @@
 ---
 title: Grouped-Query Attention
+created: 2026-02-17
+published: 2026-02-17
+modified: 2026-02-24
 type: topic
 status: seed
 area: architecture

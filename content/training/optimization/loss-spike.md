@@ -1,5 +1,8 @@
 ---
 title: Loss Spike
+created: 2026-03-28
+published: 2026-03-28
+modified: 2026-04-04
 type: topic
 status: seed
 area: training

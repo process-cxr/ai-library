@@ -1,5 +1,8 @@
 ---
 title: PPO
+created: 2026-03-19
+published: 2026-03-19
+modified: 2026-03-26
 type: topic
 status: seed
 area: training
