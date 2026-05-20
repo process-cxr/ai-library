@@ -1,5 +1,8 @@
 ---
 title: "Projects"
+created: 2026-01-27
+published: 2026-01-27
+modified: 2026-02-03
 ---
 
 个人实验、复现、Demo 和工程实践记录。

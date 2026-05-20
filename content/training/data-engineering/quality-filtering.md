@@ -1,5 +1,8 @@
 ---
-title: 质量过滤
+title: Quality Filtering
+created: 2026-03-29
+published: 2026-03-29
+modified: 2026-04-05
 type: topic
 status: seed
 area: training

@@ -1,5 +1,8 @@
 ---
-title: GPT 系列
+title: GPT
+created: 2026-02-27
+published: 2026-02-27
+modified: 2026-03-06
 tags:
   - architecture
   - openai

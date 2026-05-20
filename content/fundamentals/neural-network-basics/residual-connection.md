@@ -1,5 +1,8 @@
 ---
-title: 残差连接
+title: Residual Connection
+created: 2026-02-05
+published: 2026-02-05
+modified: 2026-02-12
 type: topic
 status: growing
 area: fundamentals

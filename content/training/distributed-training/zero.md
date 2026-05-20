@@ -1,5 +1,8 @@
 ---
 title: ZeRO
+created: 2026-04-09
+published: 2026-04-09
+modified: 2026-04-16
 type: topic
 status: seed
 area: training

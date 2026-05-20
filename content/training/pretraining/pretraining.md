@@ -1,5 +1,8 @@
 ---
-title: 预训练
+title: Pretraining
+created: 2026-03-11
+published: 2026-03-11
+modified: 2026-03-18
 tags:
   - training
   - pretraining

@@ -1,5 +1,8 @@
 ---
-title: Temperature、Top-k 与 Top-p
+title: Temperature Top-k and Top-p
+created: 2026-01-17
+published: 2026-01-17
+modified: 2026-01-24
 type: topic
 status: growing
 area: fundamentals

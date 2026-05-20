@@ -1,5 +1,8 @@
 ---
 title: PagedAttention
+created: 2026-04-13
+published: 2026-04-13
+modified: 2026-04-20
 type: topic
 status: seed
 area: inference

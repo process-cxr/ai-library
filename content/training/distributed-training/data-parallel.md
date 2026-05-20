@@ -1,5 +1,8 @@
 ---
 title: Data Parallel
+created: 2026-03-30
+published: 2026-03-30
+modified: 2026-04-06
 type: topic
 status: seed
 area: training

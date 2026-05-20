@@ -1,5 +1,8 @@
 ---
 title: Qwen-VL
+created: 2026-03-07
+published: 2026-03-07
+modified: 2026-03-14
 type: topic
 status: seed
 area: architecture

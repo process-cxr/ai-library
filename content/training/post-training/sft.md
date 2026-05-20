@@ -1,5 +1,8 @@
 ---
-title: SFT 监督微调
+title: SFT
+created: 2026-03-18
+published: 2026-03-18
+modified: 2026-03-25
 tags:
   - training
   - post-training

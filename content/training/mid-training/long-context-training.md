@@ -1,5 +1,8 @@
 ---
-title: 长上下文训练
+title: Long Context Training
+created: 2026-03-17
+published: 2026-03-17
+modified: 2026-03-24
 type: topic
 status: seed
 area: training

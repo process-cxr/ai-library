@@ -1,5 +1,8 @@
 ---
-title: Logits 与输出头
+title: Logits and Output Head
+created: 2026-01-30
+published: 2026-01-30
+modified: 2026-02-06
 type: topic
 status: growing
 area: fundamentals

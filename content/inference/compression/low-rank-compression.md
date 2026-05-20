@@ -1,5 +1,8 @@
 ---
 title: Low-rank Compression
+created: 2026-04-21
+published: 2026-04-21
+modified: 2026-04-28
 type: topic
 status: seed
 area: inference

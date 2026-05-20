@@ -1,5 +1,8 @@
 ---
-title: 训练数据工程
+title: Data Engineering
+created: 2026-03-23
+published: 2026-03-23
+modified: 2026-03-30
 tags:
   - training
   - data

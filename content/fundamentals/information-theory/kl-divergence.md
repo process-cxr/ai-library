@@ -1,5 +1,8 @@
 ---
-title: KL 散度
+title: KL Divergence
+created: 2026-02-01
+published: 2026-02-01
+modified: 2026-02-08
 type: topic
 status: growing
 area: fundamentals

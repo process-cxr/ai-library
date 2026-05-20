@@ -1,5 +1,8 @@
 ---
 title: Continued Pretraining
+created: 2026-03-13
+published: 2026-03-13
+modified: 2026-03-20
 type: topic
 status: seed
 area: training

@@ -1,5 +1,8 @@
 ---
-title: 联合熵与条件熵
+title: Joint and Conditional Entropy
+created: 2026-01-28
+published: 2026-01-28
+modified: 2026-02-04
 type: topic
 status: seed
 area: fundamentals

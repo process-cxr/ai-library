@@ -1,5 +1,8 @@
 ---
-title: 合成数据
+title: Synthetic Data
+created: 2026-03-31
+published: 2026-03-31
+modified: 2026-04-07
 type: topic
 status: seed
 area: training

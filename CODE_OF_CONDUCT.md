@@ -1,90 +1,51 @@
-# Citizen Code of Conduct
+# XR Lab Code of Conduct
 
 ## 1. Purpose
 
-A primary goal of the Quartz community is to be inclusive to the largest number of contributors, with the most varied and diverse backgrounds possible. As such, we are committed to providing a friendly, safe and welcoming environment for all, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion (or lack thereof).
+XR Lab 是一个面向 AI / 大模型学习、研究和工程实践的长期知识库。这个项目由陈新冉与孔芮共同维护，也可能在未来接收更多建议、修订或协作内容。
 
-This code of conduct outlines our expectations for all those who participate in our community, as well as the consequences for unacceptable behavior.
+本行为准则用于约定围绕本知识库进行讨论、协作、提交和评审时的基本沟通原则，目标是让知识整理保持清晰、尊重、可持续。
 
-We invite all those who participate in the Quartz community to help us create safe and positive experiences for everyone.
+## 2. Collaboration Principles
 
-## 2. Open [Source/Culture/Tech] Citizenship
+参与本项目时，请遵循以下原则：
 
-A supplemental goal of this Code of Conduct is to increase open [source/culture/tech] citizenship by encouraging participants to recognize and strengthen the relationships between our actions and their effects on our community.
+- 尊重不同背景、经验水平和表达方式的合作者。
+- 优先围绕事实、证据、代码、论文和实验结果讨论问题。
+- 对知识内容提出修改建议时，说明原因、依据和影响范围。
+- 对不确定内容保留边界，不把猜测写成结论。
+- 鼓励指出错误、补充来源、修正过时内容，但避免人身化表达。
+- 维护清晰的目录结构、链接关系和写作规范，减少后续维护成本。
 
-Communities mirror the societies in which they exist and positive action is essential to counteract the many forms of inequality and abuses of power that exist in society.
+## 3. Knowledge Writing Expectations
 
-If you see someone who is making an extra effort to ensure our community is welcoming, friendly, and encourages all participants to contribute to the fullest extent, we want to know.
+提交或修改知识内容时，建议遵循以下约定：
 
-## 3. Expected Behavior
-
-The following behaviors are expected and requested of all community members:
-
-- Participate in an authentic and active way. In doing so, you contribute to the health and longevity of this community.
-- Exercise consideration and respect in your speech and actions.
-- Attempt collaboration before conflict.
-- Refrain from demeaning, discriminatory, or harassing behavior and speech.
-- Be mindful of your surroundings and of your fellow participants. Alert community leaders if you notice a dangerous situation, someone in distress, or violations of this Code of Conduct, even if they seem inconsequential.
-- Remember that community event venues may be shared with members of the public; please be respectful to all patrons of these locations.
+- 稳定概念写入主题目录；资料阅读写入 `content/sources/`；实验、复现和源码阅读写入 `content/projects/`。
+- 引用论文、博客、课程或官方文档时，尽量保留来源信息。
+- 对公式、术语和关键概念给出必要解释，不默认读者已经掌握全部背景。
+- 区分“资料原文观点”“个人理解”“实验观察”和“稳定结论”。
+- 避免把临时进度、聊天记录或迁移流水账写进长期知识页面。
 
 ## 4. Unacceptable Behavior
 
-The following behaviors are considered harassment and are unacceptable within our community:
+以下行为不适合出现在本项目协作中：
 
-- Violence, threats of violence or violent language directed against another person.
-- Sexist, racist, homophobic, transphobic, ableist or otherwise discriminatory jokes and language.
-- Posting or displaying sexually explicit or violent material.
-- Posting or threatening to post other people's personally identifying information ("doxing").
-- Personal insults, particularly those related to gender, sexual orientation, race, religion, or disability.
-- Inappropriate photography or recording.
-- Inappropriate physical contact. You should have someone's consent before touching them.
-- Unwelcome sexual attention. This includes, sexualized comments or jokes; inappropriate touching, groping, and unwelcomed sexual advances.
-- Deliberate intimidation, stalking or following (online or in person).
-- Advocating for, or encouraging, any of the above behavior.
-- Sustained disruption of community events, including talks and presentations.
+- 人身攻击、羞辱、歧视、骚扰或威胁性表达。
+- 故意提交误导性内容、伪造来源或隐藏重要限制条件。
+- 在未经同意的情况下公开他人的私人信息。
+- 大范围重构目录、删除内容或修改约定，却不说明动机和影响。
+- 在知识页面中加入与项目目标无关的广告、灌水或低质量内容。
 
-## 5. Weapons Policy
+## 5. Handling Issues
 
-No weapons will be allowed at Quartz community events, community spaces, or in other spaces covered by the scope of this Code of Conduct. Weapons include but are not limited to guns, explosives (including fireworks), and large knives such as those used for hunting or display, as well as any other item used for the purpose of causing injury or harm to others. Anyone seen in possession of one of these items will be asked to leave immediately, and will only be allowed to return without the weapon. Community members are further expected to comply with all state and local laws on this matter.
+如果发现内容错误、结构不清、引用缺失或协作争议，可以优先通过以下方式处理：
 
-## 6. Consequences of Unacceptable Behavior
+- 直接在相关文件中提出修改建议。
+- 在提交说明或 Issue 中解释问题背景和修改理由。
+- 对有争议的知识结论，补充来源、实验或反例，而不是只给判断。
+- 对范围较大的结构调整，先讨论目录边界和迁移策略。
 
-Unacceptable behavior from any community member, including sponsors and those with decision-making authority, will not be tolerated.
+## 6. Attribution
 
-Anyone asked to stop unacceptable behavior is expected to comply immediately.
-
-If a community member engages in unacceptable behavior, the community organizers may take any action they deem appropriate, up to and including a temporary ban or permanent expulsion from the community without warning (and without refund in the case of a paid event).
-
-## 7. Reporting Guidelines
-
-If you are subject to or witness unacceptable behavior, or have any other concerns, please notify a community organizer as soon as possible. j.zhao2k19@gmail.com.
-
-Additionally, community organizers are available to help community members engage with local law enforcement or to otherwise help those experiencing unacceptable behavior feel safe. In the context of in-person events, organizers will also provide escorts as desired by the person experiencing distress.
-
-## 8. Addressing Grievances
-
-If you feel you have been falsely or unfairly accused of violating this Code of Conduct, you should notify @jackyzha0 with a concise description of your grievance. Your grievance will be handled in accordance with our existing governing policies.
-
-## 9. Scope
-
-We expect all community participants (contributors, paid or otherwise; sponsors; and other guests) to abide by this Code of Conduct in all community venues--online and in-person--as well as in all one-on-one communications pertaining to community business.
-
-This code of conduct and its related procedures also applies to unacceptable behavior occurring outside the scope of community activities when such behavior has the potential to adversely affect the safety and well-being of community members.
-
-## 10. Contact info
-
-j.zhao2k19@gmail.com
-
-## 11. License and attribution
-
-The Citizen Code of Conduct is distributed by [Stumptown Syndicate](http://stumptownsyndicate.org) under a [Creative Commons Attribution-ShareAlike license](http://creativecommons.org/licenses/by-sa/3.0/).
-
-Portions of text derived from the [Django Code of Conduct](https://www.djangoproject.com/conduct/) and the [Geek Feminism Anti-Harassment Policy](http://geekfeminism.wikia.com/wiki/Conference_anti-harassment/Policy).
-
-_Revision 2.3. Posted 6 March 2017._
-
-_Revision 2.2. Posted 4 February 2016._
-
-_Revision 2.1. Posted 23 June 2014._
-
-_Revision 2.0, adopted by the [Stumptown Syndicate](http://stumptownsyndicate.org) board on 10 January 2013. Posted 17 March 2013._
+本项目基于 Quartz 构建，Quartz 相关源码和上游材料遵循其原始许可和归属说明。本行为准则仅用于 XR Lab 知识库自身的协作维护，不代表 Quartz 上游社区政策。

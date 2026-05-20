@@ -1,5 +1,8 @@
 ---
-title: RAG 检索增强生成
+title: RAG
+created: 2026-05-07
+published: 2026-05-07
+modified: 2026-05-14
 tags:
   - application
   - retrieval

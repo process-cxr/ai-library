@@ -1,5 +1,8 @@
 ---
-title: Qwen 系列
+title: Qwen
+created: 2026-02-22
+published: 2026-02-22
+modified: 2026-03-01
 type: topic
 status: seed
 area: architecture

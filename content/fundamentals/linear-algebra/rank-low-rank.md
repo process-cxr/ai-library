@@ -1,5 +1,8 @@
 ---
-title: 秩与低秩近似
+title: Rank and Low-Rank Approximation
+created: 2026-01-13
+published: 2026-01-13
+modified: 2026-01-20
 type: topic
 status: growing
 area: fundamentals

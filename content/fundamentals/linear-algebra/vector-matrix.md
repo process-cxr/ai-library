@@ -1,5 +1,8 @@
 ---
-title: 向量、矩阵与张量
+title: Vector Matrix and Tensor
+created: 2026-01-17
+published: 2026-01-17
+modified: 2026-01-24
 type: topic
 status: growing
 area: fundamentals
