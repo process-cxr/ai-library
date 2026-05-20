@@ -1,5 +1,8 @@
 ---
-title: FSDP 训练知识点总结
+title: FSDP
+created: 2026-04-01
+published: 2026-04-01
+modified: 2026-04-08
 tags:
   - distributed-training
   - pytorch

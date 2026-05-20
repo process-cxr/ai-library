@@ -1,5 +1,8 @@
 ---
-title: LLaMA 系列
+title: LLaMA
+created: 2026-03-01
+published: 2026-03-01
+modified: 2026-03-08
 tags:
   - architecture
   - meta

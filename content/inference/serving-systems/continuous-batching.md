@@ -1,5 +1,8 @@
 ---
 title: Continuous Batching
+created: 2026-04-16
+published: 2026-04-16
+modified: 2026-04-23
 type: topic
 status: seed
 area: inference

@@ -1,5 +1,8 @@
 ---
-title: 概率链式法则
+title: Probability Chain Rule
+created: 2026-01-19
+published: 2026-01-19
+modified: 2026-01-26
 type: topic
 status: growing
 area: fundamentals

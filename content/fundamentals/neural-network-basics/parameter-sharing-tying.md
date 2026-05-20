@@ -1,5 +1,8 @@
 ---
-title: 参数共享与权重绑定
+title: Parameter Sharing and Weight Tying
+created: 2026-02-03
+published: 2026-02-03
+modified: 2026-02-10
 type: topic
 status: seed
 area: fundamentals

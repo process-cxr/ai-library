@@ -1,5 +1,8 @@
 ---
 title: Feed Forward Network in Transformer
+created: 2026-02-16
+published: 2026-02-16
+modified: 2026-02-23
 type: topic
 status: seed
 area: architecture

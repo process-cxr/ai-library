@@ -1,5 +1,8 @@
 ---
-title: 贝叶斯公式
+title: Bayes Rule
+created: 2026-01-15
+published: 2026-01-15
+modified: 2026-01-22
 type: topic
 status: seed
 area: fundamentals

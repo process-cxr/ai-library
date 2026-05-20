@@ -1,5 +1,8 @@
 ---
 title: Request Scheduling
+created: 2026-04-20
+published: 2026-04-20
+modified: 2026-04-27
 type: topic
 status: seed
 area: inference

@@ -1,5 +1,8 @@
 ---
-title: 领域适配
+title: Domain Adaptation
+created: 2026-03-15
+published: 2026-03-15
+modified: 2026-03-22
 type: topic
 status: seed
 area: training

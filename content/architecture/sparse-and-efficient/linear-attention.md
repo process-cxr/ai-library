@@ -1,5 +1,8 @@
 ---
 title: Linear Attention
+created: 2026-02-27
+published: 2026-02-27
+modified: 2026-03-06
 type: topic
 status: seed
 area: architecture

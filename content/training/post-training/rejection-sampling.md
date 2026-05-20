@@ -1,5 +1,8 @@
 ---
 title: Rejection Sampling
+created: 2026-03-21
+published: 2026-03-21
+modified: 2026-03-28
 type: topic
 status: seed
 area: training

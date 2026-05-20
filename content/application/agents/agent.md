@@ -1,5 +1,8 @@
 ---
 title: Agent
+created: 2026-05-02
+published: 2026-05-02
+modified: 2026-05-09
 tags:
   - application
   - agent

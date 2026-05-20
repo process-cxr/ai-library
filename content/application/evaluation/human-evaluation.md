@@ -1,5 +1,8 @@
 ---
 title: Human Evaluation
+created: 2026-05-11
+published: 2026-05-11
+modified: 2026-05-18
 type: topic
 status: seed
 area: application

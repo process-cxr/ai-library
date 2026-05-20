@@ -1,5 +1,8 @@
 ---
-title: 交叉熵
+title: Cross Entropy
+created: 2026-01-24
+published: 2026-01-24
+modified: 2026-01-31
 type: topic
 status: growing
 area: fundamentals

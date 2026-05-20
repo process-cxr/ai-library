@@ -1,5 +1,8 @@
 ---
-title: 知识蒸馏的信息论视角
+title: Information-Theoretic View of Knowledge Distillation
+created: 2026-01-23
+published: 2026-01-23
+modified: 2026-01-30
 type: topic
 status: growing
 area: fundamentals

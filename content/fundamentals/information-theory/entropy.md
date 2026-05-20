@@ -1,5 +1,8 @@
 ---
-title: 熵
+title: Entropy
+created: 2026-01-26
+published: 2026-01-26
+modified: 2026-02-02
 type: topic
 status: growing
 area: fundamentals

@@ -1,5 +1,8 @@
 ---
 title: Performance
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-10
 ---
 
 Performance 模块负责整理推理性能指标和评测方法，包括延迟、吞吐、TTFT、TPOT、batch size 和 benchmark。

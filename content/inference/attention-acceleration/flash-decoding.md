@@ -1,5 +1,8 @@
 ---
 title: FlashDecoding
+created: 2026-04-14
+published: 2026-04-14
+modified: 2026-04-21
 type: topic
 status: seed
 area: inference

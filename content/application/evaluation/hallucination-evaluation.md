@@ -1,5 +1,8 @@
 ---
 title: Hallucination Evaluation
+created: 2026-05-09
+published: 2026-05-09
+modified: 2026-05-16
 type: topic
 status: seed
 area: application

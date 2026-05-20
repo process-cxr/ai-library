@@ -1,5 +1,8 @@
 ---
-title: 蒙特卡罗方法
+title: Monte Carlo Method
+created: 2026-01-22
+published: 2026-01-22
+modified: 2026-01-29
 type: topic
 status: growing
 area: fundamentals

@@ -1,5 +1,8 @@
 ---
 title: Structured API
+created: 2026-05-04
+published: 2026-05-04
+modified: 2026-05-11
 type: topic
 status: seed
 area: application

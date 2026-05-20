@@ -1,5 +1,8 @@
 ---
-title: Mistral 系列
+title: Mistral
+created: 2026-03-03
+published: 2026-03-03
+modified: 2026-03-10
 type: topic
 status: seed
 area: architecture

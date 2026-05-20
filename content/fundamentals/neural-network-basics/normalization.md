@@ -1,5 +1,8 @@
 ---
-title: 归一化
+title: Normalization
+created: 2026-02-01
+published: 2026-02-01
+modified: 2026-02-08
 type: topic
 status: growing
 area: fundamentals

@@ -1,5 +1,8 @@
 ---
 title: Context Compression
+created: 2026-04-29
+published: 2026-04-29
+modified: 2026-05-06
 type: topic
 status: seed
 area: application

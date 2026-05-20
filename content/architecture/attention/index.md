@@ -1,5 +1,8 @@
 ---
 title: Attention
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-10
 ---
 
 Attention 模块负责整理注意力机制及其现代变体，包括 self-attention、multi-head attention、MQA、GQA、滑动窗口注意力等。

@@ -1,5 +1,8 @@
 ---
-title: 最大似然估计
+title: Maximum Likelihood Estimation
+created: 2026-01-20
+published: 2026-01-20
+modified: 2026-01-27
 type: topic
 status: growing
 area: fundamentals

@@ -1,5 +1,8 @@
 ---
-title: 正则化
+title: Regularization
+created: 2026-02-04
+published: 2026-02-04
+modified: 2026-02-11
 type: topic
 status: growing
 area: fundamentals

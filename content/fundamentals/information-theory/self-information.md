@@ -1,5 +1,8 @@
 ---
-title: 自信息
+title: Self-Information
+created: 2026-01-24
+published: 2026-01-24
+modified: 2026-01-31
 type: topic
 status: growing
 area: fundamentals

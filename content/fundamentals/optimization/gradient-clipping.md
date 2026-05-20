@@ -1,5 +1,8 @@
 ---
-title: 梯度裁剪
+title: Gradient Clipping
+created: 2026-02-14
+published: 2026-02-14
+modified: 2026-02-21
 type: topic
 status: growing
 area: fundamentals
