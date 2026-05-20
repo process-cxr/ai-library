@@ -1,5 +1,8 @@
 ---
-title: 神经网络基础
+title: Neural Network Basics
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-10
 type: topic
 status: growing
 area: fundamentals

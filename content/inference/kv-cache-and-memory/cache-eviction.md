@@ -1,5 +1,8 @@
 ---
 title: Cache Eviction
+created: 2026-04-07
+published: 2026-04-07
+modified: 2026-04-14
 type: topic
 status: seed
 area: inference

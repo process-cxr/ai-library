@@ -1,5 +1,8 @@
 ---
-title: 激活函数
+title: Activation Functions
+created: 2026-01-29
+published: 2026-01-29
+modified: 2026-02-05
 type: topic
 status: growing
 area: fundamentals

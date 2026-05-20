@@ -1,5 +1,8 @@
 ---
-title: 混合精度训练
+title: Mixed Precision Training
+created: 2026-03-30
+published: 2026-03-30
+modified: 2026-04-06
 tags:
   - training
   - optimization

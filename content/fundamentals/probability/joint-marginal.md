@@ -1,5 +1,8 @@
 ---
-title: 联合分布与边缘分布
+title: Joint and Marginal Distributions
+created: 2026-01-18
+published: 2026-01-18
+modified: 2026-01-25
 type: topic
 status: growing
 area: fundamentals

@@ -1,5 +1,8 @@
 ---
 title: Beam Search
+created: 2026-04-06
+published: 2026-04-06
+modified: 2026-04-13
 type: topic
 status: seed
 area: inference

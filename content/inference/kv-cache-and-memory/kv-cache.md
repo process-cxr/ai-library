@@ -1,5 +1,8 @@
 ---
 title: KV Cache
+created: 2026-04-09
+published: 2026-04-09
+modified: 2026-04-16
 tags:
   - inference
   - memory-optimization

@@ -1,5 +1,8 @@
 ---
-title: 交叉熵与 KL 的关系
+title: Cross Entropy and KL Divergence
+created: 2026-01-22
+published: 2026-01-22
+modified: 2026-01-29
 type: topic
 status: growing
 area: fundamentals

@@ -1,5 +1,8 @@
 ---
-title: Batch Size 与梯度噪声
+title: Batch Size and Gradient Noise
+created: 2026-02-10
+published: 2026-02-10
+modified: 2026-02-17
 type: topic
 status: growing
 area: fundamentals

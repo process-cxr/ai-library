@@ -1,5 +1,16 @@
 MIT License
 
+Copyright (c) 2026 Chen Xinran and Kong Rui
+
+This repository contains two kinds of materials:
+
+1. Knowledge content maintained for XR Lab, including Markdown notes, reading notes, project records, and related documentation written for this AI knowledge base.
+2. Quartz source code and upstream materials used to build and publish the knowledge base.
+
+Unless otherwise noted, the XR Lab knowledge content and project-specific documentation are released under the MIT License below.
+
+Quartz is an upstream open-source project created by Jacky Zhao. Quartz source code and upstream materials retain their original copyright and license notices, including:
+
 Copyright (c) 2021 jackyzha0
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

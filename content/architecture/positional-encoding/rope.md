@@ -1,5 +1,8 @@
 ---
 title: RoPE
+created: 2026-02-24
+published: 2026-02-24
+modified: 2026-03-03
 type: topic
 status: seed
 area: architecture

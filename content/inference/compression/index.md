@@ -1,5 +1,8 @@
 ---
 title: Compression
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-10
 ---
 
 Compression 模块负责整理模型压缩方法，包括剪枝、蒸馏、低秩压缩和与推理部署相关的压缩取舍。

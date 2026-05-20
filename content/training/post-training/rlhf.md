@@ -1,5 +1,8 @@
 ---
 title: RLHF
+created: 2026-03-14
+published: 2026-03-14
+modified: 2026-03-21
 tags:
   - training
   - post-training

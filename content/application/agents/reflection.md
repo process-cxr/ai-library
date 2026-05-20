@@ -1,5 +1,8 @@
 ---
 title: Reflection
+created: 2026-05-10
+published: 2026-05-10
+modified: 2026-05-17
 type: topic
 status: seed
 area: application

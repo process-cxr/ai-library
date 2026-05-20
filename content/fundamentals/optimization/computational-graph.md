@@ -1,5 +1,8 @@
 ---
-title: 计算图与自动微分
+title: Computational Graph and Automatic Differentiation
+created: 2026-02-12
+published: 2026-02-12
+modified: 2026-02-19
 type: topic
 status: growing
 area: fundamentals

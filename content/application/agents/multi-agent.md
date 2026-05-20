@@ -1,5 +1,8 @@
 ---
 title: Multi-Agent
+created: 2026-05-06
+published: 2026-05-06
+modified: 2026-05-13
 type: topic
 status: seed
 area: application

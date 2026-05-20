@@ -1,5 +1,8 @@
 ---
 title: GPTQ
+created: 2026-04-17
+published: 2026-04-17
+modified: 2026-04-24
 type: topic
 status: seed
 area: inference

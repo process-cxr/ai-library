@@ -1,5 +1,8 @@
 ---
-title: 范数
+title: Norm
+created: 2026-01-09
+published: 2026-01-09
+modified: 2026-01-16
 type: topic
 status: growing
 area: fundamentals

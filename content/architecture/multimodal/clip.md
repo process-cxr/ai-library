@@ -1,5 +1,8 @@
 ---
 title: CLIP
+created: 2026-03-01
+published: 2026-03-01
+modified: 2026-03-08
 type: topic
 status: seed
 area: architecture

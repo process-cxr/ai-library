@@ -1,5 +1,8 @@
 ---
 title: Function Calling
+created: 2026-04-30
+published: 2026-04-30
+modified: 2026-05-07
 tags:
   - application
   - agent

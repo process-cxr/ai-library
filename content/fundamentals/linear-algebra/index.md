@@ -1,5 +1,8 @@
 ---
-title: 线性代数
+title: Linear Algebra
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-10
 type: topic
 status: growing
 area: fundamentals

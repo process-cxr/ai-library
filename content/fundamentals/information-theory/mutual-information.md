@@ -1,5 +1,8 @@
 ---
-title: 互信息
+title: Mutual Information
+created: 2026-01-27
+published: 2026-01-27
+modified: 2026-02-03
 type: topic
 status: growing
 area: fundamentals

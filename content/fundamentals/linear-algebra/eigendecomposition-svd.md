@@ -1,5 +1,8 @@
 ---
-title: 特征分解与 SVD
+title: Eigendecomposition and SVD
+created: 2026-01-12
+published: 2026-01-12
+modified: 2026-01-19
 type: topic
 status: growing
 area: fundamentals

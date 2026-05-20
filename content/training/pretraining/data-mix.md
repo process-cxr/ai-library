@@ -1,5 +1,8 @@
 ---
-title: 数据混合
+title: Data Mix
+created: 2026-03-07
+published: 2026-03-07
+modified: 2026-03-14
 type: topic
 status: seed
 area: training

@@ -1,5 +1,8 @@
 ---
-title: 基与坐标
+title: Basis and Coordinates
+created: 2026-01-08
+published: 2026-01-08
+modified: 2026-01-15
 type: topic
 status: growing
 area: fundamentals

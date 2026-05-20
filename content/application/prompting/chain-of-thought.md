@@ -1,5 +1,8 @@
 ---
 title: Chain of Thought
+created: 2026-04-24
+published: 2026-04-24
+modified: 2026-05-01
 type: topic
 status: seed
 area: application

@@ -1,5 +1,8 @@
 ---
-title: 学习率
+title: Learning Rate
+created: 2026-02-07
+published: 2026-02-07
+modified: 2026-02-14
 type: topic
 status: growing
 area: fundamentals

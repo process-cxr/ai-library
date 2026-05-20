@@ -1,5 +1,8 @@
 ---
 title: Logits Distillation
+created: 2026-03-24
+published: 2026-03-24
+modified: 2026-03-31
 type: topic
 status: seed
 area: training

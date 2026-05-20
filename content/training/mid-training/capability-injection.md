@@ -1,5 +1,8 @@
 ---
-title: 能力注入
+title: Capability Injection
+created: 2026-03-11
+published: 2026-03-11
+modified: 2026-03-18
 type: topic
 status: seed
 area: training

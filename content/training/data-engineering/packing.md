@@ -1,5 +1,8 @@
 ---
 title: Packing
+created: 2026-03-27
+published: 2026-03-27
+modified: 2026-04-03
 type: topic
 status: seed
 area: training

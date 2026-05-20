@@ -1,5 +1,8 @@
 ---
-title: 经验分布
+title: Empirical Distribution
+created: 2026-01-25
+published: 2026-01-25
+modified: 2026-02-01
 type: topic
 status: growing
 area: fundamentals
