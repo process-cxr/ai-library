@@ -1,8 +1,8 @@
 ---
 title: "Fundamentals"
-created: 2025-12-27
-published: 2025-12-27
-modified: 2026-01-03
+created: 2025-12-06
+published: 2025-12-06
+modified: 2025-12-06
 ---
 
 LLM 学习所需的数学、概率、信息论、优化和神经网络基础。这里不追求数学大全，只沉淀理解大模型主线所必需的概念。

@@ -1,8 +1,8 @@
 ---
 title: "Architecture"
-created: 2025-12-27
-published: 2025-12-27
-modified: 2026-01-03
+created: 2026-01-18
+published: 2026-01-18
+modified: 2026-01-18
 ---
 
 大模型架构设计，从 Transformer 基础结构到注意力变体、位置编码、模型家族、稀疏高效架构和多模态架构。

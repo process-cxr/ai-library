@@ -1,8 +1,8 @@
 ---
 title: Expectation and Variance
-created: 2026-01-16
-published: 2026-01-16
-modified: 2026-01-23
+created: 2025-12-20
+published: 2025-12-20
+modified: 2025-12-20
 type: topic
 status: growing
 area: fundamentals

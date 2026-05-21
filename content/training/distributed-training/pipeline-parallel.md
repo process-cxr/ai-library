@@ -1,8 +1,8 @@
 ---
 title: Pipeline Parallel
-created: 2026-04-05
-published: 2026-04-05
-modified: 2026-04-12
+created: 2026-03-22
+published: 2026-03-22
+modified: 2026-03-22
 type: topic
 status: seed
 area: training

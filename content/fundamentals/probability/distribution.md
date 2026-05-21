@@ -1,8 +1,8 @@
 ---
 title: Probability Distribution
-created: 2026-01-23
-published: 2026-01-23
-modified: 2026-01-30
+created: 2025-12-14
+published: 2025-12-14
+modified: 2025-12-14
 type: topic
 status: growing
 area: fundamentals

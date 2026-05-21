@@ -1,8 +1,8 @@
 ---
 title: Multi-Head Attention
-created: 2026-02-19
-published: 2026-02-19
-modified: 2026-02-26
+created: 2026-01-25
+published: 2026-01-25
+modified: 2026-01-25
 type: topic
 status: seed
 area: architecture

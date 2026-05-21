@@ -1,8 +1,8 @@
 ---
 title: Encoder-Decoder Transformer
-created: 2026-02-14
-published: 2026-02-14
-modified: 2026-02-21
+created: 2026-01-24
+published: 2026-01-24
+modified: 2026-01-24
 type: topic
 status: seed
 area: architecture

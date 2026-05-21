@@ -1,8 +1,8 @@
 ---
 title: "Application"
-created: 2025-12-27
-published: 2025-12-27
-modified: 2026-01-03
+created: 2026-04-26
+published: 2026-04-26
+modified: 2026-04-26
 ---
 
 大模型应用方式与评测，按提示词、RAG、工具调用、Agent 和评测五条主线组织。

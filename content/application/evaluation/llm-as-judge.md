@@ -1,8 +1,8 @@
 ---
 title: LLM-as-a-Judge
-created: 2026-05-13
-published: 2026-05-13
-modified: 2026-05-20
+created: 2026-05-24
+published: 2026-05-24
+modified: 2026-05-24
 type: topic
 status: seed
 area: application

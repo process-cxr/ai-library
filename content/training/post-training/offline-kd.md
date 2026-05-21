@@ -1,8 +1,8 @@
 ---
 title: Offline KD
-created: 2026-03-15
-published: 2026-03-15
-modified: 2026-03-22
+created: 2026-03-08
+published: 2026-03-08
+modified: 2026-03-08
 type: topic
 status: seed
 area: training

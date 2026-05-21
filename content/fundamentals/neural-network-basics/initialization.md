@@ -1,8 +1,8 @@
 ---
 title: Initialization
-created: 2026-02-06
-published: 2026-02-06
-modified: 2026-02-13
+created: 2026-01-10
+published: 2026-01-10
+modified: 2026-01-10
 type: topic
 status: seed
 area: fundamentals

@@ -1,8 +1,8 @@
 ---
 title: Efficient Transformer
-created: 2026-02-25
-published: 2026-02-25
-modified: 2026-03-04
+created: 2026-02-14
+published: 2026-02-14
+modified: 2026-02-14
 type: topic
 status: seed
 area: architecture

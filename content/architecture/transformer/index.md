@@ -1,8 +1,8 @@
 ---
 title: Transformer
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-01-18
+published: 2026-01-18
+modified: 2026-01-18
 ---
 
 Transformer 模块负责整理标准 Transformer 架构及其核心组成，包括 block 结构、attention、FFN、残差、归一化和 decoder-only 变体。

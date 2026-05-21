@@ -1,8 +1,8 @@
 ---
 title: Computational Graph and Automatic Differentiation
-created: 2026-02-12
-published: 2026-02-12
-modified: 2026-02-19
+created: 2026-01-11
+published: 2026-01-11
+modified: 2026-01-11
 type: topic
 status: growing
 area: fundamentals

@@ -1,8 +1,8 @@
 ---
 title: Mixed Precision Training
-created: 2026-03-30
-published: 2026-03-30
-modified: 2026-04-06
+created: 2026-03-15
+published: 2026-03-15
+modified: 2026-03-15
 tags:
   - training
   - optimization

@@ -1,8 +1,8 @@
 ---
 title: Residual Connection
-created: 2026-02-05
-published: 2026-02-05
-modified: 2026-02-12
+created: 2026-01-10
+published: 2026-01-10
+modified: 2026-01-10
 type: topic
 status: growing
 area: fundamentals

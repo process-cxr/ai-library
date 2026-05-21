@@ -1,8 +1,8 @@
 ---
 title: Gradient Descent
-created: 2026-02-05
-published: 2026-02-05
-modified: 2026-02-12
+created: 2026-01-11
+published: 2026-01-11
+modified: 2026-01-11
 type: topic
 status: growing
 area: fundamentals

@@ -1,8 +1,8 @@
 ---
 title: Learning Rate Scheduler
-created: 2026-02-11
-published: 2026-02-11
-modified: 2026-02-18
+created: 2026-01-11
+published: 2026-01-11
+modified: 2026-01-11
 type: topic
 status: growing
 area: fundamentals

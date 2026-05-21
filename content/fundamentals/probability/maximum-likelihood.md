@@ -1,8 +1,8 @@
 ---
 title: Maximum Likelihood Estimation
-created: 2026-01-20
-published: 2026-01-20
-modified: 2026-01-27
+created: 2025-12-21
+published: 2025-12-21
+modified: 2025-12-21
 type: topic
 status: growing
 area: fundamentals

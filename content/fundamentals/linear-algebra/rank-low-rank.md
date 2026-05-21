@@ -1,8 +1,8 @@
 ---
 title: Rank and Low-Rank Approximation
-created: 2026-01-13
-published: 2026-01-13
-modified: 2026-01-20
+created: 2025-12-13
+published: 2025-12-13
+modified: 2025-12-13
 type: topic
 status: growing
 area: fundamentals

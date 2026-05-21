@@ -1,8 +1,8 @@
 ---
 title: SGD and Momentum
-created: 2026-02-06
-published: 2026-02-06
-modified: 2026-02-13
+created: 2026-01-17
+published: 2026-01-17
+modified: 2026-01-17
 type: topic
 status: growing
 area: fundamentals

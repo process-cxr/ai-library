@@ -2,7 +2,7 @@
 title: System Prompt
 created: 2026-05-02
 published: 2026-05-02
-modified: 2026-05-09
+modified: 2026-05-02
 type: topic
 status: seed
 area: application

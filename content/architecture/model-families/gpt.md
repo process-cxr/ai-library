@@ -1,8 +1,8 @@
 ---
 title: GPT
-created: 2026-02-27
-published: 2026-02-27
-modified: 2026-03-06
+created: 2026-02-07
+published: 2026-02-07
+modified: 2026-02-07
 tags:
   - architecture
   - openai

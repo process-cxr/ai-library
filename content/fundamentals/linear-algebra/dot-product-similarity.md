@@ -1,8 +1,8 @@
 ---
 title: Dot Product and Similarity
-created: 2026-01-10
-published: 2026-01-10
-modified: 2026-01-17
+created: 2025-12-07
+published: 2025-12-07
+modified: 2025-12-07
 type: topic
 status: growing
 area: fundamentals

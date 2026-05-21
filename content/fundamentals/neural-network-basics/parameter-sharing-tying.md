@@ -1,8 +1,8 @@
 ---
 title: Parameter Sharing and Weight Tying
-created: 2026-02-03
-published: 2026-02-03
-modified: 2026-02-10
+created: 2026-01-10
+published: 2026-01-10
+modified: 2026-01-10
 type: topic
 status: seed
 area: fundamentals

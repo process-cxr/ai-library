@@ -1,7 +1,7 @@
 ---
 title: Reflection
-created: 2026-05-10
-published: 2026-05-10
+created: 2026-05-17
+published: 2026-05-17
 modified: 2026-05-17
 type: topic
 status: seed

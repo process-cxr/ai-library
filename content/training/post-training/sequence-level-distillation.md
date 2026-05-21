@@ -1,8 +1,8 @@
 ---
 title: Sequence-level Distillation
-created: 2026-03-16
-published: 2026-03-16
-modified: 2026-03-23
+created: 2026-03-08
+published: 2026-03-08
+modified: 2026-03-08
 type: topic
 status: seed
 area: training

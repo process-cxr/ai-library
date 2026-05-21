@@ -1,8 +1,8 @@
 ---
 title: Elementwise Operations and Broadcasting
-created: 2026-01-14
-published: 2026-01-14
-modified: 2026-01-21
+created: 2025-12-13
+published: 2025-12-13
+modified: 2025-12-13
 type: topic
 status: growing
 area: fundamentals
