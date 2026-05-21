@@ -1,8 +1,8 @@
 ---
 title: Annealing
-created: 2026-03-09
-published: 2026-03-09
-modified: 2026-03-16
+created: 2026-02-28
+published: 2026-02-28
+modified: 2026-02-28
 type: topic
 status: seed
 area: training

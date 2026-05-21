@@ -1,8 +1,8 @@
 ---
 title: Entropy
-created: 2026-01-26
-published: 2026-01-26
-modified: 2026-02-02
+created: 2025-12-27
+published: 2025-12-27
+modified: 2025-12-27
 type: topic
 status: growing
 area: fundamentals

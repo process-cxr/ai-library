@@ -1,8 +1,8 @@
 ---
 title: Data Engineering
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-03-14
+published: 2026-03-14
+modified: 2026-03-14
 ---
 
 训练数据工程负责数据收集、清洗、去重、过滤、混合、packing 和合成数据构造，是训练效果的基础约束。

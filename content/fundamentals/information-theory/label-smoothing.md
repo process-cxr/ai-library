@@ -1,8 +1,8 @@
 ---
 title: Label Smoothing
-created: 2026-01-25
-published: 2026-01-25
-modified: 2026-02-01
+created: 2025-12-28
+published: 2025-12-28
+modified: 2025-12-28
 type: topic
 status: seed
 area: fundamentals

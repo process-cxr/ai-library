@@ -1,8 +1,8 @@
 ---
 title: Optimizer State
-created: 2026-04-01
-published: 2026-04-01
-modified: 2026-04-08
+created: 2026-03-21
+published: 2026-03-21
+modified: 2026-03-21
 type: topic
 status: seed
 area: training

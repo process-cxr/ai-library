@@ -1,8 +1,8 @@
 ---
 title: GRPO
-created: 2026-03-18
-published: 2026-03-18
-modified: 2026-03-25
+created: 2026-03-07
+published: 2026-03-07
+modified: 2026-03-07
 type: topic
 status: seed
 area: training

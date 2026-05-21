@@ -1,8 +1,8 @@
 ---
 title: RAG
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-05-03
+published: 2026-05-03
+modified: 2026-05-03
 ---
 
 RAG 模块负责整理检索增强生成系统，包括检索、切块、embedding、reranking、混合检索、查询改写和上下文压缩。

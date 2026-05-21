@@ -1,8 +1,8 @@
 ---
 title: Mid-training
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-02-22
+published: 2026-02-22
+modified: 2026-02-22
 ---
 
 中训练阶段介于预训练和后训练之间，通常用于继续预训练、领域能力注入、长上下文扩展和训练末期退火。

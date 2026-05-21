@@ -1,8 +1,8 @@
 ---
 title: Tensor Parallel Serving
-created: 2026-04-22
-published: 2026-04-22
-modified: 2026-04-29
+created: 2026-04-18
+published: 2026-04-18
+modified: 2026-04-18
 type: topic
 status: seed
 area: inference

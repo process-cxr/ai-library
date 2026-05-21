@@ -1,8 +1,8 @@
 ---
 title: Regularization
-created: 2026-02-04
-published: 2026-02-04
-modified: 2026-02-11
+created: 2026-01-18
+published: 2026-01-18
+modified: 2026-01-18
 type: topic
 status: growing
 area: fundamentals

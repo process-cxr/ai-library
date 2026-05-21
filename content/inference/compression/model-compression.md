@@ -1,8 +1,8 @@
 ---
 title: Model Compression
-created: 2026-04-23
-published: 2026-04-23
-modified: 2026-04-30
+created: 2026-04-19
+published: 2026-04-19
+modified: 2026-04-19
 tags:
   - inference
   - compression

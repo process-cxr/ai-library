@@ -1,8 +1,8 @@
 ---
 title: Numerical Stability in Optimization
-created: 2026-02-13
-published: 2026-02-13
-modified: 2026-02-20
+created: 2026-01-18
+published: 2026-01-18
+modified: 2026-01-18
 type: topic
 status: seed
 area: fundamentals

@@ -1,8 +1,8 @@
 ---
 title: Model Families
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-02-07
+published: 2026-02-07
+modified: 2026-02-07
 ---
 
 模型家族模块负责整理主流大模型架构案例，重点记录公开架构设计、模块组合、训练范式和与基础机制的对应关系。

@@ -1,8 +1,8 @@
 ---
 title: Pruning
-created: 2026-04-25
-published: 2026-04-25
-modified: 2026-05-02
+created: 2026-04-19
+published: 2026-04-19
+modified: 2026-04-19
 type: topic
 status: seed
 area: inference

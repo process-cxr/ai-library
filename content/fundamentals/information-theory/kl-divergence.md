@@ -1,8 +1,8 @@
 ---
 title: KL Divergence
-created: 2026-02-01
-published: 2026-02-01
-modified: 2026-02-08
+created: 2025-12-28
+published: 2025-12-28
+modified: 2025-12-28
 type: topic
 status: growing
 area: fundamentals

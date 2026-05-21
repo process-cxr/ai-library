@@ -1,8 +1,8 @@
 ---
 title: Latency and Throughput
-created: 2026-04-26
-published: 2026-04-26
-modified: 2026-05-03
+created: 2026-04-25
+published: 2026-04-25
+modified: 2026-04-25
 type: topic
 status: seed
 area: inference

@@ -1,8 +1,8 @@
 ---
 title: Information-Theoretic View of Knowledge Distillation
-created: 2026-01-23
-published: 2026-01-23
-modified: 2026-01-30
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-03
 type: topic
 status: growing
 area: fundamentals

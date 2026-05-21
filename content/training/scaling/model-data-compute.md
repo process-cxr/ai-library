@@ -1,8 +1,8 @@
 ---
 title: Model Data and Compute
-created: 2026-04-04
-published: 2026-04-04
-modified: 2026-04-11
+created: 2026-03-28
+published: 2026-03-28
+modified: 2026-03-28
 type: topic
 status: seed
 area: training

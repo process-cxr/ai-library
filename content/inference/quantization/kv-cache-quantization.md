@@ -1,8 +1,8 @@
 ---
 title: KV Cache Quantization
-created: 2026-04-19
-published: 2026-04-19
-modified: 2026-04-26
+created: 2026-04-11
+published: 2026-04-11
+modified: 2026-04-11
 type: topic
 status: seed
 area: inference

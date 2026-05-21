@@ -1,8 +1,8 @@
 ---
 title: Pretraining
-created: 2026-03-11
-published: 2026-03-11
-modified: 2026-03-18
+created: 2026-02-21
+published: 2026-02-21
+modified: 2026-02-21
 tags:
   - training
   - pretraining

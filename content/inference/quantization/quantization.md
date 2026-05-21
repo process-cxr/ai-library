@@ -1,8 +1,8 @@
 ---
 title: Quantization
-created: 2026-04-21
-published: 2026-04-21
-modified: 2026-04-28
+created: 2026-04-11
+published: 2026-04-11
+modified: 2026-04-11
 tags:
   - inference
   - memory-optimization

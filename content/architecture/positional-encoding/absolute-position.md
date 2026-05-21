@@ -1,8 +1,8 @@
 ---
 title: Absolute Position Embedding
-created: 2026-02-18
-published: 2026-02-18
-modified: 2026-02-25
+created: 2026-02-01
+published: 2026-02-01
+modified: 2026-02-01
 type: topic
 status: seed
 area: architecture

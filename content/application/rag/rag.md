@@ -1,8 +1,8 @@
 ---
 title: RAG
-created: 2026-05-07
-published: 2026-05-07
-modified: 2026-05-14
+created: 2026-05-03
+published: 2026-05-03
+modified: 2026-05-03
 tags:
   - application
   - retrieval

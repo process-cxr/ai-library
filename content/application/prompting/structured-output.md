@@ -1,8 +1,8 @@
 ---
 title: Structured Output
-created: 2026-04-30
-published: 2026-04-30
-modified: 2026-05-07
+created: 2026-05-02
+published: 2026-05-02
+modified: 2026-05-02
 type: topic
 status: seed
 area: application

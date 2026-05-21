@@ -1,8 +1,8 @@
 ---
 title: Workflow Agent
-created: 2026-05-12
-published: 2026-05-12
-modified: 2026-05-19
+created: 2026-05-23
+published: 2026-05-23
+modified: 2026-05-23
 type: topic
 status: seed
 area: application

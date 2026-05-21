@@ -1,8 +1,8 @@
 ---
 title: Gradient Clipping
-created: 2026-02-14
-published: 2026-02-14
-modified: 2026-02-21
+created: 2026-01-17
+published: 2026-01-17
+modified: 2026-01-17
 type: topic
 status: growing
 area: fundamentals

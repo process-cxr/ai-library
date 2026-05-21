@@ -1,8 +1,8 @@
 ---
 title: Vision-Language Model
-created: 2026-03-09
-published: 2026-03-09
-modified: 2026-03-16
+created: 2026-02-15
+published: 2026-02-15
+modified: 2026-02-15
 type: topic
 status: seed
 area: architecture

@@ -1,8 +1,8 @@
 ---
 title: vLLM
-created: 2026-04-24
-published: 2026-04-24
-modified: 2026-05-01
+created: 2026-04-18
+published: 2026-04-18
+modified: 2026-04-18
 tags:
   - inference
   - serving

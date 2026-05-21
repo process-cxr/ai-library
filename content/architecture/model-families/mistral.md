@@ -1,8 +1,8 @@
 ---
 title: Mistral
-created: 2026-03-03
-published: 2026-03-03
-modified: 2026-03-10
+created: 2026-02-08
+published: 2026-02-08
+modified: 2026-02-08
 type: topic
 status: seed
 area: architecture

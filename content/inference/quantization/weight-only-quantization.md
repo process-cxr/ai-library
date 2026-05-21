@@ -1,8 +1,8 @@
 ---
 title: Weight-only Quantization
-created: 2026-04-23
-published: 2026-04-23
-modified: 2026-04-30
+created: 2026-04-11
+published: 2026-04-11
+modified: 2026-04-11
 type: topic
 status: seed
 area: inference

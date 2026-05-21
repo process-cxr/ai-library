@@ -1,8 +1,8 @@
 ---
 title: Scaling
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-03-28
+published: 2026-03-28
+modified: 2026-03-28
 ---
 
 Scaling 模块关注模型规模、数据规模、计算量和性能之间的关系，用于理解训练预算和 compute optimal 配置。

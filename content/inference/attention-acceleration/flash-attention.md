@@ -1,8 +1,8 @@
 ---
 title: FlashAttention
-created: 2026-04-12
-published: 2026-04-12
-modified: 2026-04-19
+created: 2026-04-05
+published: 2026-04-05
+modified: 2026-04-05
 tags:
   - inference
   - optimization

@@ -1,8 +1,8 @@
 ---
 title: "Training"
-created: 2025-12-27
-published: 2025-12-27
-modified: 2026-01-03
+created: 2026-02-21
+published: 2026-02-21
+modified: 2026-02-21
 ---
 
 大模型训练全流程，从预训练、中训练到后训练，并包含数据工程、训练优化、分布式训练和 scaling 等横切模块。
