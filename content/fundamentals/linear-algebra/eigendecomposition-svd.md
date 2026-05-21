@@ -1,8 +1,8 @@
 ---
 title: Eigendecomposition and SVD
-created: 2026-01-12
-published: 2026-01-12
-modified: 2026-01-19
+created: 2025-12-13
+published: 2025-12-13
+modified: 2025-12-13
 type: topic
 status: growing
 area: fundamentals

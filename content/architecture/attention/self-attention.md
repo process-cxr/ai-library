@@ -1,8 +1,8 @@
 ---
 title: Self-Attention
-created: 2026-02-23
-published: 2026-02-23
-modified: 2026-03-02
+created: 2026-01-25
+published: 2026-01-25
+modified: 2026-01-25
 type: topic
 status: seed
 area: architecture

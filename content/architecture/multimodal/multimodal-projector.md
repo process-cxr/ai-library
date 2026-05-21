@@ -1,8 +1,8 @@
 ---
 title: Multimodal Projector
-created: 2026-03-05
-published: 2026-03-05
-modified: 2026-03-12
+created: 2026-02-15
+published: 2026-02-15
+modified: 2026-02-15
 type: topic
 status: seed
 area: architecture

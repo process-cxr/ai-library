@@ -1,8 +1,8 @@
 ---
 title: Basis and Coordinates
-created: 2026-01-08
-published: 2026-01-08
-modified: 2026-01-15
+created: 2025-12-07
+published: 2025-12-07
+modified: 2025-12-07
 type: topic
 status: growing
 area: fundamentals

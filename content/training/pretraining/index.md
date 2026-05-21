@@ -1,8 +1,8 @@
 ---
 title: Pretraining
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-02-21
+published: 2026-02-21
+modified: 2026-02-21
 ---
 
 预训练阶段从大规模通用语料中学习基础语言建模能力，是 base model 能力形成的主要阶段。

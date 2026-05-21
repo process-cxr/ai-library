@@ -1,8 +1,8 @@
 ---
 title: Reranking
-created: 2026-04-28
-published: 2026-04-28
-modified: 2026-05-05
+created: 2026-05-09
+published: 2026-05-09
+modified: 2026-05-09
 type: topic
 status: seed
 area: application

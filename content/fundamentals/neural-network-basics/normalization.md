@@ -1,8 +1,8 @@
 ---
 title: Normalization
-created: 2026-02-01
-published: 2026-02-01
-modified: 2026-02-08
+created: 2026-01-04
+published: 2026-01-04
+modified: 2026-01-04
 type: topic
 status: growing
 area: fundamentals

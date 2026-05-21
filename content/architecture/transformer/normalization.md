@@ -1,8 +1,8 @@
 ---
 title: Normalization in Transformer
-created: 2026-02-18
-published: 2026-02-18
-modified: 2026-02-25
+created: 2026-01-24
+published: 2026-01-24
+modified: 2026-01-24
 type: topic
 status: seed
 area: architecture

@@ -1,8 +1,8 @@
 ---
 title: Training Objective
-created: 2026-03-09
-published: 2026-03-09
-modified: 2026-03-16
+created: 2026-02-22
+published: 2026-02-22
+modified: 2026-02-22
 type: topic
 status: seed
 area: training

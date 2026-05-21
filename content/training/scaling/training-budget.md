@@ -1,8 +1,8 @@
 ---
 title: Training Budget
-created: 2026-04-08
-published: 2026-04-08
-modified: 2026-04-15
+created: 2026-03-28
+published: 2026-03-28
+modified: 2026-03-28
 type: topic
 status: seed
 area: training

@@ -1,8 +1,8 @@
 ---
 title: Cross Entropy
-created: 2026-01-24
-published: 2026-01-24
-modified: 2026-01-31
+created: 2025-12-27
+published: 2025-12-27
+modified: 2025-12-27
 type: topic
 status: growing
 area: fundamentals

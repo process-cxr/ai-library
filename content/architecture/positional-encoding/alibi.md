@@ -1,8 +1,8 @@
 ---
 title: ALiBi
-created: 2026-02-20
-published: 2026-02-20
-modified: 2026-02-27
+created: 2026-02-07
+published: 2026-02-07
+modified: 2026-02-07
 type: topic
 status: seed
 area: architecture

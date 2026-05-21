@@ -1,8 +1,8 @@
 ---
 title: State Space Model
-created: 2026-03-05
-published: 2026-03-05
-modified: 2026-03-12
+created: 2026-02-14
+published: 2026-02-14
+modified: 2026-02-14
 type: topic
 status: seed
 area: architecture

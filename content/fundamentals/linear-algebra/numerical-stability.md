@@ -1,8 +1,8 @@
 ---
 title: Numerical Stability
-created: 2026-01-11
-published: 2026-01-11
-modified: 2026-01-18
+created: 2025-12-13
+published: 2025-12-13
+modified: 2025-12-13
 type: topic
 status: growing
 area: fundamentals

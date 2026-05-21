@@ -1,8 +1,8 @@
 ---
 title: Probability
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2025-12-13
+published: 2025-12-13
+modified: 2025-12-13
 type: topic
 status: growing
 area: fundamentals

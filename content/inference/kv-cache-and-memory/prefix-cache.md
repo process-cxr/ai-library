@@ -1,8 +1,8 @@
 ---
 title: Prefix Cache
-created: 2026-04-15
-published: 2026-04-15
-modified: 2026-04-22
+created: 2026-04-04
+published: 2026-04-04
+modified: 2026-04-04
 type: topic
 status: seed
 area: inference

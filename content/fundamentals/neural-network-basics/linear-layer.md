@@ -1,8 +1,8 @@
 ---
 title: Linear Layer
-created: 2026-02-08
-published: 2026-02-08
-modified: 2026-02-15
+created: 2026-01-03
+published: 2026-01-03
+modified: 2026-01-03
 type: topic
 status: growing
 area: fundamentals

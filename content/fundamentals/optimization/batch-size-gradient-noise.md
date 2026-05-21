@@ -1,8 +1,8 @@
 ---
 title: Batch Size and Gradient Noise
-created: 2026-02-10
-published: 2026-02-10
-modified: 2026-02-17
+created: 2026-01-17
+published: 2026-01-17
+modified: 2026-01-17
 type: topic
 status: growing
 area: fundamentals

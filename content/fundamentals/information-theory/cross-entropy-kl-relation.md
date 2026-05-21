@@ -1,8 +1,8 @@
 ---
 title: Cross Entropy and KL Divergence
-created: 2026-01-22
-published: 2026-01-22
-modified: 2026-01-29
+created: 2025-12-27
+published: 2025-12-27
+modified: 2025-12-27
 type: topic
 status: growing
 area: fundamentals

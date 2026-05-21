@@ -1,8 +1,8 @@
 ---
 title: Vector Matrix and Tensor
-created: 2026-01-17
-published: 2026-01-17
-modified: 2026-01-24
+created: 2025-12-06
+published: 2025-12-06
+modified: 2025-12-06
 type: topic
 status: growing
 area: fundamentals

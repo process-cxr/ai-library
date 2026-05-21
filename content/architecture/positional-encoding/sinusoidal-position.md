@@ -1,8 +1,8 @@
 ---
 title: Sinusoidal Position Encoding
-created: 2026-02-26
-published: 2026-02-26
-modified: 2026-03-05
+created: 2026-02-01
+published: 2026-02-01
+modified: 2026-02-01
 type: topic
 status: seed
 area: architecture

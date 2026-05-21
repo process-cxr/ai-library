@@ -1,8 +1,8 @@
 ---
 title: Optimization
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-03-15
+published: 2026-03-15
+modified: 2026-03-15
 ---
 
 训练优化工程关注大模型训练过程中的稳定性、效率和资源使用，偏工程实践，不重复基础优化理论。

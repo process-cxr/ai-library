@@ -1,8 +1,8 @@
 ---
 title: Mutual Information
-created: 2026-01-27
-published: 2026-01-27
-modified: 2026-02-03
+created: 2025-12-28
+published: 2025-12-28
+modified: 2025-12-28
 type: topic
 status: growing
 area: fundamentals

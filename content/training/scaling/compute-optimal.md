@@ -1,8 +1,8 @@
 ---
 title: Compute Optimal
-created: 2026-04-02
-published: 2026-04-02
-modified: 2026-04-09
+created: 2026-03-28
+published: 2026-03-28
+modified: 2026-03-28
 type: topic
 status: seed
 area: training

@@ -2,7 +2,7 @@
 title: Neural Network Basics
 created: 2026-01-03
 published: 2026-01-03
-modified: 2026-01-10
+modified: 2026-01-03
 type: topic
 status: growing
 area: fundamentals

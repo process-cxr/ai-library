@@ -1,8 +1,8 @@
 ---
 title: Dropout
-created: 2026-01-31
-published: 2026-01-31
-modified: 2026-02-07
+created: 2026-01-10
+published: 2026-01-10
+modified: 2026-01-10
 type: topic
 status: seed
 area: fundamentals

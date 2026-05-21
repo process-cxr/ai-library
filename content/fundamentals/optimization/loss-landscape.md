@@ -1,8 +1,8 @@
 ---
 title: Loss Landscape
-created: 2026-02-09
-published: 2026-02-09
-modified: 2026-02-16
+created: 2026-01-18
+published: 2026-01-18
+modified: 2026-01-18
 type: topic
 status: seed
 area: fundamentals

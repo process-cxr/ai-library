@@ -1,8 +1,8 @@
 ---
 title: Mamba / SSM
-created: 2026-03-01
-published: 2026-03-01
-modified: 2026-03-08
+created: 2026-02-15
+published: 2026-02-15
+modified: 2026-02-15
 tags:
   - architecture
   - non-transformer

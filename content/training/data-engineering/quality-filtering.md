@@ -1,8 +1,8 @@
 ---
 title: Quality Filtering
-created: 2026-03-29
-published: 2026-03-29
-modified: 2026-04-05
+created: 2026-03-14
+published: 2026-03-14
+modified: 2026-03-14
 type: topic
 status: seed
 area: training

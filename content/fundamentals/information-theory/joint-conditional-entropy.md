@@ -1,8 +1,8 @@
 ---
 title: Joint and Conditional Entropy
-created: 2026-01-28
-published: 2026-01-28
-modified: 2026-02-04
+created: 2025-12-27
+published: 2025-12-27
+modified: 2025-12-27
 type: topic
 status: seed
 area: fundamentals
