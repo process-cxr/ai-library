@@ -1,8 +1,8 @@
 ---
 title: Probability Chain Rule
-created: 2026-01-19
-published: 2026-01-19
-modified: 2026-01-26
+created: 2025-12-14
+published: 2025-12-14
+modified: 2025-12-14
 type: topic
 status: growing
 area: fundamentals

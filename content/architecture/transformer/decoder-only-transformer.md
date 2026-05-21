@@ -1,8 +1,8 @@
 ---
 title: Decoder-only Transformer
-created: 2026-02-12
-published: 2026-02-12
-modified: 2026-02-19
+created: 2026-01-24
+published: 2026-01-24
+modified: 2026-01-24
 type: topic
 status: seed
 area: architecture

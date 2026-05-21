@@ -16,7 +16,7 @@ const config: QuartzConfig = {
     locale: "zh-CN",
     baseUrl: "process-cxr.github.io/ai-library",
     ignorePatterns: ["private", "templates", ".obsidian", "**/README.md"],
-    defaultDateType: "created",
+    defaultDateType: "published",
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,

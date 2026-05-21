@@ -1,8 +1,8 @@
 ---
 title: Residual in Transformer
-created: 2026-02-20
-published: 2026-02-20
-modified: 2026-02-27
+created: 2026-01-25
+published: 2026-01-25
+modified: 2026-01-25
 type: topic
 status: seed
 area: architecture

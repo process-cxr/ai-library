@@ -1,8 +1,8 @@
 ---
 title: Adam
-created: 2026-02-04
-published: 2026-02-04
-modified: 2026-02-11
+created: 2026-01-17
+published: 2026-01-17
+modified: 2026-01-17
 type: topic
 status: growing
 area: fundamentals

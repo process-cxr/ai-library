@@ -1,8 +1,8 @@
 ---
 title: Backpropagation
-created: 2026-02-08
-published: 2026-02-08
-modified: 2026-02-15
+created: 2026-01-11
+published: 2026-01-11
+modified: 2026-01-11
 type: topic
 status: growing
 area: fundamentals

@@ -1,8 +1,8 @@
 ---
 title: Embedding
-created: 2026-02-02
-published: 2026-02-02
-modified: 2026-02-09
+created: 2026-01-04
+published: 2026-01-04
+modified: 2026-01-04
 type: topic
 status: growing
 area: fundamentals

@@ -1,8 +1,8 @@
 ---
 title: Linear Transformation
-created: 2026-01-16
-published: 2026-01-16
-modified: 2026-01-23
+created: 2025-12-07
+published: 2025-12-07
+modified: 2025-12-07
 type: topic
 status: growing
 area: fundamentals

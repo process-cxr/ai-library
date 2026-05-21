@@ -1,8 +1,8 @@
 ---
 title: Shape and Dimension
-created: 2026-01-15
-published: 2026-01-15
-modified: 2026-01-22
+created: 2025-12-06
+published: 2025-12-06
+modified: 2025-12-06
 type: topic
 status: growing
 area: fundamentals

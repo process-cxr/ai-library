@@ -1,8 +1,8 @@
 ---
 title: FP8
-created: 2026-04-15
-published: 2026-04-15
-modified: 2026-04-22
+created: 2026-04-12
+published: 2026-04-12
+modified: 2026-04-12
 type: topic
 status: seed
 area: inference

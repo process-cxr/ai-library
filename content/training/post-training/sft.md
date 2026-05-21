@@ -1,8 +1,8 @@
 ---
 title: SFT
-created: 2026-03-18
-published: 2026-03-18
-modified: 2026-03-25
+created: 2026-03-01
+published: 2026-03-01
+modified: 2026-03-01
 tags:
   - training
   - post-training

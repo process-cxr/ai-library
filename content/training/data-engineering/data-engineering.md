@@ -1,8 +1,8 @@
 ---
 title: Data Engineering
-created: 2026-03-23
-published: 2026-03-23
-modified: 2026-03-30
+created: 2026-03-14
+published: 2026-03-14
+modified: 2026-03-14
 tags:
   - training
   - data

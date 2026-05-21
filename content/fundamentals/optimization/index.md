@@ -1,7 +1,7 @@
 ---
 title: Optimization
-created: 2026-01-03
-published: 2026-01-03
+created: 2026-01-10
+published: 2026-01-10
 modified: 2026-01-10
 type: topic
 status: growing

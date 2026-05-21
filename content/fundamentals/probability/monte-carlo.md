@@ -1,8 +1,8 @@
 ---
 title: Monte Carlo Method
-created: 2026-01-22
-published: 2026-01-22
-modified: 2026-01-29
+created: 2025-12-20
+published: 2025-12-20
+modified: 2025-12-20
 type: topic
 status: growing
 area: fundamentals

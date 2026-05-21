@@ -1,8 +1,8 @@
 ---
 title: Tensor Parallel
-created: 2026-04-07
-published: 2026-04-07
-modified: 2026-04-14
+created: 2026-03-22
+published: 2026-03-22
+modified: 2026-03-22
 type: topic
 status: seed
 area: training

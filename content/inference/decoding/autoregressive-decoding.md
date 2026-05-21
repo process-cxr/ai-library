@@ -1,8 +1,8 @@
 ---
 title: Autoregressive Decoding
-created: 2026-04-04
-published: 2026-04-04
-modified: 2026-04-11
+created: 2026-03-29
+published: 2026-03-29
+modified: 2026-03-29
 type: topic
 status: seed
 area: inference

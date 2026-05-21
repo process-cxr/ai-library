@@ -1,8 +1,8 @@
 ---
 title: Benchmark
-created: 2026-05-05
-published: 2026-05-05
-modified: 2026-05-12
+created: 2026-05-23
+published: 2026-05-23
+modified: 2026-05-23
 type: topic
 status: seed
 area: application

@@ -1,8 +1,8 @@
 ---
 title: Gradient Checkpointing
-created: 2026-03-26
-published: 2026-03-26
-modified: 2026-04-02
+created: 2026-03-15
+published: 2026-03-15
+modified: 2026-03-15
 type: topic
 status: seed
 area: training

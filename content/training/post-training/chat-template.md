@@ -1,8 +1,8 @@
 ---
 title: Chat Template
-created: 2026-03-14
-published: 2026-03-14
-modified: 2026-03-21
+created: 2026-03-01
+published: 2026-03-01
+modified: 2026-03-01
 type: topic
 status: seed
 area: training

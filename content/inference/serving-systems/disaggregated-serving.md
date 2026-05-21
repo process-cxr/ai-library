@@ -2,7 +2,7 @@
 title: Disaggregated Serving
 created: 2026-04-18
 published: 2026-04-18
-modified: 2026-04-25
+modified: 2026-04-18
 type: topic
 status: seed
 area: inference

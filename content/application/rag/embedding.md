@@ -1,8 +1,8 @@
 ---
 title: Embedding for RAG
-created: 2026-05-01
-published: 2026-05-01
-modified: 2026-05-08
+created: 2026-05-03
+published: 2026-05-03
+modified: 2026-05-03
 type: topic
 status: seed
 area: application

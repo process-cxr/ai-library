@@ -1,8 +1,8 @@
 ---
 title: Sparse and Efficient Architectures
-created: 2026-01-03
-published: 2026-01-03
-modified: 2026-01-10
+created: 2026-02-14
+published: 2026-02-14
+modified: 2026-02-14
 ---
 
 稀疏与高效架构模块负责整理 MoE、Mamba、SSM、Linear Attention 等用于提升扩展性、效率或长序列建模能力的架构路线。

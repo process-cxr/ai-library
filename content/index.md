@@ -1,8 +1,8 @@
 ---
 title: "XR Lab"
-created: 2025-12-20
-published: 2025-12-20
-modified: 2025-12-27
+created: 2025-12-06
+published: 2025-12-06
+modified: 2025-12-06
 ---
 
 <div style="position: relative; overflow: hidden; padding: 2rem 1.45rem 2.15rem; border: 1px solid var(--lightgray); border-radius: 24px; background: linear-gradient(135deg, rgba(132, 165, 157, .16), rgba(255, 178, 102, .12)); margin: 1rem 0 1.8rem; box-shadow: 0 18px 45px rgba(40, 75, 99, .08);">

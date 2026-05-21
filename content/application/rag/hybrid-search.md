@@ -1,8 +1,8 @@
 ---
 title: Hybrid Search
-created: 2026-05-03
-published: 2026-05-03
-modified: 2026-05-10
+created: 2026-05-09
+published: 2026-05-09
+modified: 2026-05-09
 type: topic
 status: seed
 area: application

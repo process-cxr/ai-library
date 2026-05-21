@@ -1,8 +1,8 @@
 ---
 title: Learning Rate
-created: 2026-02-07
-published: 2026-02-07
-modified: 2026-02-14
+created: 2026-01-11
+published: 2026-01-11
+modified: 2026-01-11
 type: topic
 status: growing
 area: fundamentals
