@@ -12,6 +12,7 @@ modified: 2026-02-21
 - [[training/pretraining/|预训练]] — 从大规模通用语料中学习基础语言建模能力。
 - [[training/mid-training/|中训练]] — continued pretraining、领域适配、长上下文和能力注入。
 - [[training/post-training/|后训练]] — SFT、RLHF、DPO/GRPO、拒绝采样和蒸馏。
+- [[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]] — 把 RL-style objective 前移到预训练或 continued pretraining 阶段。
 
 ## Cross-cutting Modules
 
