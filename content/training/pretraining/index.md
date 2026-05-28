@@ -11,6 +11,7 @@ modified: 2026-02-21
 
 - [[training/pretraining/pretraining|预训练]]
 - [[training/pretraining/objective|训练目标]]
+- [[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]]
 - [[training/pretraining/data-mix|数据混合]]
 - [[training/pretraining/tokenizer|Tokenizer]]
 - [[training/pretraining/compute-optimal|Compute Optimal]]

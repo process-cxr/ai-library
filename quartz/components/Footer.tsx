@@ -14,7 +14,7 @@ export default ((opts?: Options) => {
     return (
       <footer class={`${displayClass ?? ""}`}>
         <p>
-          <a href="https://github.com/process-cxr/ai-library">🍊 XR Lab 🍉</a> · An AI knowledge garden built with{" "}
+          <a href="https://github.com/process-cxr/ai-library">🍊 Latent Atlas 🍉</a> · An AI knowledge atlas built with{" "}
           <a href="https://quartz.jzhao.xyz/">Quartz</a> © {year}
         </p>
         <ul>

@@ -8,7 +8,7 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "🍊 XR Lab 🍉",
+    pageTitle: "🍊 Latent Atlas 🍉",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
