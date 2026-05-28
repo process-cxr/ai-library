@@ -30,7 +30,7 @@
 
 ## 项目结构
 
-- `content/` — 个人 AI 知识正文，发布到 XR Lab 网站。
+- `content/` — AI 知识正文，发布到 Latent Atlas 网站。
 - `quartz/` — Quartz 静态站点生成器源码，用于构建和渲染知识库。
 - `docs/` — Quartz 上游文档，用于查阅配置、插件、部署和维护方式。
 - `.comate/skills/` — 项目级 AI 写作和维护技能说明。
