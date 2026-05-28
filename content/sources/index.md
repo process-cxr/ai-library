@@ -18,6 +18,10 @@ modified: 2026-05-28
 - `reports/` — 技术报告、行业报告、白皮书和模型报告。
 - `docs/` — 官方文档、API 文档、框架文档阅读。
 
+## Recent Notes
+
+- [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
+
 ## Naming
 
 - `papers/年份-主题.md` — 论文阅读，例如 `papers/2023-dpo.md`
