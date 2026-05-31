@@ -2,7 +2,7 @@
 title: "Training"
 created: 2026-02-21
 published: 2026-02-21
-modified: 2026-02-21
+modified: 2026-05-31
 ---
 
 大模型训练全流程，从预训练、中训练到后训练，并包含数据工程、训练优化、分布式训练和 scaling 等横切模块。
@@ -17,6 +17,6 @@ modified: 2026-02-21
 ## Cross-cutting Modules
 
 - [[training/data-engineering/|训练数据工程]] — 数据清洗、去重、过滤、packing 和合成数据。
-- [[training/optimization/|训练优化工程]] — 混合精度、checkpointing、optimizer state 和稳定性。
+- [[training/optimization/|训练优化工程]] — 显存估算、混合精度、checkpointing、optimizer state 和稳定性。
 - [[training/distributed-training/|分布式训练]] — DP、TP、PP、ZeRO、FSDP、Megatron。
 - [[training/scaling/|Scaling]] — scaling law、模型/数据/算力配比和训练预算。

@@ -2,7 +2,7 @@
 title: FSDP
 created: 2026-03-22
 published: 2026-03-22
-modified: 2026-03-22
+modified: 2026-05-31
 tags:
   - distributed-training
   - pytorch
@@ -76,9 +76,9 @@ FSDP 本身只是显存切分策略，预训练、中训练、后训练都能用
 
 ---
 
-## 4. ZERO 切分策略
+## 4. 与 ZeRO 切分策略的对应关系
 
-FSDP 实现了 Microsoft DeepSpeed 的 ZERO (Zero Redundancy Optimizer) 策略，分为三个级别：
+FSDP 与 Microsoft DeepSpeed 的 ZeRO (Zero Redundancy Optimizer) 都围绕“切分 data parallel 冗余状态”这一思想展开，但二者是不同实现和生态，不应理解为 FSDP 直接实现了 DeepSpeed ZeRO。为了便于记忆，可以用 ZeRO stage 来类比 FSDP 的 sharding strategy：
 
 ### 4.1 ZERO1 — 切分优化器状态
 
@@ -201,6 +201,7 @@ reshard_after_forward: true  # 前向传播后立即释放参数
 其中优化器状态是最大头：Adam 为每个参数维护两个额外状态（一阶矩 m 和二阶矩 v），加上 fp32 master weight，优化器总共需要 **12 bytes/参数**（master 4 + m 4 + v 4），这也正是 ZERO 优先切分优化器状态的原因。
 
 > 关于 Adam 公式的详细推导，参见 [[fundamentals/optimization/adam|Adam]] 和 [[fundamentals/optimization/gradient-descent|梯度下降]]。
+> 更通用的训练显存估算公式，参见 [[training/optimization/training-memory-estimation|Training Memory Estimation]]。
 
 ### 7.2 各策略显存占用对比
 
@@ -226,7 +227,7 @@ reshard_after_forward: true  # 前向传播后立即释放参数
 ```
 参数 shard   = (N / K) × sizeof(dtype)
 梯度 shard   = (N / K) × sizeof(dtype)
-优化器 shard = (N / K) × 3 × sizeof(model_dtype)   # master weight + Adam m + v
+优化器 shard = (N / K) × (4 + 4 + 4) bytes          # fp32 master weight + Adam m + v
 ```
 
 **临时显存（峰值时额外占用）**：
