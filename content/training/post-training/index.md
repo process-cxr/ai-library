@@ -4,7 +4,7 @@ created: 2026-03-01
 published: 2026-03-01
 modified: 2026-05-29
 type: topic
-status: growing
+status: mature
 area: training
 tags:
   - training
@@ -46,6 +46,17 @@ SFT 本质上仍是 imitation learning：模型学习数据里出现的回答。
 ### 6. 从大模型到可部署模型：Knowledge Distillation
 
 [[training/post-training/knowledge-distillation|Knowledge Distillation]] 将 teacher model 的能力迁移到 student model。后训练中的蒸馏可以学习 teacher logits、完整 answers、reasoning traces、preference labels 或 on-policy feedback。它既服务于小模型部署，也服务于把昂贵 RL / verifier / long-CoT 产生的能力固化到更便宜的模型中。
+
+## 学习边界
+
+Post-training 不应被理解为“给模型补一点对话数据”。它是一套目标、数据、采样、评估和安全约束共同组成的系统。阅读时需要持续区分四件事：
+
+- **行为格式**：模型是否会按 chat template、工具协议和产品约束输出；
+- **能力提升**：模型是否真的更会解题、写代码、检索或规划；
+- **偏好对齐**：模型是否在多个可行回答中选择更有帮助、更真实、更安全的回答；
+- **成本迁移**：昂贵 teacher、verifier 或 RL 产生的能力是否能被蒸馏到更便宜模型。
+
+不同方法常常解决不同层面的问题。SFT 更擅长格式和行为初始化；DPO / RLHF 更关注偏好排序；GRPO / verifier RL 更适合可验证 reasoning；distillation 更强调把已有强能力压缩和固化。把这些阶段混在一起讨论，容易误把数据风格变化当作真实能力提升。
 
 ## 方法图谱
 
