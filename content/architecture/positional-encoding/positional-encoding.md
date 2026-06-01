@@ -2,9 +2,9 @@
 title: Positional Encoding
 created: 2026-02-01
 published: 2026-02-01
-modified: 2026-02-01
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - architecture
@@ -293,3 +293,10 @@ RoPE 的旋转由绝对 position id 决定，但 query-key dot product 中体现
 - [[architecture/positional-encoding/alibi|ALiBi]] — 基于 attention score bias 的位置方法。
 - [[architecture/positional-encoding/yarn|YaRN]] — RoPE 长上下文扩展方法。
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]] — 推理中需要正确维护位置编号和缓存。
+
+## 经典论文与资料
+
+- [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
+- [[sources/papers/2021-roformer|RoFormer]]
+- [[sources/papers/2021-alibi|ALiBi]]
+- [[sources/papers/2023-yarn|YaRN]]

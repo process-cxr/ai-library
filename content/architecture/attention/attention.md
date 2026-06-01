@@ -2,9 +2,9 @@
 title: Attention
 created: 2026-01-25
 published: 2026-01-25
-modified: 2026-01-25
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - architecture
@@ -318,6 +318,12 @@ Attention 的数值稳定性也会影响训练。比如 softmax 前的 score 过
 这就是 [[inference/kv-cache-and-memory/kv-cache|KV Cache]] 的来源。KV Cache 让自回归推理从“每步重算全部历史”变成“每步复用历史 K/V”，大幅节省计算。但它也把瓶颈转移到了显存容量、显存带宽和 cache 管理。
 
 因此，attention 不只是模型结构问题，也是推理系统问题。理解 attention 后，才能理解为什么 vLLM、PagedAttention、continuous batching、prefix cache、GQA 等系统设计会出现。
+
+## 经典论文与资料
+
+- [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
+- [[sources/papers/2019-fast-transformer-decoding-one-write-head-is-all-you-need|Fast Transformer Decoding]]
+- [[sources/papers/2023-gqa|Grouped-Query Attention]]
 
 ## 相关概念
 
