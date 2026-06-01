@@ -2,29 +2,43 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-05-31
+modified: 2026-06-01
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
 
 ## Notes
 
+- [[sources/papers/2015-deep-residual-learning-for-image-recognition|Deep Residual Learning for Image Recognition]]
 - [[sources/papers/2016-sequence-level-knowledge-distillation|Sequence-Level Knowledge Distillation]]
 - [[sources/papers/2016-neural-machine-translation-of-rare-words-with-subword-units|Neural Machine Translation of Rare Words with Subword Units]]
 - [[sources/papers/2016-training-deep-nets-with-sublinear-memory-cost|Training Deep Nets with Sublinear Memory Cost]]
+- [[sources/papers/2016-layer-normalization|Layer Normalization]]
 - [[sources/papers/2017-deep-rl-from-human-preferences|Deep Reinforcement Learning from Human Preferences]]
 - [[sources/papers/2017-ppo|Proximal Policy Optimization Algorithms]]
+- [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
+- [[sources/papers/2017-outrageously-large-neural-networks|Outrageously Large Neural Networks]]
 - [[sources/papers/2018-gpipe|GPipe]]
 - [[sources/papers/2018-sentencepiece|SentencePiece]]
 - [[sources/papers/2019-megatron-lm|Megatron-LM]]
+- [[sources/papers/2019-fast-transformer-decoding-one-write-head-is-all-you-need|Fast Transformer Decoding]]
+- [[sources/papers/2019-rmsnorm|Root Mean Square Layer Normalization]]
 - [[sources/papers/2019-t5|T5]]
 - [[sources/papers/2019-zero|ZeRO]]
+- [[sources/papers/2020-big-bird|Big Bird]]
+- [[sources/papers/2020-gshard|GShard]]
+- [[sources/papers/2020-glu-variants-improve-transformer|GLU Variants Improve Transformer]]
+- [[sources/papers/2020-language-models-are-few-shot-learners|Language Models are Few-Shot Learners]]
+- [[sources/papers/2020-longformer|Longformer]]
 - [[sources/papers/2020-learning-to-summarize-from-human-feedback|Learning to summarize from human feedback]]
 - [[sources/papers/2020-scaling-laws-for-neural-language-models|Scaling Laws for Neural Language Models]]
+- [[sources/papers/2021-alibi|ALiBi]]
 - [[sources/papers/2021-deduplicating-training-data-makes-language-models-better|Deduplicating Training Data Makes Language Models Better]]
 - [[sources/papers/2021-documenting-large-webtext-corpora|Documenting Large Webtext Corpora]]
 - [[sources/papers/2021-the-pile|The Pile]]
 - [[sources/papers/2021-lora|LoRA]]
+- [[sources/papers/2021-roformer|RoFormer]]
+- [[sources/papers/2021-switch-transformer|Switch Transformer]]
 - [[sources/papers/2021-zero-infinity|ZeRO-Infinity]]
 - [[sources/papers/2021-flan|Finetuned Language Models Are Zero-Shot Learners]]
 - [[sources/papers/2021-t0|Multitask Prompted Training Enables Zero-Shot Task Generalization]]
@@ -35,6 +49,7 @@ modified: 2026-05-31
 - [[sources/papers/2023-a-pretrainers-guide-to-training-data|A Pretrainer's Guide to Training Data]]
 - [[sources/papers/2023-distilling-step-by-step|Distilling Step-by-Step]]
 - [[sources/papers/2023-dpo|Direct Preference Optimization]]
+- [[sources/papers/2023-gqa|Grouped-Query Attention]]
 - [[sources/papers/2023-longlora|LongLoRA]]
 - [[sources/papers/2023-position-interpolation|Position Interpolation]]
 - [[sources/papers/2023-qlora|QLoRA]]
@@ -43,6 +58,9 @@ modified: 2026-05-31
 - [[sources/papers/2023-yarn|YaRN]]
 - [[sources/papers/2024-datacomp-lm|DataComp-LM]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]
+- [[sources/papers/2024-deepseek-v2|DeepSeek-V2]]
+- [[sources/papers/2024-deepseek-v3|DeepSeek-V3]]
+- [[sources/papers/2024-deepseekmoe|DeepSeekMoE]]
 - [[sources/papers/2024-dolma|Dolma]]
 - [[sources/papers/2024-fineweb|FineWeb]]
 - [[sources/papers/2024-longrope|LongRoPE]]
