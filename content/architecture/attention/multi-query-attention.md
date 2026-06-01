@@ -2,9 +2,9 @@
 title: Multi-Query Attention
 created: 2026-01-31
 published: 2026-01-31
-modified: 2026-01-31
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - attention
@@ -199,3 +199,8 @@ MQA 更适合以下场景：
 - [[architecture/attention/multi-head-latent-attention|Multi-Head Latent Attention]]
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]]
 - [[inference/serving-systems/vllm|vLLM]]
+
+## 经典论文与资料
+
+- [[sources/papers/2019-fast-transformer-decoding-one-write-head-is-all-you-need|Fast Transformer Decoding]]
+- [[sources/papers/2023-gqa|Grouped-Query Attention]]

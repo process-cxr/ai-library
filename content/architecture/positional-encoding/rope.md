@@ -2,9 +2,9 @@
 title: RoPE
 created: 2026-02-01
 published: 2026-02-01
-modified: 2026-02-01
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - positional-encoding
@@ -334,3 +334,10 @@ $$
 - [[architecture/positional-encoding/yarn|YaRN]] — RoPE 长上下文扩展方法之一。
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]] — RoPE 在推理缓存中需要保持 position id 一致。
 - [[fundamentals/linear-algebra/linear-transformation|Linear Transformation]] — 理解旋转矩阵和表示空间变换的基础。
+
+## 经典论文与资料
+
+- [[sources/papers/2021-roformer|RoFormer]]
+- [[sources/papers/2023-position-interpolation|Position Interpolation]]
+- [[sources/papers/2023-yarn|YaRN]]
+- [[sources/papers/2024-longrope|LongRoPE]]

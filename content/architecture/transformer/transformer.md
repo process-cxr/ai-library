@@ -2,9 +2,9 @@
 title: Transformer
 created: 2026-01-24
 published: 2026-01-24
-modified: 2026-01-24
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - architecture
@@ -354,3 +354,8 @@ prompt -> predict next token -> append token -> predict next token -> ...
 - [[architecture/transformer/decoder-only-transformer|Decoder-only Transformer]] — 当前主流 LLM 的基本架构形态。
 - [[training/pretraining/pretraining|Pretraining]] — Transformer 通过大规模 next-token prediction 形成 base model 能力。
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]] — Transformer 自回归推理的核心缓存机制。
+
+## 经典论文与资料
+
+- [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
+- [[sources/papers/2020-language-models-are-few-shot-learners|Language Models are Few-Shot Learners]]

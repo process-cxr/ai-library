@@ -2,9 +2,9 @@
 title: Multi-Head Latent Attention
 created: 2026-01-31
 published: 2026-01-31
-modified: 2026-01-31
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - attention
@@ -219,3 +219,8 @@ RoPE 与相对位置建模有关。如果位置相关 key 被压缩处理不当�
 - [[architecture/positional-encoding/rope|RoPE]]
 - [[architecture/model-families/deepseek|DeepSeek]]
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]]
+
+## 经典论文与资料
+
+- [[sources/papers/2024-deepseek-v2|DeepSeek-V2]]
+- [[sources/papers/2024-deepseek-v3|DeepSeek-V3]]
