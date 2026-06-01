@@ -2,9 +2,9 @@
 title: Grouped-Query Attention
 created: 2026-01-31
 published: 2026-01-31
-modified: 2026-01-31
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - attention
@@ -207,3 +207,8 @@ MLA 则把 K/V 联合压缩成 latent representation，缓存的是低维 latent
 - [[architecture/model-families/deepseek|DeepSeek]]
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]]
 - [[inference/serving-systems/vllm|vLLM]]
+
+## 经典论文与资料
+
+- [[sources/papers/2023-gqa|Grouped-Query Attention]]
+- [[sources/papers/2019-fast-transformer-decoding-one-write-head-is-all-you-need|Fast Transformer Decoding]]

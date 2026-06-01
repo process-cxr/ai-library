@@ -2,10 +2,18 @@
 title: "Architecture"
 created: 2026-01-18
 published: 2026-01-18
-modified: 2026-01-18
+modified: 2026-05-31
 ---
 
 大模型架构设计，从 Transformer 基础结构到注意力变体、位置编码、模型家族、稀疏高效架构和多模态架构。
+
+## Recommended Path
+
+1. [[architecture/transformer/transformer|Transformer]]：先理解 block、residual、normalization、FFN 和 decoder-only 结构。
+2. [[architecture/attention/attention|Attention]]：再理解 self-attention、MHA、MQA/GQA/MLA 和长上下文 attention 变体。
+3. [[architecture/positional-encoding/positional-encoding|Positional Encoding]]：理解 RoPE、ALiBi、YaRN 等位置机制如何影响 attention。
+4. [[architecture/sparse-and-efficient/moe|Mixture of Experts]]：理解 dense FFN 到 sparse expert FFN 的容量/计算取舍。
+5. [[architecture/model-families/|Model Families]]：最后把 GPT、LLaMA、Qwen、DeepSeek 等看作基础机制的组合案例。
 
 ## Core Modules
 

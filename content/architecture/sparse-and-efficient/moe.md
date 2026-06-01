@@ -2,9 +2,9 @@
 title: Mixture of Experts
 created: 2026-02-14
 published: 2026-02-14
-modified: 2026-02-14
+modified: 2026-05-31
 type: topic
-status: growing
+status: mature
 area: architecture
 tags:
   - architecture
@@ -111,6 +111,17 @@ MoE 的核心难点不是“多放几个 FFN”这么简单，而是如何让 ex
 
 [[architecture/model-families/deepseek|DeepSeek]] 系列中的 DeepSeek-V3 强调 auxiliary-loss-free load balancing，目标就是减少负载均衡损失对模型效果的干扰，同时仍然避免 expert load 失衡。这说明 MoE 的关键问题已经从“能不能稀疏激活”进一步发展到“如何稳定、高效、低损失地路由”。
 
+## Capacity 与 Token Dropping
+
+MoE 训练中还要处理 expert capacity。每个 expert 在一个 batch 内能接收的 token 数通常有上限。如果 router 把太多 token 发给同一个 expert，系统需要决定如何处理溢出 token：
+
+- 丢弃部分 expert computation；
+- 转发到备选 expert；
+- 增大 capacity factor；
+- 使用更强的负载均衡或 routing 约束。
+
+Capacity factor 越大，越不容易丢 token，但计算和通信 buffer 也更大；capacity 太小，可能损害训练信号和模型质量。这个问题说明 MoE 的稀疏性不只是数学结构，也是 batch-level 系统调度问题。
+
 ## Shared Experts 与 Routed Experts
 
 一些现代 MoE 架构会区分 shared experts 和 routed experts。
@@ -138,6 +149,25 @@ MoE 的优势主要来自稀疏计算。
 
 MoE 的 expert 可以分布在不同设备上，通过 expert parallelism 扩展训练和推理。但这同时也引入通信、调度和负载均衡问题。
 
+## 训练与系统复杂度
+
+MoE 的训练通常需要组合多种并行方式：
+
+- data parallel：复制或切分 batch；
+- tensor parallel：切分矩阵计算；
+- expert parallel：把不同 experts 放到不同设备；
+- pipeline parallel：按层切分模型。
+
+其中 expert parallel 会引入 token dispatch / combine 通信：token 先被路由到对应 expert 所在设备，expert 计算后再把结果发回原位置。若路由分布不均，某些设备会成为 straggler，拖慢整个 step。
+
+因此 MoE 的吞吐不仅取决于 active parameters，也取决于：
+
+- router 分布是否均衡；
+- expert placement 是否合理；
+- all-to-all 通信是否高效；
+- batch size 是否足以填满 experts；
+- serving 时请求是否能形成稳定 batch。
+
 ## MoE 的代价
 
 MoE 不是免费午餐。它把 dense model 的一部分计算问题，转化成了路由和系统问题。
@@ -157,6 +187,10 @@ Router、experts 和主干网络要共同训练。训练过程中可能出现 ex
 ### 4. 指标解释更容易混乱
 
 MoE 模型经常同时报告 active parameters 和 total parameters。如果只拿 active parameters 和 dense model 的总参数比较，可能低估 MoE 的模型容量；如果只拿 total parameters 比较，又可能高估每 token 计算成本。
+
+### 5. 微调与部署更复杂
+
+MoE 的参数分布在多个 experts 中。微调时，如果只更新部分参数，可能改变 router 与 expert 的协同；如果全量微调，显存和通信成本又很高。部署时，量化、专家放置、batching 和 KV Cache 管理都需要结合 MoE 的动态路由特点设计。
 
 ## 与 Attention 的关系
 
@@ -196,11 +230,25 @@ Llama 4 是 LLaMA 家族首次公开采用 MoE 的一代。Scout 是 17B active 
 
 不一定。MoE 提供的是容量和计算之间的新 trade-off。它需要足够大的数据、稳定的 routing、合适的负载均衡和成熟的训练/推理系统。小规模或简单场景下，dense model 可能更简单、更稳定。
 
+### 误解五：active parameters 等于实际部署成本
+
+不对。active parameters 更接近每 token 计算路径，但部署仍要存储 total parameters，并处理 expert dispatch、通信和负载均衡。
+
 ## 相关概念
 
 - [[architecture/transformer/transformer|Transformer]] — MoE 通常作为 Transformer FFN 的稀疏替代。
 - [[architecture/transformer/feed-forward|Feed Forward Network]] — MoE experts 常常就是多个 FFN。
 - [[architecture/attention/attention|Attention]] — 与 MoE 分工不同，负责 token 间交互。
+- [[training/distributed-training/megatron|Megatron]] — 多维并行训练和 MoE 系统相关。
 - [[architecture/model-families/deepseek|DeepSeek]] — DeepSeekMoE 的重要模型家族案例。
 - [[architecture/model-families/llama|LLaMA]] — Llama 4 Scout / Maverick 引入 MoE。
 - [[inference/serving-systems/vllm|vLLM]] — MoE serving 常需要高效推理系统支持。
+
+## 经典论文与资料
+
+- [[sources/papers/2017-outrageously-large-neural-networks|Outrageously Large Neural Networks]]
+- [[sources/papers/2020-gshard|GShard]]
+- [[sources/papers/2021-switch-transformer|Switch Transformer]]
+- [[sources/papers/2024-deepseekmoe|DeepSeekMoE]]
+- [[sources/papers/2024-deepseek-v2|DeepSeek-V2]]
+- [[sources/papers/2024-deepseek-v3|DeepSeek-V3]]
