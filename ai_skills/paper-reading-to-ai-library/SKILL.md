@@ -34,6 +34,8 @@ Use this skill to convert an external AI source into maintainable notes for the 
    - If the source was read from a local PDF path, use that path only for reading; do not write local absolute paths into public notes.
    - Preserve the public source URL in frontmatter or `## 基本信息` when the user provides one.
    - Use Markdown, wikilinks, callouts, tables, LaTeX, and code fences as appropriate.
+   - Keep the source's research question, method, evidence, and limitations as the main narrative. Do not force a separate "knowledge sedimentation" essay at the end when the report itself already explains the paper.
+   - Put knowledge-base links where they naturally support the discussion. If a closing link section is useful, keep it lightweight, e.g. `## 相关知识链接`, and list only related topic notes without re-explaining each concept.
    - Avoid chat transcript language, temporary TODOs, and progress-log phrasing.
 
 5. Backfill stable knowledge.
@@ -86,10 +88,11 @@ tags:
 
 ## 局限与疑问
 
-## 可沉淀到 Topic Note 的内容
+## 相关知识链接
 ```
 
 For closed or speculative sources, clearly separate public facts, paper claims, experimental evidence, and inference.
+Treat the closing links section as optional navigation, not as a required analytical conclusion. Use it only when links do not fit naturally into earlier sections, and keep it concise.
 
 ## Topic Backfill Rules
 
