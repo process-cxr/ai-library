@@ -20,6 +20,14 @@ modified: 2026-05-28
 
 ## Recent Notes
 
+- [[sources/papers/2026-codepromptzip-code-specific-prompt-compression|CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs]]
+- [[sources/papers/2026-squeez-task-conditioned-tool-output-pruning-for-coding-agents|Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents]]
+- [[sources/papers/2026-swe-pruner-self-adaptive-context-pruning-for-coding-agents|SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents]]
+- [[sources/papers/2025-longcodezip-compress-long-context-for-code-language-models|LongCodeZip: Compress Long Context for Code Language Models]]
+- [[sources/papers/2025-coderag-relevant-and-necessary-knowledge|CodeRAG: Finding Relevant and Necessary Knowledge for Retrieval-Augmented Repository-Level Code Completion]]
+- [[sources/papers/2024-longllmlingua-accelerating-and-enhancing-llms-in-long-context-scenarios|LongLLMLingua: Accelerating and Enhancing LLMs in Long Context Scenarios via Prompt Compression]]
+- [[sources/papers/2024-repoformer-selective-retrieval-for-repository-level-code-completion|Repoformer: Selective Retrieval for Repository-Level Code Completion]]
+- [[sources/papers/2023-repocoder-repository-level-code-completion|RepoCoder: Repository-Level Code Completion Through Iterative Retrieval and Generation]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
 
 ## Naming
