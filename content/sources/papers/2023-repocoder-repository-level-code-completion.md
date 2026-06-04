@@ -431,15 +431,15 @@ issue / traceback / partial file is not enough
 
 ## 论文图表摘录
 
-![RepoCoder Figure 1: iterative retrieval-generation 与普通 RAG / in-file completion 对比](./assets/code-agent-context-pruning/repocoder-figure1.png)
+![RepoCoder Figure 1: iterative retrieval-generation 与普通 RAG / in-file completion 对比](/sources/papers/assets/code-agent-context-pruning/repocoder-figure1.png)
 
 *RepoCoder Figure 1: iterative retrieval-generation 与普通 RAG / in-file completion 对比*
 
-![RepoCoder Table 2: line / API completion 主结果](./assets/code-agent-context-pruning/repocoder-table2.png)
+![RepoCoder Table 2: line / API completion 主结果](/sources/papers/assets/code-agent-context-pruning/repocoder-table2.png)
 
 *RepoCoder Table 2: line / API completion 主结果*
 
-![RepoCoder Table 3: function body completion 结果](./assets/code-agent-context-pruning/repocoder-table3.png)
+![RepoCoder Table 3: function body completion 结果](/sources/papers/assets/code-agent-context-pruning/repocoder-table3.png)
 
 *RepoCoder Table 3: function body completion 结果*
 

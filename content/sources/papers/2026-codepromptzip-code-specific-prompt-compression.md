@@ -520,19 +520,19 @@ CodePromptZip 最值得借鉴的地方不是“又训练了一个 compressor”�
 
 ## 论文图表摘录
 
-![CodePromptZip Figure 1: 不同任务下 code token type removal priority](./assets/code-agent-context-pruning/codepromptzip-figure1.png)
+![CodePromptZip Figure 1: 不同任务下 code token type removal priority](/sources/papers/assets/code-agent-context-pruning/codepromptzip-figure1.png)
 
 *CodePromptZip Figure 1: 不同任务下 code token type removal priority*
 
-![CodePromptZip Figure 2: framework overview](./assets/code-agent-context-pruning/codepromptzip-figure2.png)
+![CodePromptZip Figure 2: framework overview](/sources/papers/assets/code-agent-context-pruning/codepromptzip-figure2.png)
 
 *CodePromptZip Figure 2: framework overview*
 
-![CodePromptZip Figure 3: CodeT5 copy mechanism](./assets/code-agent-context-pruning/codepromptzip-figure3.png)
+![CodePromptZip Figure 3: CodeT5 copy mechanism](/sources/papers/assets/code-agent-context-pruning/codepromptzip-figure3.png)
 
 *CodePromptZip Figure 3: CodeT5 copy mechanism*
 
-![CodePromptZip Table 2: 三类 coding tasks 主结果](./assets/code-agent-context-pruning/codepromptzip-table2.png)
+![CodePromptZip Table 2: 三类 coding tasks 主结果](/sources/papers/assets/code-agent-context-pruning/codepromptzip-table2.png)
 
 *CodePromptZip Table 2: 三类 coding tasks 主结果*
 

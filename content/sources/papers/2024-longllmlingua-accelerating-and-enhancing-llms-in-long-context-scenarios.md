@@ -430,15 +430,15 @@ LongLLMLingua 的核心贡献不是提出一个更强的 retriever，而是把 l
 
 ## 论文图表摘录
 
-![LongLLMLingua Figure 1: 噪声文档数量与关键信息位置对性能的影响](./assets/code-agent-context-pruning/longllmlingua-figure1.png)
+![LongLLMLingua Figure 1: 噪声文档数量与关键信息位置对性能的影响](/sources/papers/assets/code-agent-context-pruning/longllmlingua-figure1.png)
 
 *LongLLMLingua Figure 1: 噪声文档数量与关键信息位置对性能的影响*
 
-![LongLLMLingua Figure 2: 框架总览](./assets/code-agent-context-pruning/longllmlingua-figure2.png)
+![LongLLMLingua Figure 2: 框架总览](/sources/papers/assets/code-agent-context-pruning/longllmlingua-figure2.png)
 
 *LongLLMLingua Figure 2: 框架总览*
 
-![LongLLMLingua Table 1: NaturalQuestions 压缩结果](./assets/code-agent-context-pruning/longllmlingua-table1.png)
+![LongLLMLingua Table 1: NaturalQuestions 压缩结果](/sources/papers/assets/code-agent-context-pruning/longllmlingua-table1.png)
 
 *LongLLMLingua Table 1: NaturalQuestions 压缩结果*
 

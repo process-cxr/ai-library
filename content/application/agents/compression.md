@@ -151,6 +151,10 @@ Agent 真正需要的是能改变下一步判断或行动的信息。相似、�
 - [[sources/papers/2026-swe-pruner-self-adaptive-context-pruning-for-coding-agents|SWE-Pruner]]：在工具输出进入 agent history 前做目标条件化剪枝。
 - [[sources/papers/2026-squeez-task-conditioned-tool-output-pruning-for-coding-agents|Squeez]]：把 tool-output pruning 建模为任务条件化原文 span extraction。
 
+## 相关项目
+
+- [[projects/claude-code/compact-context-pipeline|compact Context Pipeline]]：把 `/compact` 放在 conversation compaction 和 context saturation 阶段看，说明产品级 code agent 的压缩不只是 LLM summary，还包括 prompt cache、session memory、最近文件、plan、skill、agent 状态和 MCP/tool schema 的 deterministic 重建。
+
 ## 相关概念
 
 - [[application/rag/context-compression|Context Compression]]：更一般的上下文压缩问题。

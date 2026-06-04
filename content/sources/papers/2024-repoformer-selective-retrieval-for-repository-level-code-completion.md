@@ -483,19 +483,19 @@ Repoformer 是一篇很适合作为 coding agent context pruning 背景阅读的
 
 ## 论文图表摘录
 
-![Repoformer Figure 1: selective RAG framework overview](./assets/code-agent-context-pruning/repoformer-figure1.png)
+![Repoformer Figure 1: selective RAG framework overview](/sources/papers/assets/code-agent-context-pruning/repoformer-figure1.png)
 
 *Repoformer Figure 1: selective RAG framework overview*
 
-![Repoformer Figure 2: self-selective RAG 与 FIM 对比](./assets/code-agent-context-pruning/repoformer-figure2.png)
+![Repoformer Figure 2: self-selective RAG 与 FIM 对比](/sources/papers/assets/code-agent-context-pruning/repoformer-figure2.png)
 
 *Repoformer Figure 2: self-selective RAG 与 FIM 对比*
 
-![Repoformer Table 2: RepoEval / CrossCodeLongEval 主结果](./assets/code-agent-context-pruning/repoformer-table2.png)
+![Repoformer Table 2: RepoEval / CrossCodeLongEval 主结果](/sources/papers/assets/code-agent-context-pruning/repoformer-table2.png)
 
 *Repoformer Table 2: RepoEval / CrossCodeLongEval 主结果*
 
-![Repoformer Table 3: selective retrieval ablation](./assets/code-agent-context-pruning/repoformer-table3.png)
+![Repoformer Table 3: selective retrieval ablation](/sources/papers/assets/code-agent-context-pruning/repoformer-table3.png)
 
 *Repoformer Table 3: selective retrieval ablation*
 
