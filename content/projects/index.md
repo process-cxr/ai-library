@@ -2,7 +2,7 @@
 title: "Projects"
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-05-28
+modified: 2026-06-04
 ---
 
 个人实验、复现、Demo 和工程实践记录。
@@ -20,3 +20,7 @@ modified: 2026-05-28
 - 训练脚本、数据处理、评测流程
 - 源码阅读与框架机制分析
 - 工程踩坑与排障记录
+
+## Project Notes
+
+- [[projects/claude-code/|Claude Code]]

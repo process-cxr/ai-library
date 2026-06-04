@@ -171,19 +171,19 @@ SWE-Pruner 的可复用结论主要有四点：
 
 ## 论文图表摘录
 
-![SWE-Pruner Figure 2: read operation token cost 分布](./assets/code-agent-context-pruning/swe-pruner-figure2.png)
+![SWE-Pruner Figure 2: read operation token cost 分布](/sources/papers/assets/code-agent-context-pruning/swe-pruner-figure2.png)
 
 *SWE-Pruner Figure 2: read operation token cost 分布*
 
-![SWE-Pruner Figure 3: SWE-Pruner framework](./assets/code-agent-context-pruning/swe-pruner-figure3.png)
+![SWE-Pruner Figure 3: SWE-Pruner framework](/sources/papers/assets/code-agent-context-pruning/swe-pruner-figure3.png)
 
 *SWE-Pruner Figure 3: SWE-Pruner framework*
 
-![SWE-Pruner Table 1: SWE-Bench Verified 结果](./assets/code-agent-context-pruning/swe-pruner-table1.png)
+![SWE-Pruner Table 1: SWE-Bench Verified 结果](/sources/papers/assets/code-agent-context-pruning/swe-pruner-table1.png)
 
 *SWE-Pruner Table 1: SWE-Bench Verified 结果*
 
-![SWE-Pruner Table 3: context management 方法对比](./assets/code-agent-context-pruning/swe-pruner-table3.png)
+![SWE-Pruner Table 3: context management 方法对比](/sources/papers/assets/code-agent-context-pruning/swe-pruner-table3.png)
 
 *SWE-Pruner Table 3: context management 方法对比*
 

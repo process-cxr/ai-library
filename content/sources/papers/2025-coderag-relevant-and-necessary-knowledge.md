@@ -484,11 +484,11 @@ CodeRAG 用 AST 提取 functions、variables、class functions、class variables
 
 ## 论文图表摘录
 
-![CodeRAG Figure 2: framework overview](./assets/code-agent-context-pruning/coderag-figure2.png)
+![CodeRAG Figure 2: framework overview](/sources/papers/assets/code-agent-context-pruning/coderag-figure2.png)
 
 *CodeRAG Figure 2: framework overview*
 
-![CodeRAG Table 1: ReccEval 主结果](./assets/code-agent-context-pruning/coderag-table1.png)
+![CodeRAG Table 1: ReccEval 主结果](/sources/papers/assets/code-agent-context-pruning/coderag-table1.png)
 
 *CodeRAG Table 1: ReccEval 主结果*
 

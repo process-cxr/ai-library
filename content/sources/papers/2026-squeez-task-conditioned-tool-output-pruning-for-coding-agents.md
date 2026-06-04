@@ -179,19 +179,19 @@ Squeez 是一个有价值的单轮 tool-output pruning benchmark 和小模型训
 
 ## 论文图表摘录
 
-![Squeez Figure 1: task-conditioned tool-output pruning 示例](./assets/code-agent-context-pruning/squeez-figure1.png)
+![Squeez Figure 1: task-conditioned tool-output pruning 示例](/sources/papers/assets/code-agent-context-pruning/squeez-figure1.png)
 
 *Squeez Figure 1: task-conditioned tool-output pruning 示例*
 
-![Squeez Table 4: held-out test set 主结果](./assets/code-agent-context-pruning/squeez-table4.png)
+![Squeez Table 4: held-out test set 主结果](/sources/papers/assets/code-agent-context-pruning/squeez-table4.png)
 
 *Squeez Table 4: held-out test set 主结果*
 
-![Squeez Figure 2: 输出长度与 recall / F1 关系](./assets/code-agent-context-pruning/squeez-figure2.png)
+![Squeez Figure 2: 输出长度与 recall / F1 关系](/sources/papers/assets/code-agent-context-pruning/squeez-figure2.png)
 
 *Squeez Figure 2: 输出长度与 recall / F1 关系*
 
-![Squeez Figure 3: pruning examples / error modes](./assets/code-agent-context-pruning/squeez-figure3.png)
+![Squeez Figure 3: pruning examples / error modes](/sources/papers/assets/code-agent-context-pruning/squeez-figure3.png)
 
 *Squeez Figure 3: pruning examples / error modes*
 

@@ -173,17 +173,29 @@ LongCodeZip 的稳定价值不在于某个具体 benchmark 数字，而在于提
 
 ## 论文图表摘录
 
-![LongCodeZip Figure 2: coarse-to-fine compression framework](./assets/code-agent-context-pruning/longcodezip-figure2.png)
+![LongCodeZip Table I: evaluation datasets](/sources/papers/assets/code-agent-context-pruning/longcodezip-table1.png)
+
+*LongCodeZip Table I: evaluation datasets*
+
+![LongCodeZip Figure 2: coarse-to-fine compression framework](/sources/papers/assets/code-agent-context-pruning/longcodezip-figure2.png)
 
 *LongCodeZip Figure 2: coarse-to-fine compression framework*
 
-![LongCodeZip Algorithm 2: knapsack block selection](./assets/code-agent-context-pruning/longcodezip-algorithm2.png)
+![LongCodeZip Algorithm 2: knapsack block selection](/sources/papers/assets/code-agent-context-pruning/longcodezip-algorithm2.png)
 
 *LongCodeZip Algorithm 2: knapsack block selection*
 
-![LongCodeZip Table II: Long Code Completion 结果](./assets/code-agent-context-pruning/longcodezip-table2.png)
+![LongCodeZip Table II: Long Code Completion 结果](/sources/papers/assets/code-agent-context-pruning/longcodezip-table2.png)
 
 *LongCodeZip Table II: Long Code Completion 结果*
+
+![LongCodeZip Table III: Long Module Summarization 结果](/sources/papers/assets/code-agent-context-pruning/longcodezip-table3.png)
+
+*LongCodeZip Table III: Long Module Summarization 结果*
+
+![LongCodeZip Table IV: RepoQA 结果](/sources/papers/assets/code-agent-context-pruning/longcodezip-table4.png)
+
+*LongCodeZip Table IV: RepoQA 结果*
 
 ## 相关知识链接
 
