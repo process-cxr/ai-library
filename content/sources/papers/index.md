@@ -2,7 +2,7 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-06-01
+modified: 2026-06-02
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
@@ -73,3 +73,5 @@ modified: 2026-06-01
 - [[sources/papers/2026-squeez-task-conditioned-tool-output-pruning-for-coding-agents|Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents]]
 - [[sources/papers/2026-codepromptzip-code-specific-prompt-compression|CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
+- [[sources/papers/2026-klong-training-llm-agent-for-extremely-long-horizon-tasks|KLong: Training LLM Agent for Extremely Long-horizon Tasks]]
+- [[sources/papers/2026-dive-into-claude-code-design-space-ai-agent-systems|Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems]]
