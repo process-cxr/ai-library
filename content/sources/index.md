@@ -20,6 +20,7 @@ modified: 2026-05-28
 
 ## Recent Notes
 
+- [[sources/reports/code-agent-trajectory-reasoning-synthesis|Code Agent Trajectory Reasoning Synthesis]]
 - [[sources/papers/2026-codepromptzip-code-specific-prompt-compression|CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs]]
 - [[sources/papers/2026-squeez-task-conditioned-tool-output-pruning-for-coding-agents|Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents]]
 - [[sources/papers/2026-swe-pruner-self-adaptive-context-pruning-for-coding-agents|SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents]]
