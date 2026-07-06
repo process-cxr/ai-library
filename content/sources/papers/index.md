@@ -2,7 +2,7 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-06-02
+modified: 2026-06-30
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
@@ -69,9 +69,15 @@ modified: 2026-06-02
 - [[sources/papers/2024-repoformer-selective-retrieval-for-repository-level-code-completion|Repoformer: Selective Retrieval for Repository-Level Code Completion]]
 - [[sources/papers/2025-coderag-relevant-and-necessary-knowledge|CodeRAG: Finding Relevant and Necessary Knowledge for Retrieval-Augmented Repository-Level Code Completion]]
 - [[sources/papers/2025-longcodezip-compress-long-context-for-code-language-models|LongCodeZip: Compress Long Context for Code Language Models]]
+- [[sources/papers/2025-aptbench-benchmarking-agentic-potential-of-base-llms|APTBench: Benchmarking Agentic Potential of Base LLMs During Pre-Training]]
+- [[sources/papers/2025-kimi-dev-agentless-training-as-skill-prior-for-swe-agents|Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents]]
+- [[sources/papers/2025-scaling-agents-via-continual-pre-training|Scaling Agents via Continual Pre-training]]
 - [[sources/papers/2026-swe-pruner-self-adaptive-context-pruning-for-coding-agents|SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents]]
 - [[sources/papers/2026-squeez-task-conditioned-tool-output-pruning-for-coding-agents|Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents]]
 - [[sources/papers/2026-codepromptzip-code-specific-prompt-compression|CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs]]
+- [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev: Agent-native Mid-training for Software Engineering]]
+- [[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning]]
+- [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
 - [[sources/papers/2026-klong-training-llm-agent-for-extremely-long-horizon-tasks|KLong: Training LLM Agent for Extremely Long-horizon Tasks]]
 - [[sources/papers/2026-dive-into-claude-code-design-space-ai-agent-systems|Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems]]

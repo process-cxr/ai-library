@@ -98,6 +98,10 @@ Packing 对短样本和长 context 训练尤其重要。没有 packing 时，SFT
 
 因此，long context training 的数据构造不仅是 packing 问题，还涉及 [[training/mid-training/long-context-training|Long Context Training]] 和位置编码扩展。
 
+对多轮 agent 轨迹和工具调用数据，packing 还会影响格式学习。许多 agent 样本会在开头定义 system instruction、tool schema、tool call format 和 response wrapper，后续 action 则依赖这些开头约束。如果采用 concat-then-split，把一条轨迹从中间切开，模型可能在没有工具定义的片段中学习 tool call，导致 context hallucination、格式错误或参数边界混淆。
+
+因此，agent / tool-use 长上下文训练更适合记录 fragmentation rate，并优先使用能保留样本或轨迹边界的 packing 策略。Best-fit packing 可以在接近零 padding 的情况下减少文档碎片化，适合长文档、仓库级代码和多轮工具轨迹。[[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next]] 将 best-fit packing 用于 262K context 的 coding agent mid-training，并强调它对工具格式和长程任务的稳定性价值。
+
 ## 实践设计
 
 Packing pipeline 通常需要记录：
@@ -110,6 +114,7 @@ Packing pipeline 通常需要记录：
 - attention mask 类型；
 - loss mask 规则；
 - padding ratio；
+- fragmentation rate；
 - pack 后平均样本数；
 - domain/language distribution 是否变化。
 

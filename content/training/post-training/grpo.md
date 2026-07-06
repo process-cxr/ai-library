@@ -147,6 +147,8 @@ GRPO 的效果高度依赖 reward。常见 reward 包括：
 
 Reward 设计要避免只奖励容易投机的表面指标。例如只检查最终答案字符串，可能鼓励模型猜答案；只奖励格式，可能牺牲内容质量；只奖励长 CoT，可能导致冗长无效推理。
 
+在 agent 场景中，GRPO-like 更新也可以结合 step-level 信号。除了 episode-level success reward，还可以对中间 world-model span 或 planning span 设计局部 reward，例如预测关键词是否在后续真实轨迹中出现、confidence 是否与最终成败校准、工具调用是否有效。这类设计试图缓解长程任务的稀疏 credit assignment，但需要避免局部 proxy 压过最终任务目标。[[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future]] 使用 grounding reward、Brier score calibration 和 confidence-based local advantage 作为示例。
+
 ## 失败模式与边界
 
 - **Group quality 低**：如果同组样本全错，relative advantage 只能在错误中挑“相对较好”，学习信号弱。
