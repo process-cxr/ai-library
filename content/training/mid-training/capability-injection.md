@@ -2,7 +2,7 @@
 title: Capability Injection
 created: 2026-02-28
 published: 2026-02-28
-modified: 2026-05-31
+modified: 2026-06-30
 type: topic
 status: mature
 area: training
@@ -54,6 +54,14 @@ Capability Injection 指在已有 base model 或 intermediate checkpoint 上，�
 5. **Curriculum injection**：从简单能力样本逐步过渡到复杂样本。
 
 不同方式可以叠加。例如，代码能力可先用仓库 CPT，再用 issue/patch SFT，最后用 unit-test reward 或 rejection sampling。
+
+## Agentic Capability Injection
+
+Agentic capability injection 指在后训练之前，提前注入工具使用、规划、环境反馈利用和长程任务推进等 agent 行为倾向。它与普通代码或领域能力注入的区别在于，训练数据需要保留 action-observation loop，而不仅是最终产物。
+
+在 software engineering agent 中，更合适的数据形态不是孤立的代码文件、单独的 bug localization 样本或 oracle-file patch，而是把 issue、相关文件、编辑序列、测试输出和修正过程组织成连续样本。PR 数据可以提供大规模 contextually-native supervision；可执行环境 rollout 可以提供 environmentally-native feedback。相关案例见 [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev: Agent-native Mid-training for Software Engineering]]。
+
+另一种路径是先用 workflow / Agentless training 注入原子技能，再迁移到更开放的 agent 框架。固定 workflow 可以将软件工程任务拆成 localization、code edit、test writing、verification 和 self-reflection 等可验证子问题，使 SFT 或 RL 更容易获得稳定信号。这类训练得到的不是完整 agent policy，而是后续多轮 agent 适配所需的 skill priors。相关案例见 [[sources/papers/2025-kimi-dev-agentless-training-as-skill-prior-for-swe-agents|Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents]]。
 
 ## 与 Post-training 的边界
 

@@ -2,7 +2,7 @@
 title: Continued Pretraining
 created: 2026-02-28
 published: 2026-02-28
-modified: 2026-05-31
+modified: 2026-06-30
 type: topic
 status: mature
 area: training
@@ -99,6 +99,26 @@ SFT 训练的是指令响应格式和 assistant 行为，数据通常是 prompt-
 - SFT 更像“学习如何按用户请求回答”。
 
 更形式化地说，CPT 主要改变模型对文本分布的建模能力，SFT 主要改变模型在交互协议中的条件响应行为。CPT 做得好，通常会让 SFT 更容易；但 CPT 不能替代 SFT 的 instruction following、safety policy 和 assistant style。
+
+## Agentic CPT
+
+Agentic CPT 是把 agent 行为分布前移到 continued pretraining 阶段的一类做法。它的目标不是让模型直接学习某个最终 agent 产品的固定交互格式，而是在 SFT/RL 之前注入工具调用、规划、长程决策、轨迹理解和环境反馈利用等基础倾向。
+
+与普通领域 CPT 相比，Agentic CPT 的数据不只是领域文档，而往往包含：
+
+- planning 与 next-action prediction；
+- reasoning + tool call 片段；
+- 多步 action-observation 轨迹；
+- 从既有轨迹重组出的 step-level decision data；
+- 长上下文 agent trajectory。
+
+这种路线的核心假设是：如果 base model 已经具备 agentic inductive bias，后续 [[training/post-training/sft|SFT]] 或 RL 就不必同时学习“如何作为 agent 行动”和“如何对齐专家轨迹”，从而降低后训练阶段的优化压力。[[sources/papers/2025-scaling-agents-via-continual-pre-training|Scaling Agents via Continual Pre-training]] 是这一方向的代表案例。
+
+在 code agent 场景中，agentic CPT / mid-training 的关键不只是加入更多代码，而是让数据保留软件工程 agent 的工作流结构。典型数据形态包括从 PR 重构出的 contextually-native trajectories，以及从可执行仓库环境中采集的 environmentally-native trajectories。前者强调 issue、相关文件和 commit edits 的上下文连续性，后者强调工具调用、测试失败和修正反馈的真实性。[[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev]] 是这一方向的代表案例。
+
+更完整的 coding-agent CPT / mid-training recipe 往往还需要配合可执行任务合成、长上下文仓库级代码、multi-scaffold trajectory、工具模板多样性和后续 SFT/RL。[[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next]] 展示了这种路线的工程化版本：先用 repository-level code、PR 数据、text-code grounding 与 multi-turn agentic trajectories 塑造 base，再用 verified trajectories、tool-format validation、execution-driven RL 和 expert distillation 对齐部署行为。
+
+另一类 agentic mid-training 关注 internal world model。它不是只训练模型预测下一步 action，而是在轨迹中插入对未来路径的压缩摘要、当前信息缺口和成功概率估计，使模型在行动前形成 look-ahead planning 先验。后续 SFT 再把这种潜在能力结构化外显，RL 则用真实执行结果校准预测和 confidence。相关案例见 [[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future]]。
 
 ## 与 Reinforcement Pretraining 的关系
 

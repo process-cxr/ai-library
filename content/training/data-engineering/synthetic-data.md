@@ -2,7 +2,7 @@
 title: Synthetic Data
 created: 2026-03-15
 published: 2026-03-15
-modified: 2026-05-31
+modified: 2026-06-30
 type: topic
 status: mature
 area: training
@@ -65,6 +65,22 @@ Self-Instruct 类方法用少量 seed instructions 启动，让模型生成更�
 - structured output：schema validation。
 
 可验证数据的优势是质量边界更清楚。它可以用于训练 reasoning、code、tool use 和 RLVR。局限是 verifier 覆盖有限，容易让模型过拟合可验证形式，而非真实开放问题。
+
+## Agent Trajectory Synthesis
+
+Agent 场景中的 synthetic data 不只包括最终问答，也可以包括 action、observation、planning、tool call 和 trajectory decision。相比普通 instruction data，这类数据需要保留时序边界：当前 step 的 reasoning 和 action 只能使用此前可见的 prefix，不能泄漏当前 tool result、后续 observation 或最终 outcome。
+
+常见思路包括：
+
+- 从静态知识构造需要检索和多步推理的问题；
+- 合成 first-step planning 和 next-action prediction；
+- 将已有 agent trajectory 重组为 step-level decision-making 数据；
+- 对候选 action 或 reasoning 做 judge / verifier 过滤；
+- 用长上下文轨迹训练模型理解复杂 action space。
+
+这类数据适合用于 [[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/post-training/sft|SFT]]、rejection sampling 或 RL 前的数据准备。它的主要风险是 future leakage、teacher bias、judge bias 和轨迹级反馈的 credit assignment 不清。相关案例见 [[sources/papers/2025-scaling-agents-via-continual-pre-training|Scaling Agents via Continual Pre-training]]。
+
+在 code agent 场景中，轨迹数据还可以按信息来源区分为两类：从历史 PR 重构出的 contextually-native trajectories，以及在可执行环境中采集的 environmentally-native trajectories。前者规模大、覆盖广，但可能包含后验重构和 LLM 摘要偏差；后者包含真实工具输出、测试失败和修正反馈，但构造成本更高、覆盖更窄。相关案例见 [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev: Agent-native Mid-training for Software Engineering]]。
 
 ## Rejection Sampling 与 Best-of-N
 

@@ -2,7 +2,7 @@
 title: "Sources"
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-05-28
+modified: 2026-07-01
 ---
 
 外部资料阅读与分析，包括论文、博客、课程、报告和官方文档。
@@ -20,6 +20,13 @@ modified: 2026-05-28
 
 ## Recent Notes
 
+- [[sources/reports/agentic-mid-training-strategies-reading-synthesis|Agentic Mid-training Strategy for General-Purpose Agent Capability Injection]]
+- [[sources/papers/2025-kimi-dev-agentless-training-as-skill-prior-for-swe-agents|Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents]]
+- [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]
+- [[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning]]
+- [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev: Agent-native Mid-training for Software Engineering]]
+- [[sources/papers/2025-aptbench-benchmarking-agentic-potential-of-base-llms|APTBench: Benchmarking Agentic Potential of Base LLMs During Pre-Training]]
+- [[sources/papers/2025-scaling-agents-via-continual-pre-training|Scaling Agents via Continual Pre-training]]
 - [[sources/reports/code-agent-trajectory-reasoning-synthesis|Code Agent Trajectory Reasoning Synthesis]]
 - [[sources/papers/2026-codepromptzip-code-specific-prompt-compression|CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs]]
 - [[sources/papers/2026-squeez-task-conditioned-tool-output-pruning-for-coding-agents|Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents]]
