@@ -2,7 +2,7 @@
 title: Mixed Precision Training
 created: 2026-03-15
 published: 2026-03-15
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -143,6 +143,7 @@ FP8 进一步降低显存和带宽，但训练 recipe 更复杂，通常需要�
 
 - [[training/optimization/training-memory-estimation|Training Memory Estimation]]
 - [[training/optimization/optimizer-state|Optimizer State]]
+- [[training/optimization/checkpoint-sharding|Checkpoint Sharding]]
 - [[training/optimization/loss-spike|Loss Spike]]
 - [[training/distributed-training/fsdp|FSDP]]
 - [[training/distributed-training/zero|ZeRO]]

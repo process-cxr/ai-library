@@ -2,7 +2,7 @@
 title: Optimizer State
 created: 2026-03-21
 published: 2026-03-21
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -131,7 +131,7 @@ Optimizer state 不只占 GPU 显存，也占 checkpoint 存储。完整训练 c
 - random states；
 - sharded state metadata。
 
-如果只导出推理权重，checkpoint 可能接近 $2N$ bytes；如果保存完整 AdamW training state，则可能接近 $14N$ 到 $16N$ bytes 或更高，具体取决于 dtype 和分片格式。大规模训练中，optimizer state checkpoint 的写入、读取和合并常常是恢复时间的重要瓶颈。
+如果只导出推理权重，checkpoint 可能接近 $2N$ bytes；如果保存完整 AdamW training state，则可能接近 $14N$ 到 $16N$ bytes 或更高，具体取决于 dtype 和分片格式。大规模训练中，optimizer state checkpoint 的写入、读取和合并常常是恢复时间的重要瓶颈。详见 [[training/optimization/checkpoint-sharding|Checkpoint Sharding]]。
 
 ## Offload 与低精度 Optimizer
 
@@ -156,6 +156,7 @@ Optimizer state 显存过高时，常见缓解方式有：
 
 - [[training/optimization/training-memory-estimation|Training Memory Estimation]]
 - [[training/optimization/mixed-precision|Mixed Precision Training]]
+- [[training/optimization/checkpoint-sharding|Checkpoint Sharding]]
 - [[training/distributed-training/zero|ZeRO]]
 - [[training/distributed-training/fsdp|FSDP]]
 - [[fundamentals/optimization/adam|Adam]]

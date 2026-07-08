@@ -2,7 +2,7 @@
 title: Pipeline Parallel
 created: 2026-03-22
 published: 2026-03-22
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -91,6 +91,8 @@ PP 适合：
 
 对中小模型或后训练，FSDP/ZeRO 往往更简单；PP 的复杂度不一定值得。
 
+在包含 TP/PP/DP/CP 的训练栈中，pipeline stage 只保存模型的一部分层。checkpoint、dataloader 和日志都需要记录 pipeline rank。否则恢复训练或导出完整权重时，容易出现层顺序错位、stage 缺失或 optimizer state 对不上参数的问题。
+
 ## 常见失败模式
 
 - **pipeline bubble 大**：micro-batch 太少，GPU 利用率低。
@@ -103,7 +105,9 @@ PP 适合：
 ## 相关概念
 
 - [[training/distributed-training/megatron|Megatron and 3D Parallelism]]
+- [[training/distributed-training/torch-distributed|torch.distributed]]
 - [[training/distributed-training/tensor-parallel|Tensor Parallel]]
 - [[training/distributed-training/data-parallel|Data Parallel]]
 - [[training/optimization/gradient-checkpointing|Gradient Checkpointing]]
+- [[training/optimization/checkpoint-sharding|Checkpoint Sharding]]
 - [[sources/papers/2018-gpipe|GPipe]]

@@ -16,7 +16,7 @@ modified: 2026-05-31
 
 ## Cross-cutting Modules
 
-- [[training/data-engineering/|训练数据工程]] — 数据清洗、去重、过滤、packing 和合成数据。
-- [[training/optimization/|训练优化工程]] — 显存估算、混合精度、checkpointing、optimizer state 和稳定性。
-- [[training/distributed-training/|分布式训练]] — DP、TP、PP、ZeRO、FSDP、Megatron。
+- [[training/data-engineering/|训练数据工程]] — 数据清洗、去重、过滤、packing、distributed dataloader 和合成数据。
+- [[training/optimization/|训练优化工程]] — 显存估算、混合精度、checkpointing、optimizer state、checkpoint sharding 和稳定性。
+- [[training/distributed-training/|分布式训练]] — DP、TP、PP、SP、CP、ZeRO、FSDP、Megatron。
 - [[training/scaling/|Scaling]] — scaling law、模型/数据/算力配比和训练预算。

@@ -14,9 +14,9 @@
 - `pretraining/` — 预训练阶段，包括训练目标、数据混合、tokenizer 和 compute optimal。
 - `mid-training/` — 中训练阶段，包括 continued pretraining、领域适配、长上下文、annealing 和能力注入。
 - `post-training/` — 后训练阶段，包括 SFT、RLHF、DPO/GRPO、拒绝采样和 KD。
-- `data-engineering/` — 训练数据清洗、去重、过滤、packing 和合成数据。
-- `optimization/` — 训练工程优化，如混合精度、checkpointing、optimizer state 和稳定性。
-- `distributed-training/` — DP、TP、PP、ZeRO、FSDP、Megatron 等分布式训练方法。
+- `data-engineering/` — 训练数据清洗、去重、过滤、packing、distributed dataloader 和合成数据。
+- `optimization/` — 训练工程优化，如混合精度、activation checkpointing、optimizer state、checkpoint sharding 和稳定性。
+- `distributed-training/` — DP、TP、PP、SP、CP、ZeRO、FSDP、Megatron 等分布式训练方法。
 - `scaling/` — Scaling Law、模型/数据/算力配比和训练预算。
 
 ## 文件契约
