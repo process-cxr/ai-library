@@ -2,7 +2,7 @@
 title: Packing
 created: 2026-03-15
 published: 2026-03-15
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -120,6 +120,8 @@ Packing pipeline 通常需要记录：
 
 如果按长度排序或 bucketing，需要检查是否改变 batch 分布。极端按长度聚类可能提高吞吐，但会让某些 batch 语言/领域过于单一，影响优化稳定性。
 
+在多卡训练中，packing 还必须和 [[training/data-engineering/distributed-dataloader|Distributed Dataloader]] 配合。不同 data-parallel ranks 的有效 token 数、padding ratio 和 packed sample 数应尽量接近，否则会出现 straggler。若使用 TP/PP/CP，模型并行组内 ranks 必须看到同一个 packed micro-batch 的不同分片，而不是各自读取不同样本。
+
 ## 常见失败模式
 
 - **只关注 padding ratio**：忽略跨样本 attention leakage。
@@ -134,6 +136,7 @@ Packing pipeline 通常需要记录：
 - [[training/data-engineering/data-engineering|Data Engineering]]
 - [[training/pretraining/tokenizer|Tokenizer]]
 - [[training/pretraining/data-mix|Data Mix]]
+- [[training/data-engineering/distributed-dataloader|Distributed Dataloader]]
 - [[training/mid-training/long-context-training|Long Context Training]]
 - [[training/post-training/sft|SFT]]
 - [[training/post-training/chat-template|Chat Template]]

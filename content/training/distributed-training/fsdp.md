@@ -2,14 +2,17 @@
 title: FSDP
 created: 2026-03-22
 published: 2026-03-22
-modified: 2026-05-31
+modified: 2026-07-06
+type: topic
+status: mature
+area: training
 tags:
   - distributed-training
   - pytorch
   - fsdp
 ---
 
-> 帮助回顾和梳理 FSDP (Fully Sharded Data Parallel) 训练的核心概念和实战要点
+FSDP (Fully Sharded Data Parallel) 是理解 PyTorch 大模型训练、verl 后训练工程和 ZeRO-style sharded data parallel 的核心概念之一。这篇笔记整理 FSDP 的机制、显存估算、配置要点和与其他并行策略的边界。
 
 ## 1. FSDP 概述
 
@@ -26,11 +29,11 @@ FSDP 本身只是显存切分策略，预训练、中训练、后训练都能用
 
 | 训练阶段 | FSDP 的角色 | 说明 |
 |---------|------------|------|
-| **后训练**（SFT/RLHF/DPO） | 主力，单独使用即可 | 数据量小、集群规模几张到几十张卡，7B-70B 模型 FSDP 就够。veRL、TRL、LLaMA-Factory 默认后端都是 FSDP |
-| **中训练**（Continual Pre-training） | 主力，单独使用即可 | 和后训练类似，规模适中 |
+| **Post-training** | 主力，单独使用即可 | 数据量相对较小、集群规模通常为几张到几十张卡，7B-70B 模型常可用 FSDP 支撑。verl、TRL、LLaMA-Factory 等框架均支持 FSDP |
+| **Mid-training** | 主力或重要组件 | 中等规模 continued pretraining / capability injection 可直接使用 FSDP；更大规模训练需要与 TP/PP 等策略组合 |
 | **大规模预训练** | 3D 并行中的一环 | 70B+ 模型、几百上千张卡，需要 TP（张量并行）+ PP（流水线并行）+ FSDP（数据并行）配合，FSDP 只负责数据并行维度的切分 |
 
->  模型不太大、卡不太多 → FSDP 单独够用；超大规模预训练 → FSDP 是 3D 并行里数据并行那一维。
+模型规模和集群规模适中时，FSDP 可以作为主要并行策略；超大规模预训练通常将 FSDP 放在 data parallel 维度，与 [[training/distributed-training/tensor-parallel|Tensor Parallel]] 和 [[training/distributed-training/pipeline-parallel|Pipeline Parallel]] 组合。
 
 > 关于 3D 并行和 Megatron-LM 的详细介绍，参见 [[training/distributed-training/megatron|Megatron]]。
 
@@ -58,7 +61,7 @@ FSDP 本身只是显存切分策略，预训练、中训练、后训练都能用
 | **TRL** | Accelerate → PyTorch FSDP / DeepSpeed | HuggingFace 的 LLM 后训练框架 |
 | **LLaMA-Factory** | Accelerate → PyTorch FSDP / DeepSpeed | LLM 微调一站式工具 |
 
-> 选型建议：新项目推荐 **PyTorch FSDP2** 或 **DeepSpeed ZeRO Stage 3**，上层框架按团队习惯选。
+新训练栈通常优先评估 **PyTorch FSDP2** 或 **DeepSpeed ZeRO Stage 3**；上层框架取决于已有工程生态、checkpoint 需求和调试工具链。
 
 ---
 
@@ -262,7 +265,7 @@ L=32, H=4096, a≈10
        ≈ 343GB
 ```
 
-这个数字非常夸张，实际中**一定会开梯度检查点**（activation checkpointing），只保留每层的输入，反向时重算中间激活，可以将激活值降低到原来的 **~1/a**：
+该估算说明 activation memory 可能远超参数本身。实际训练中通常需要开启梯度检查点（activation checkpointing），只保留每层的输入，反向时重算中间激活，将激活保存量降低到接近原来的 **~1/a**：
 
 ```
 开启梯度检查点后：
@@ -275,8 +278,10 @@ L=32, H=4096, a≈10
 
 ```
 单卡显存 ≈ 持久 shard + All-Gather 临时 + 激活值
-         ≈ (5N/K) + (2N/L) + (2 × L × B × S × H) bytes
+         ≈ (16N/K) + (2N/L) + M_act bytes
 ```
+
+其中 $16N/K$ 来自 bf16 参数、bf16 梯度、fp32 master weights、Adam $m$ 和 Adam $v$ 在 $K$ 个 data-parallel ranks 上的 full shard；$2N/L$ 近似表示单个 Transformer block all-gather 后的 bf16 参数临时峰值；$M_{\text{act}}$ 取决于 micro-batch、sequence length、hidden size、layers、checkpointing、attention kernel 和 sequence/context parallel。
 
 ### 7.5 实际案例
 
@@ -291,7 +296,7 @@ L=32, H=4096, a≈10
 | 激活值 (B=32, S=4096, 梯度检查点) | L×B×S×H×2 | ~34 GB |
 | **总计** | | **~62 GB** |
 
-> 不开梯度检查点的话激活值会膨胀到 ~343GB，根本放不下。所以大模型训练梯度检查点几乎是必开的。
+若不开启梯度检查点，示例中的 activation 估算会达到 ~343GB，已经超过常见单卡显存范围。因此，大模型 full training 中 activation checkpointing 通常是基础配置。
 
 ### 7.6 不同训练场景下的激活值分析
 
@@ -330,8 +335,8 @@ Training（策略更新）阶段：
 
 ### 7.7 注意事项
 
-- 激活值和 **B × S** 成正比，降 batch size 或缩短序列长度可以直接减少激活值显存
-- 可结合 [[training/optimization/mixed-precision|混合精度]] 和梯度检查点进一步优化
+- 激活值和 **B × S** 成正比，降低 micro-batch size 或缩短序列长度可以直接减少 activation 显存
+- 可结合 [[training/optimization/mixed-precision|混合精度]]、[[training/optimization/gradient-checkpointing|Gradient Checkpointing]]、[[training/distributed-training/sequence-parallel|Sequence Parallel]] 和 [[training/distributed-training/context-parallel|Context Parallel]] 进一步优化
 - All-Gather 临时开销很小（单层参数），这也是 FSDP 按 Transformer Block 粒度 wrap 的原因之一
 
 ---
@@ -460,7 +465,7 @@ fully_shard(model.layers)  # 对每个 Transformer 层应用
 fully_shard(model)          # 对整个模型应用
 ```
 
-> 如果是新项目，建议直接使用 FSDP2。
+新项目通常优先评估 FSDP2；已有项目则需要结合框架版本、state dict 格式、checkpoint 兼容性和上层训练框架支持情况选择。
 
 ---
 
@@ -496,7 +501,7 @@ DeepSpeed 通过一个 JSON 配置文件控制所有分布式训练行为：
 | `stage` | ZeRO 级别：1（切优化器）、2（+梯度）、3（+参数） |
 | `offload_param` | 参数卸载到 CPU/NVMe，显存不够时开启 |
 | `offload_optimizer` | 优化器状态卸载到 CPU/NVMe |
-| `overlap_comm` | 通信与计算重叠，建议开启 |
+| `overlap_comm` | 通信与计算重叠，通常作为高吞吐训练配置开启 |
 | `reduce_bucket_size` | 梯度通信桶大小，影响通信效率 |
 | `stage3_prefetch_bucket_size` | Stage 3 预取桶大小，类似 FSDP 的 prefetch |
 | `stage3_param_persistence_threshold` | 小于此值的参数不切分，减少通信开销 |
@@ -529,3 +534,16 @@ accelerate launch --config_file accelerate_config.yaml train.py
 | 社区趋势 | Meta 主推，与 PyTorch 路线图一致 | 微软持续维护，生态广泛 |
 
 > 两者功能上高度重叠，选哪个主要看团队技术栈和上层框架的支持情况。
+
+## 相关概念
+
+- [[training/distributed-training/data-parallel|Data Parallel]]
+- [[training/distributed-training/torch-distributed|torch.distributed]]
+- [[training/distributed-training/zero|ZeRO]]
+- [[training/distributed-training/tensor-parallel|Tensor Parallel]]
+- [[training/distributed-training/pipeline-parallel|Pipeline Parallel]]
+- [[training/optimization/training-memory-estimation|Training Memory Estimation]]
+- [[training/optimization/optimizer-state|Optimizer State]]
+- [[training/optimization/mixed-precision|Mixed Precision Training]]
+- [[training/optimization/gradient-checkpointing|Gradient Checkpointing]]
+- [[training/optimization/checkpoint-sharding|Checkpoint Sharding]]

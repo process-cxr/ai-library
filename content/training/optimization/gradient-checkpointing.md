@@ -2,7 +2,7 @@
 title: Gradient Checkpointing
 created: 2026-03-15
 published: 2026-03-15
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -49,7 +49,7 @@ M_{\text{act}}
 \propto B_{\mu} \cdot S \cdot L \cdot H
 $$
 
-当训练长上下文或大 batch 时，activation 可能成为显存瓶颈。ZeRO/FSDP 能切分模型状态，但不能自动切分每个 GPU 在本地 forward/backward 中产生的 activation。因此，checkpointing 经常与 FSDP、tensor parallel、sequence parallel 和 FlashAttention 一起使用。
+当训练长上下文或大 batch 时，activation 可能成为显存瓶颈。ZeRO/FSDP 能切分模型状态，但不能自动切分每个 GPU 在本地 forward/backward 中产生的 activation。因此，checkpointing 经常与 FSDP、tensor parallel、sequence/context parallel 和 FlashAttention 一起使用。
 
 需要区分两类显存：
 
@@ -138,4 +138,6 @@ FlashAttention 通过 IO-aware tiling 避免显式 materialize 完整 attention 
 - [[training/optimization/mixed-precision|Mixed Precision Training]]
 - [[training/distributed-training/fsdp|FSDP]]
 - [[training/distributed-training/zero|ZeRO]]
+- [[training/distributed-training/sequence-parallel|Sequence Parallel]]
+- [[training/distributed-training/context-parallel|Context Parallel]]
 - [[inference/attention-acceleration/flash-attention|FlashAttention]]

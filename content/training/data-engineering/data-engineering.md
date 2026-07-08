@@ -2,7 +2,7 @@
 title: Data Engineering
 created: 2026-03-14
 published: 2026-03-14
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -41,7 +41,7 @@ Data Engineering 是大模型训练中把原始数据转化为可训练 token st
 8. **Safety and privacy filtering**：PII、密钥、恶意代码、毒性内容、版权和敏感数据控制。
 9. **Mixture construction**：按语言、领域、质量层级和目标能力定义采样比例。
 10. **Tokenization and packing**：用固定 tokenizer 编码，并把样本打包成训练序列。
-11. **Sharding and metadata**：分片存储 token stream，记录 provenance、过滤版本、mix 权重和文档元数据。
+11. **Sharding, distributed loading and metadata**：分片存储 token stream，在多 GPU / 多节点训练中按 DP group 切分数据，并记录 provenance、过滤版本、mix 权重、resume position 和文档元数据。
 12. **Validation and audit**：构建 held-out validation sets、contamination 检查和数据统计报告。
 
 这个流程应该是可复现的。训练数据一旦进入大规模实验，任何过滤规则、去重阈值、tokenizer 版本或 mix 权重变化都可能影响 loss curve 和最终能力。
@@ -111,6 +111,7 @@ $$
 - [[training/data-engineering/deduplication|Deduplication]]
 - [[training/data-engineering/quality-filtering|Quality Filtering]]
 - [[training/data-engineering/packing|Packing]]
+- [[training/data-engineering/distributed-dataloader|Distributed Dataloader]]
 - [[training/data-engineering/synthetic-data|Synthetic Data]]
 - [[training/pretraining/data-mix|Data Mix]]
 - [[training/pretraining/tokenizer|Tokenizer]]

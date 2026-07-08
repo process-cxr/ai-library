@@ -2,7 +2,7 @@
 title: Tensor Parallel
 created: 2026-03-22
 published: 2026-03-22
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -95,7 +95,7 @@ TP 的通信发生在层内部，通常比 data parallel 更频繁。常见通�
 
 ## Sequence Parallel
 
-Sequence Parallelism 常与 tensor parallel 配合，把某些 activation 沿 sequence dimension 切分，减少 activation memory。它通常用于 LayerNorm、Dropout、residual 等不需要完整 hidden dimension 的部分。
+[[training/distributed-training/sequence-parallel|Sequence Parallelism]] 常与 tensor parallel 配合，把某些 activation 沿 sequence dimension 切分，减少 activation memory。它通常作用于 LayerNorm、Dropout、residual 等 token-wise 模块附近：这些模块按 token position 独立处理，不需要同时持有完整 sequence，但 LayerNorm / RMSNorm 仍需要该 token 的完整 hidden vector 或等价的正确聚合实现。
 
 直观上：
 
@@ -103,7 +103,7 @@ Sequence Parallelism 常与 tensor parallel 配合，把某些 activation 沿 se
 - sequence parallel 切 sequence dimension；
 - 二者配合降低单卡 activation 和通信压力。
 
-具体实现依赖框架，Megatron-Core 中 sequence parallel 是重要优化。
+具体实现依赖框架，Megatron-Core 中 sequence parallel 是重要优化。需要注意，sequence parallel 不等于 [[training/distributed-training/context-parallel|Context Parallel]]：前者主要切分部分 activation layout，后者直接面向长上下文 attention 的 context / K/V 跨 shard 计算。
 
 ## 与其他并行的关系
 
@@ -140,7 +140,10 @@ TP 不适合过小模型或低带宽跨节点环境，因为通信可能超过�
 
 ## 相关概念
 
+- [[training/distributed-training/torch-distributed|torch.distributed]]
 - [[training/distributed-training/megatron|Megatron and 3D Parallelism]]
+- [[training/distributed-training/sequence-parallel|Sequence Parallel]]
+- [[training/distributed-training/context-parallel|Context Parallel]]
 - [[training/distributed-training/pipeline-parallel|Pipeline Parallel]]
 - [[training/distributed-training/data-parallel|Data Parallel]]
 - [[training/distributed-training/zero|ZeRO]]

@@ -2,7 +2,7 @@
 title: ZeRO
 created: 2026-03-22
 published: 2026-03-22
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -140,7 +140,7 @@ ZeRO 主要作用在 data parallel 维度。超大规模训练常组合：
 
 ## Checkpoint 与恢复
 
-ZeRO 训练通常使用 sharded checkpoint。优点是每个 rank 只写自己负责的状态，保存和恢复更接近训练时布局；代价是 checkpoint 与 world size、并行策略和框架版本可能耦合。
+ZeRO 训练通常使用 [[training/optimization/checkpoint-sharding|sharded checkpoint]]。优点是每个 rank 只写自己负责的状态，保存和恢复更接近训练时布局；代价是 checkpoint 与 world size、并行策略和框架版本可能耦合。
 
 需要提前明确：
 
@@ -169,7 +169,9 @@ ZeRO 训练通常使用 sharded checkpoint。优点是每个 rank 只写自己�
 
 - [[training/optimization/training-memory-estimation|Training Memory Estimation]]
 - [[training/optimization/optimizer-state|Optimizer State]]
+- [[training/distributed-training/torch-distributed|torch.distributed]]
 - [[training/distributed-training/fsdp|FSDP]]
 - [[training/distributed-training/data-parallel|Data Parallel]]
 - [[training/distributed-training/tensor-parallel|Tensor Parallel]]
 - [[training/distributed-training/pipeline-parallel|Pipeline Parallel]]
+- [[training/optimization/checkpoint-sharding|Checkpoint Sharding]]

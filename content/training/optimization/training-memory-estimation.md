@@ -2,7 +2,7 @@
 title: Training Memory Estimation
 created: 2026-05-31
 published: 2026-05-31
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -26,7 +26,7 @@ Training Memory Estimation 指在训练开始前估算模型会占用多少显�
 | Parameters | 模型权重 | 否，主要与参数量和 dtype 相关 | mixed precision、ZeRO-3/FSDP、tensor parallel |
 | Gradients | 反向传播梯度 | 否，主要与可训练参数量和 dtype 相关 | ZeRO-2/3、gradient accumulation、freeze |
 | Optimizer states | Adam m/v、master weights 等 | 否，主要与可训练参数量和 optimizer 相关 | ZeRO-1/2/3、optimizer 选择、offload |
-| Activations | 前向中间激活，用于 backward | 是，随 batch、sequence、hidden、layers 增长 | activation checkpointing、sequence parallel、micro-batch |
+| Activations | 前向中间激活，用于 backward | 是，随 batch、sequence、hidden、layers 增长 | activation checkpointing、sequence/context parallel、micro-batch |
 | Temporary buffers | attention workspace、通信缓冲、loss buffer | 部分相关 | kernel、并行策略、framework 配置 |
 | Fragmentation / overhead | allocator 碎片、padding、框架缓存 | 部分相关 | memory profiling、固定 shape、allocator 配置 |
 
@@ -200,7 +200,9 @@ FlashAttention、memory-efficient attention 和 recomputation 策略会显著改
 - [[training/optimization/gradient-checkpointing|Gradient Checkpointing]] 可以少存 activation，但要在 backward 重算 forward；
 - FlashAttention 类 kernel 可以减少 attention score/probability 矩阵的 materialization，但不等于消除所有 activation。
 
-Activation memory 与 optimizer state 不同：ZeRO/FSDP 主要切分模型状态，不自动把 activation 除以 GPU 数。要降低 activation，通常要调整 micro-batch、sequence length、checkpointing、sequence parallel 或模型结构。
+Activation memory 与 optimizer state 不同：ZeRO/FSDP 主要切分模型状态，不自动把 activation 除以 GPU 数。要降低 activation，通常要调整 micro-batch、sequence length、checkpointing、[[training/distributed-training/sequence-parallel|Sequence Parallel]]、[[training/distributed-training/context-parallel|Context Parallel]] 或模型结构。
+
+Sequence parallel 通常减少部分 token-wise activation 的复制；context parallel 则把长 sequence attention 的 context 分布到多个 ranks 上。二者都与 sequence length 相关，但作用位置和通信模式不同。
 
 ## Gradient Accumulation 与 Micro-batch
 
@@ -273,7 +275,7 @@ $$
 
 只保存 inference weights 则通常小得多。例如 bf16 7B 权重约 14GB，但 full optimizer checkpoint 可能超过 100GB。
 
-Sharded training 下，checkpoint 还要考虑格式问题。ZeRO/FSDP 的 sharded checkpoint 适合原训练拓扑快速恢复，但跨框架迁移、合并成单文件权重、或改变 GPU 数量 resume 时可能需要额外转换。训练前应明确保存的是“可恢复训练状态”还是“可发布推理权重”，两者的容量、加载路径和可靠性要求不同。
+Sharded training 下，checkpoint 还要考虑格式问题。ZeRO/FSDP 的 [[training/optimization/checkpoint-sharding|sharded checkpoint]] 适合原训练拓扑快速恢复，但跨框架迁移、合并成单文件权重、或改变 GPU 数量 resume 时可能需要额外转换。训练前应明确保存的是“可恢复训练状态”还是“可发布推理权重”，两者的容量、加载路径和可靠性要求不同。
 
 ## 快速估算流程
 
@@ -340,5 +342,8 @@ ZeRO/FSDP 主要切分 parameters、gradients 和 optimizer states。Activation�
 - [[training/distributed-training/fsdp|FSDP]]
 - [[training/distributed-training/tensor-parallel|Tensor Parallel]]
 - [[training/distributed-training/pipeline-parallel|Pipeline Parallel]]
+- [[training/distributed-training/sequence-parallel|Sequence Parallel]]
+- [[training/distributed-training/context-parallel|Context Parallel]]
+- [[training/optimization/checkpoint-sharding|Checkpoint Sharding]]
 - [[training/scaling/training-budget|Training Budget]]
 - [[training/post-training/sft|SFT]]

@@ -2,7 +2,7 @@
 title: Data Parallel
 created: 2026-03-21
 published: 2026-03-21
-modified: 2026-05-31
+modified: 2026-07-06
 type: topic
 status: mature
 area: training
@@ -52,6 +52,8 @@ global batch size 会影响优化动态。扩大 GPU 数时，如果保持每卡
 ## 通信开销
 
 普通 data parallel 的主要通信是 gradient AllReduce。每个 step 需要同步所有参数对应的梯度，通信量大致与参数量成正比。
+
+AllReduce 是 [[training/distributed-training/torch-distributed|torch.distributed]] 中的 collective communication primitive：每个 rank 提供本地梯度，通信后每个 rank 都得到全局 reduce 结果。DDP 在实现上会把梯度按 bucket 组织，并尽量把 backward 计算与 AllReduce 通信重叠。
 
 优化方式包括：
 
@@ -104,18 +106,23 @@ Data parallel 适合：
 
 当单卡放不下模型状态时，需要 FSDP/ZeRO；当单层计算太大时，需要 [[training/distributed-training/tensor-parallel|Tensor Parallel]]；当层数太多或模型总规模太大时，需要 [[training/distributed-training/pipeline-parallel|Pipeline Parallel]]。
 
+在多维并行中，data parallel 维度还决定数据如何切分。TP/PP/CP group 内的 ranks 往往共同处理同一 micro-batch，而不同 DP ranks 处理不同数据 shard。因此 [[training/data-engineering/distributed-dataloader|Distributed Dataloader]] 必须按 DP group 切数据，不能简单按 global rank 让每个进程读取不同样本。
+
 ## 常见失败模式
 
 - **global batch 被无意放大**：GPU 数增加后优化动态改变。
 - **通信成为瓶颈**：AllReduce 时间抵消并行收益。
 - **数据 shard 不均匀**：不同 rank 处理长度或难度差异大，造成 straggler。
 - **随机性不一致**：seed、dropout、data loader 状态导致复现实验困难。
+- **dataloader sharding 错误**：TP/PP ranks 读到不同 batch，导致模型并行组输入不一致。
 - **只用 DP 训练超大模型**：每卡完整状态导致 OOM。
 
 ## 相关概念
 
 - [[training/distributed-training/zero|ZeRO]]
 - [[training/distributed-training/fsdp|FSDP]]
+- [[training/distributed-training/torch-distributed|torch.distributed]]
 - [[training/distributed-training/tensor-parallel|Tensor Parallel]]
 - [[training/distributed-training/pipeline-parallel|Pipeline Parallel]]
+- [[training/data-engineering/distributed-dataloader|Distributed Dataloader]]
 - [[training/scaling/training-budget|Training Budget]]
