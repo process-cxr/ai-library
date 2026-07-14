@@ -11,7 +11,7 @@
 ## 文件
 
 - `index.md` — Projects 网页入口与项目类型说明。
-- 其他 `.md` — 单个实验、复现、Demo、源码阅读或工程记录。
+- 其他 `.md` 或项目子目录 — 单个实验、复现、Demo、源码阅读或工程记录。
 
 ## 契约
 
@@ -28,4 +28,4 @@
 ## Direct-Call 信息
 
 - 目录入口链接：`[[projects/|Projects]]`。
-- 典型引用方式：项目笔记引用主题笔记和资料笔记，例如 `[[inference/serving-systems/vllm|vLLM]]`、`[[sources/paper-2022-flashattention|FlashAttention 论文阅读]]`。
+- 典型引用方式：项目笔记引用主题笔记和资料笔记，例如 `[[inference/serving-systems/vllm|vLLM]]`、`[[inference/attention-acceleration/flash-attention|FlashAttention]]`。
