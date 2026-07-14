@@ -161,6 +161,14 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       })),
   }
 
+  if (graphData.nodes.length === 0) {
+    const empty = document.createElement("div")
+    empty.className = "graph-empty"
+    empty.textContent = "No local links yet"
+    graph.appendChild(empty)
+    return () => empty.remove()
+  }
+
   const width = graph.offsetWidth
   const height = Math.max(graph.offsetHeight, 250)
 
@@ -357,7 +365,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     autoStart: false,
     autoDensity: true,
     backgroundAlpha: 0,
-    preference: "webgpu",
+    preference: "webgl",
     resolution: window.devicePixelRatio,
     eventMode: "static",
   })
@@ -528,7 +536,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     if (stopAnimation) return
     for (const n of nodeRenderData) {
       const { x, y } = n.simulationData
-      if (!x || !y) continue
+      if (x === undefined || y === undefined) continue
       n.gfx.position.set(x + width / 2, y + height / 2)
       if (n.label) {
         n.label.position.set(x + width / 2, y + height / 2)
@@ -589,10 +597,18 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const handleThemeChange = () => {
     void renderLocalGraph()
   }
+  const handleSourcePanelChange = (event: Event) => {
+    const mode = (event as CustomEvent<{ mode: "on" | "off" }>).detail?.mode
+    if (mode === "off") {
+      requestAnimationFrame(() => void renderLocalGraph())
+    }
+  }
 
   document.addEventListener("themechange", handleThemeChange)
+  document.addEventListener("sourcepanelchange", handleSourcePanelChange)
   window.addCleanup(() => {
     document.removeEventListener("themechange", handleThemeChange)
+    document.removeEventListener("sourcepanelchange", handleSourcePanelChange)
   })
 
   const containers = [...document.getElementsByClassName("global-graph-outer")] as HTMLElement[]

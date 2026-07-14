@@ -15,6 +15,16 @@
     position: relative;
     overflow: hidden;
 
+    & > .graph-empty {
+      display: grid;
+      height: 100%;
+      place-items: center;
+      color: var(--gray);
+      font-size: 0.82rem;
+      font-weight: $semiBoldWeight;
+      opacity: 0.6;
+    }
+
     & > .global-graph-icon {
       cursor: pointer;
       background: none;
