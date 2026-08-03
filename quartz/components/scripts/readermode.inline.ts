@@ -19,7 +19,7 @@ const emitReaderModeChangeEvent = (mode: "on" | "off") => {
 }
 
 document.addEventListener("nav", () => {
-  if (!document.querySelector(".source-panel")) {
+  if (!document.querySelector(".source-panel") && !document.querySelector(".paper-panel")) {
     document.documentElement.setAttribute("source-panel-mode", "off")
   }
 

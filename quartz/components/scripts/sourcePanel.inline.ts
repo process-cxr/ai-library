@@ -6,12 +6,36 @@ type SourceLink = {
   lineEnd?: number
 }
 
+type PaperPanelRefs = {
+  panel: HTMLElement
+  layout: HTMLElement | null
+  toggle: HTMLButtonElement | null
+  status: HTMLElement | null
+}
+
 const githubBlobPattern = /^\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/
 const sourceCache = new Map<string, string>()
-
 function setSourcePanelMode(mode: "on" | "off") {
   document.documentElement.setAttribute("source-panel-mode", mode)
   document.dispatchEvent(new CustomEvent("sourcepanelchange", { detail: { mode } }))
+}
+
+function setPaperPageMode(isPaperPage: boolean) {
+  document.documentElement.toggleAttribute("data-paper-page", isPaperPage)
+}
+
+function getPaperPanel() {
+  const panel = document.querySelector<HTMLElement>(".paper-panel")
+  if (!panel) {
+    return null
+  }
+
+  return {
+    panel,
+    layout: document.querySelector<HTMLElement>(".content-paper-layout"),
+    toggle: document.querySelector<HTMLButtonElement>(".paper-panel-toggle"),
+    status: panel.querySelector<HTMLElement>(".paper-panel-status"),
+  } satisfies PaperPanelRefs
 }
 
 function parseLineHash(hash: string): Pick<SourceLink, "lineStart" | "lineEnd"> {
@@ -70,6 +94,97 @@ function getSourcePanel() {
     code: panel.querySelector<HTMLElement>(".source-panel-code > code"),
     layout: document.querySelector<HTMLElement>(".content-source-layout"),
   }
+}
+
+function getPaperPanelStorageKey() {
+  const slug = document.body.dataset.slug ?? window.location.pathname
+  return `paper-panel:${slug}`
+}
+
+function closePanelsForNavigation() {
+  setSourcePanelMode("off")
+  setPaperPageMode(false)
+
+  const paperRefs = getPaperPanel()
+  if (paperRefs) {
+    paperRefs.panel.hidden = true
+    paperRefs.panel.setAttribute("hidden", "")
+    paperRefs.layout?.classList.remove("has-paper-panel")
+    if (paperRefs.toggle) {
+      paperRefs.toggle.textContent = "Show PDF"
+      paperRefs.toggle.setAttribute("aria-pressed", "false")
+    }
+    if (paperRefs.status) {
+      paperRefs.status.textContent = "PDF hidden"
+    }
+  }
+
+  const sourceRefs = getSourcePanel()
+  if (sourceRefs) {
+    sourceRefs.panel.hidden = true
+    sourceRefs.layout?.classList.remove("has-source-panel")
+  }
+}
+
+function setPaperPanelVisibility(refs: PaperPanelRefs, hidden: boolean) {
+  refs.panel.hidden = hidden
+  refs.panel.toggleAttribute("hidden", hidden)
+  refs.layout?.classList.toggle("has-paper-panel", !hidden)
+  if (refs.toggle) {
+    refs.toggle.textContent = hidden ? "Show PDF" : "Hide PDF"
+    refs.toggle.setAttribute("aria-pressed", String(!hidden))
+  }
+  if (refs.status) {
+    refs.status.textContent = hidden ? "PDF hidden" : "PDF preview"
+  }
+}
+
+function setupPaperPanel() {
+  const refs = getPaperPanel()
+  if (!refs) {
+    setPaperPageMode(false)
+    return false
+  }
+
+  setPaperPageMode(true)
+  const pdfUrl = refs.panel.dataset.pdfUrl ?? null
+
+  if (!pdfUrl) {
+    refs.panel.hidden = true
+    refs.layout?.classList.remove("has-paper-panel")
+    setSourcePanelMode("off")
+    if (refs.toggle) {
+      refs.toggle.textContent = "No PDF"
+      refs.toggle.disabled = true
+    }
+    if (refs.status) {
+      refs.status.textContent = "Add a pdf_url or source_url to enable the PDF panel."
+    }
+    return true
+  }
+
+  refs.layout?.classList.remove("has-paper-panel")
+  refs.panel.hidden = true
+  refs.panel.setAttribute("hidden", "")
+  if (refs.toggle) {
+    refs.toggle.textContent = "Show PDF"
+    refs.toggle.setAttribute("aria-pressed", "false")
+    refs.toggle.disabled = false
+  }
+  if (refs.status) {
+    refs.status.textContent = "PDF hidden"
+  }
+  setSourcePanelMode("off")
+
+  const onToggle = () => {
+    const nextHidden = !refs.panel.hidden
+    setPaperPanelVisibility(refs, nextHidden)
+    setSourcePanelMode(nextHidden ? "off" : "on")
+  }
+
+  refs.toggle?.addEventListener("click", onToggle)
+  window.addCleanup(() => refs.toggle?.removeEventListener("click", onToggle))
+  return true
 }
 
 function escapeHtml(value: string): string {
@@ -198,10 +313,12 @@ function markSourceLinks(links: HTMLAnchorElement[]) {
 function setupSourcePanel() {
   const refs = getSourcePanel()
   if (!refs) {
+    setPaperPageMode(false)
     setSourcePanelMode("off")
     return
   }
 
+  setPaperPageMode(false)
   const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("article a[href]"))
   const sourceLinks = links.filter((link) => parseGithubSourceUrl(link.href) !== null)
 
@@ -225,4 +342,15 @@ function setupSourcePanel() {
   window.addCleanup(() => refs.close?.removeEventListener("click", onClose))
 }
 
-document.addEventListener("nav", setupSourcePanel)
+function setupPanels() {
+  setSourcePanelMode("off")
+  if (setupPaperPanel()) {
+    return
+  }
+
+  setupSourcePanel()
+}
+
+document.addEventListener("prenav", closePanelsForNavigation)
+setupPanels()
+document.addEventListener("nav", setupPanels)

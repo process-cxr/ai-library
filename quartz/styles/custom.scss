@@ -3,12 +3,14 @@
 // put your custom CSS here!
 
 @media (min-width: 1200px) {
-  :root[source-panel-mode="on"] .page {
+  :root[source-panel-mode="on"] .page,
+  :root[data-paper-page="true"][source-panel-mode="on"] .page {
     max-width: min(2400px, calc(100vw - 1rem));
     width: min(2400px, calc(100vw - 1rem));
   }
 
-  :root[source-panel-mode="on"] .page > #quartz-body {
+  :root[source-panel-mode="on"] .page > #quartz-body,
+  :root[data-paper-page="true"][source-panel-mode="on"] .page > #quartz-body {
     display: block;
     padding: 0 0.5rem;
   }
@@ -27,12 +29,14 @@
     margin-right: 0;
   }
 
-  :root[source-panel-mode="on"] .page > #quartz-body .center {
+  :root[source-panel-mode="on"] .page > #quartz-body .center,
+  :root[data-paper-page="true"][source-panel-mode="on"] .page > #quartz-body .center {
     box-sizing: border-box;
     padding-left: 0;
   }
 
   :root[source-panel-mode="on"] .page > #quartz-body .content-source-layout,
+  :root[source-panel-mode="on"] .page > #quartz-body .content-paper-layout,
   :root[source-panel-mode="on"] .page > #quartz-body hr,
   :root[source-panel-mode="on"] .page > #quartz-body .page-footer {
     width: 100%;
@@ -40,7 +44,8 @@
     max-width: none;
   }
 
-  :root[source-panel-mode="on"] .page > #quartz-body .page-header {
+  :root[source-panel-mode="on"] .page > #quartz-body .page-header,
+  :root[data-paper-page="true"][source-panel-mode="on"] .page > #quartz-body .page-header {
     margin-top: 2rem;
   }
 }
