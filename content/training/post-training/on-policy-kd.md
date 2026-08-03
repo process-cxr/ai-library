@@ -2,7 +2,7 @@
 title: On-policy KD
 created: 2026-03-08
 published: 2026-03-08
-modified: 2026-05-29
+modified: 2026-07-22
 type: topic
 status: mature
 area: training
@@ -32,15 +32,15 @@ Offline KD 假设固定数据足以训练 student。但 student 部署时的输�
 
 On-policy KD 可以产生多种训练信号：
 
-| Student 输出 | Teacher / verifier 反馈 | 后续训练 |
-|---|---|---|
-| 错误答案 | 正确答案 | SFT correction |
-| 多个候选 | 排序或 chosen/rejected | DPO / RM |
-| reasoning trace | step-level critique | process supervision |
-| code solution | unit test result | RL / rejection sampling |
-| tool call | schema error / corrected call | tool-use SFT |
-| unsafe answer | refusal / safe alternative | safety tuning |
-| low-quality answer | reward score | RL / weighted SFT |
+| Student 输出       | Teacher / verifier 反馈       | 后续训练                |
+| ------------------ | ----------------------------- | ----------------------- |
+| 错误答案           | 正确答案                      | SFT correction          |
+| 多个候选           | 排序或 chosen/rejected        | DPO / RM                |
+| reasoning trace    | step-level critique           | process supervision     |
+| code solution      | unit test result              | RL / rejection sampling |
+| tool call          | schema error / corrected call | tool-use SFT            |
+| unsafe answer      | refusal / safe alternative    | safety tuning           |
+| low-quality answer | reward score                  | RL / weighted SFT       |
 
 这种方法不要求 teacher 总是生成完整答案；teacher 可以只是 judge、critic、verifier 或 editor。
 
@@ -54,6 +54,65 @@ On-policy KD 与 [[training/post-training/rlhf|RLHF]]、[[training/post-training
 - RL 更强调通过 reward 优化 policy，不一定产生 teacher answer。
 
 因此，On-policy KD 可以是“带 teacher 的 RL”，也可以是“动态生成纠错数据的 SFT/DPO”。
+
+## Token-Level OPD Signal
+
+On-policy distillation 在 reasoning model 后训练中常被写成 RL-like objective：student 根据当前 policy 采样 response，teacher 只对 student 已经采样出的 tokens 提供 dense reward。传统 OPD 的 token reward 可以写成：
+
+$$
+R_t^{\mathrm{OPD}}
+=
+\log \pi^\*(y_t\mid x,y_{<t})
+-
+\log \pi_\theta(y_t\mid x,y_{<t})
+$$
+
+其中 $\pi^\*$ 是 teacher，$\pi_\theta$ 是 student。这个 reward 的含义是：如果 teacher 比 student 更偏好当前 sampled token，就提高它的概率；如果 teacher 更不偏好，就降低它的概率。
+
+这种形式的优点是训练信号密集，并且作用在 student 自己访问到的状态上。它比 sequence-level SFT 更贴近 inference-time distribution，也不需要为每个任务设计 verifier 或 reward model。
+
+它的限制是，teacher 的完整分布不只包含目标能力，也包含 base model 阶段已经形成的语言偏好、格式偏好和常见表达。对于 reasoning distillation，直接模仿 teacher 分布可能会把这些无关 prior 一起转移给 student。
+
+## Delta Signal
+
+[[sources/papers/2026-on-policy-delta-distillation|On-Policy Delta Distillation]] 提出用 teacher 与 teacher-base 的 logprob 差作为主要 distillation reward：
+
+$$
+R_t^\Delta
+=
+\log \pi^\*(y_t\mid x,y_{<t})
+-
+\log \pi^\*_{\mathrm{base}}(y_t\mid x,y_{<t})
+$$
+
+这里 $\pi^\*_{\mathrm{base}}$ 是 teacher 在 instruction / reasoning tuning 前的 base checkpoint。这个差值可以理解为 teacher 经过 reasoning tuning 后相对自身 base model 发生的 token preference shift。
+
+直观上，OPD 学的是：
+
+```text
+teacher 相比 student 更喜欢什么
+```
+
+Delta signal 学的是：
+
+```text
+reasoning-tuned teacher 相比 teacher-base 新增或强化了什么
+```
+
+因此，delta signal 更适合表达某一阶段训练注入的能力增量，而不是 teacher 的完整语言分布。
+
+但 delta signal 不能直接裸用。因为它不包含 student probability，直接最大化可能把 student 推向 delta 最大的 token，而不是稳定对齐 teacher。OPD2 的做法是对 reward 做 centering，并且只在 delta advantage 与传统 OPD advantage 方向一致时更新：
+
+$$
+A_t^{\mathrm{D2}}
+=
+\begin{cases}
+A_t^\Delta, & A_t^\Delta A_t^{\mathrm{OPD}} > 0 \\
+0, & \mathrm{otherwise}
+\end{cases}
+$$
+
+这个条件保留了 delta signal 的能力增量信息，同时用传统 OPD signal 约束训练方向，避免 student 被 teacher-base 差值过度带偏。
 
 ## 典型流程
 
@@ -149,6 +208,7 @@ On-policy KD 特别适合：
 - [[sources/papers/2022-instructgpt|Training language models to follow instructions with human feedback]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]
 - [[sources/papers/2023-distilling-step-by-step|Distilling Step-by-Step]]
+- [[sources/papers/2026-on-policy-delta-distillation|On-Policy Delta Distillation]]
 
 ## 相关概念
 

@@ -23,23 +23,28 @@ interface RenderComponents {
 }
 
 const headerRegex = new RegExp(/h[1-6]/)
+const assetCacheBuster = Date.now().toString(36)
+
+function cacheBust(path: string) {
+  return `${path}?v=${assetCacheBuster}`
+}
 export function pageResources(
   baseDir: FullSlug | RelativeURL,
   staticResources: StaticResources,
 ): StaticResources {
-  const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
+  const contentIndexPath = cacheBust(joinSegments(baseDir, "static/contentIndex.json"))
   const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
   const resources: StaticResources = {
     css: [
       {
-        content: joinSegments(baseDir, "index.css"),
+        content: cacheBust(joinSegments(baseDir, "index.css")),
       },
       ...staticResources.css,
     ],
     js: [
       {
-        src: joinSegments(baseDir, "prescript.js"),
+        src: cacheBust(joinSegments(baseDir, "prescript.js")),
         loadTime: "beforeDOMReady",
         contentType: "external",
       },
@@ -55,7 +60,7 @@ export function pageResources(
   }
 
   resources.js.push({
-    src: joinSegments(baseDir, "postscript.js"),
+    src: cacheBust(joinSegments(baseDir, "postscript.js")),
     loadTime: "afterDOMReady",
     moduleType: "module",
     contentType: "external",
@@ -240,6 +245,7 @@ export function renderPage(
   } = components
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
+  const isPaperSource = componentData.fileData.frontmatter?.source_type === "paper"
 
   const LeftComponent = (
     <div class="left sidebar">
@@ -260,7 +266,7 @@ export function renderPage(
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
   const direction = i18n(cfg.locale).direction ?? "ltr"
   const doc = (
-    <html lang={lang} dir={direction}>
+    <html lang={lang} dir={direction} data-paper-page={isPaperSource ? "true" : undefined}>
       <Head {...componentData} />
       <body data-slug={slug}>
         <div id="quartz-root" class="page">

@@ -78,6 +78,7 @@ modified: 2026-06-30
 - [[sources/papers/2026-codepromptzip-code-specific-prompt-compression|CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs]]
 - [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev: Agent-native Mid-training for Software Engineering]]
 - [[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning]]
+- [[sources/papers/2026-on-policy-delta-distillation|On-Policy Delta Distillation]]
 - [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]
 - [[sources/papers/2026-single-rollout-asynchronous-optimization-agentic-reinforcement-learning|Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
