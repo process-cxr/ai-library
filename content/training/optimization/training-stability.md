@@ -51,6 +51,8 @@ $$
 
 学习率过大是 loss spike 和发散的常见原因。Warmup 的作用是在训练初期逐步增大学习率，让 optimizer state、activation scale 和模型表示逐步进入稳定区域。
 
+更细一点看，稳定性并不只取决于 `lr` 数值本身，还取决于实际参数更新尺度、batch 噪声、梯度裁剪、mixed precision 和 optimizer state 是否健康。学习率只是这些因素里最容易被直接调节的一个旋钮。
+
 常见策略：
 
 - linear warmup；

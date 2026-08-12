@@ -73,6 +73,8 @@ CPT 对已有模型继续优化，超参通常比从零预训练更保守：
 
 常见做法是使用较低 learning rate、较短 warmup、明确的 held-out domain validation，并保留多个 checkpoint 做回退。
 
+在实际训练里，CPT 的学习率不应只抄 pretraining 配方。更合理的起点是把它理解为“允许模型在既有表示上移动多少”，然后结合目标领域大小、数据质量和 replay 比例去缩小搜索范围。
+
 ## 遗忘与能力迁移
 
 CPT 的核心风险是 catastrophic forgetting。领域数据过窄时，模型可能在目标领域表现提升，但通用语言、代码、数学、多语言或指令跟随能力下降。

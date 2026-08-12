@@ -23,6 +23,8 @@ Batch size 决定每一步用多少样本估计梯度，梯度噪声描述 mini-
 
 大模型训练需要高吞吐，因此常使用很大的 global batch size。但 batch 变大后，梯度估计更稳定、硬件利用率更高，同时也会改变优化动态和学习率需求。
 
+在 mean reduction 下，batch size 主要改变梯度方差，不会把平均梯度直接放大。真正被放大的通常是“更稳定的方向估计”和“每个 optimizer step 吸收的 token 数”。
+
 ## 定义与记号
 
 真实梯度：
@@ -54,6 +56,7 @@ g_B - g
 - batch size 增大后，学习率常需要重新调整。
 - gradient accumulation 可以在显存有限时模拟更大的 global batch。
 - 大 batch 训练可能需要 warmup 来稳定初期更新。
+- 如果 gradient accumulation 的实现是 sum 而不是 mean，那么有效更新尺度会变大，学习率需要相应缩小。
 
 ## 示例
 

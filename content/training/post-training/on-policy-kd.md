@@ -2,7 +2,7 @@
 title: On-policy KD
 created: 2026-03-08
 published: 2026-03-08
-modified: 2026-07-22
+modified: 2026-08-12
 type: topic
 status: mature
 area: training
@@ -27,6 +27,44 @@ Offline KD 假设固定数据足以训练 student。但 student 部署时的输�
 5. 更新后的 student 再生成新样本。
 
 这使训练数据随 student 变化，能更针对性地修复当前 policy 的错误。
+
+## GKD 基础形式
+
+[[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]] 提出的 Generalized Knowledge Distillation（GKD）是 OPD 方向的基础形式。它把 autoregressive KD 看成 interactive imitation learning：output prefix 是当前状态，next-token distribution 是动作分布，teacher 是 expert，student 是 learner。
+
+GKD 的关键不是让 teacher 重新生成完整答案，而是让 student 先根据当前 policy 生成 output sequence：
+
+$$
+y\sim p_S(\cdot\mid x)
+$$
+
+然后 teacher 在 student 已经生成出的 prefixes 上提供 token-level probability supervision：
+
+$$
+L_{\mathrm{OD}}(\theta)
+=
+\mathbb{E}_{x\sim X}
+\left[
+\mathbb{E}_{y\sim p_S(\cdot\mid x)}
+\left[
+D_{\mathrm{KL}}(p_T\|p_S^\theta)(y\mid x)
+\right]
+\right]
+$$
+
+这里的采样过程不参与反向传播，因此它更接近稳定的 supervised distillation / imitation learning，而不是高方差 policy-gradient RL。
+
+MiniLLM 可以看成这个方向更早的一种 generative KD 版本：它已经把 reverse KL 和 on-policy 优化结合起来，只是重点还停留在“如何让生成式 KD 更适合 LLM”这一层，还没有像 GKD 那样把 on-policy 蒸馏统一成更完整的 interactive imitation learning 视角。
+
+[[sources/papers/2026-self-distilled-reasoner-on-policy-self-distillation-for-large-language-models|Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models]] 把这条线进一步推进到 self-distillation：teacher 和 student 来自同一个模型，只是 teacher 看到 privileged solution / trace，student 只看到问题本身。这说明 on-policy KD 不一定要求外部 teacher，关键是要有能提供更强条件信息的监督视图。
+
+GKD 用 $\lambda$ 控制 student-generated data fraction：
+
+- $\lambda=0$：退化为固定数据上的 supervised KD；
+- $\lambda=1$：纯 on-policy KD；
+- $0<\lambda<1$：混合固定数据和 student-generated data。
+
+它还允许把 forward KL 换成 reverse KL 或 generalized JSD。Forward KL 更 mode-covering，适合覆盖 teacher 的完整分布；reverse KL 更 mode-seeking，能让小 student 更集中到 teacher 高概率区域，但可能牺牲多样性；JSD 在二者之间提供折中。这个选择通常和任务、student 容量、decoding temperature 一起决定。
 
 ## 反馈形式
 
@@ -72,6 +110,49 @@ $$
 这种形式的优点是训练信号密集，并且作用在 student 自己访问到的状态上。它比 sequence-level SFT 更贴近 inference-time distribution，也不需要为每个任务设计 verifier 或 reward model。
 
 它的限制是，teacher 的完整分布不只包含目标能力，也包含 base model 阶段已经形成的语言偏好、格式偏好和常见表达。对于 reasoning distillation，直接模仿 teacher 分布可能会把这些无关 prior 一起转移给 student。
+
+## G-OPD / ExOPD
+
+[[sources/papers/2026-learning-beyond-teacher-generalized-on-policy-distillation-with-reward-extrapolation|Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation]] 进一步把标准 OPD 写成 dense KL-constrained RL，并显式引入 `λ` 和 reference model `π_ref`。
+
+其一般形式可以写成：
+
+$$
+J_{\mathrm{G-OPD}}(\theta)
+=
+\mathbb{E}_{x\sim D, y\sim \pi_\theta(\cdot\mid x)}
+\left[
+\lambda \log \frac{\pi^\*(y\mid x)}{\pi_{\mathrm{ref}}(y\mid x)}
+-
+D_{\mathrm{KL}}(\pi_\theta \| \pi_{\mathrm{ref}})
+\right]
+$$
+
+当 `λ=1` 时，它退化为标准 OPD。更一般地：
+
+- `0<λ<1`：reward interpolation，student 行为介于 teacher 与 reference 之间；
+- `λ>1`：reward extrapolation，student 可以沿 teacher 的偏移继续外推，这一变体称为 ExOPD；
+- `λ` 过大时，可能出现 reward hacking、response length 变长和不稳定。
+
+这篇论文在 same-size math/code distillation 上使用 Qwen3-4B Non-Thinking 作为 student，并发现 `λ≈1.25` 往往优于标准 OPD；在 multi-teacher distillation 中，ExOPD 能把 domain-specific RL teachers 的能力统一回 base model，甚至超过所有 domain teachers。
+
+在 strong-to-weak distillation 中，若可以访问 teacher 的 pre-RL checkpoint，把 `π_ref` 从 student base 换成 teacher base 可以得到更干净的 reward signal，这被称为 reward correction。代价是需要额外模型和更高的 logprob 计算成本。
+
+## OPD Phenomenology
+
+[[sources/papers/2026-rethinking-on-policy-distillation-of-large-language-models-phenomenology-mechanism-and-recipe|Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe]] 把 OPD 的成败条件整理得更清楚，结论可以直接沉淀到 on-policy KD 里：
+
+- teacher 和 student 需要共享 compatible thinking patterns；
+- 高分 teacher 不一定比低分 teacher 更可蒸馏，关键在于 teacher 是否带来了 student 尚未见过的新知识；
+- OPD 的主要梯度集中在 student / teacher 的 overlap tokens 上，而不是整个 vocab；
+- 并非所有长轨迹都适合纯 dense token supervision，trajectory depth 增加后 reward 质量会下降。
+
+这篇论文还给出两类可操作修复：
+
+- off-policy cold start：先用 teacher-generated rollouts 做 SFT，再进入 OPD；
+- teacher-aligned prompts：使用与 teacher post-training 更一致的 prompt template / content 来提升 overlap。
+
+对实际训练而言，这意味着 OPD 更像一种需要“先对齐 thinking pattern，再做 token-level refinement”的 recipe，而不是一上来就能直接吞下任意 teacher 的通用蒸馏器。
 
 ## Delta Signal
 
@@ -204,6 +285,9 @@ On-policy KD 特别适合：
 
 ## 经典论文与资料
 
+- [[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]
+- [[sources/papers/2026-rethinking-on-policy-distillation-of-large-language-models-phenomenology-mechanism-and-recipe|Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe]]
+- [[sources/papers/2026-learning-beyond-teacher-generalized-on-policy-distillation-with-reward-extrapolation|Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation]]
 - [[sources/papers/2020-learning-to-summarize-from-human-feedback|Learning to summarize from human feedback]]
 - [[sources/papers/2022-instructgpt|Training language models to follow instructions with human feedback]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]
