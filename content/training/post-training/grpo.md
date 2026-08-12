@@ -2,7 +2,7 @@
 title: GRPO
 created: 2026-03-07
 published: 2026-03-07
-modified: 2026-07-14
+modified: 2026-08-12
 type: topic
 status: mature
 area: training
@@ -25,6 +25,8 @@ PPO-style policy update
 ```
 
 它不是完全抛弃 PPO，而是保留 policy ratio、clipping、reference / KL 约束等稳定更新思想，把 PPO 中的 learned value baseline 换成了同 prompt 多候选的 group baseline。
+
+与 on-policy distillation 相比，GRPO 的信号更稀疏：它通常只在 sequence / response 级别给 reward，再广播到整条 response 上。像 [[sources/papers/2026-self-distilled-reasoner-on-policy-self-distillation-for-large-language-models|Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models]] 这类工作则直接在 token-level 做 dense supervision，因此在同样的计算预算下往往能更快拿到稳定梯度。
 
 ## 为什么需要 GRPO
 

@@ -2,7 +2,7 @@
 title: Knowledge Distillation
 created: 2026-03-08
 published: 2026-03-08
-modified: 2026-05-29
+modified: 2026-08-11
 type: topic
 status: mature
 area: training
@@ -132,6 +132,10 @@ Student 可能学到 teacher 的口吻、冗长程度和模板，而不是核心
 ## 经典论文与资料
 
 - [[sources/papers/2016-sequence-level-knowledge-distillation|Sequence-Level Knowledge Distillation]]
+- [[sources/papers/2023-minillm-knowledge-distillation-of-large-language-models|MiniLLM: Knowledge Distillation of Large Language Models]]
+- [[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]
+- [[sources/papers/2026-learning-beyond-teacher-generalized-on-policy-distillation-with-reward-extrapolation|Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation]]
+- [[sources/papers/2026-rethinking-on-policy-distillation-of-large-language-models-phenomenology-mechanism-and-recipe|Rethinking On-Policy Distillation of Large Language Models]]
 - [[sources/papers/2023-distilling-step-by-step|Distilling Step-by-Step]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]
 - [[sources/papers/2022-self-instruct|Self-Instruct]]

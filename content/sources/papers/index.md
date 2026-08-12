@@ -2,7 +2,7 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-06-30
+modified: 2026-08-12
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
@@ -48,6 +48,7 @@ modified: 2026-06-30
 - [[sources/papers/2022-training-compute-optimal-large-language-models|Training Compute-Optimal Large Language Models]]
 - [[sources/papers/2023-a-pretrainers-guide-to-training-data|A Pretrainer's Guide to Training Data]]
 - [[sources/papers/2023-distilling-step-by-step|Distilling Step-by-Step]]
+- [[sources/papers/2023-minillm-knowledge-distillation-of-large-language-models|MiniLLM: Knowledge Distillation of Large Language Models]]
 - [[sources/papers/2023-dpo|Direct Preference Optimization]]
 - [[sources/papers/2023-gqa|Grouped-Query Attention]]
 - [[sources/papers/2023-repocoder-repository-level-code-completion|RepoCoder: Repository-Level Code Completion Through Iterative Retrieval and Generation]]
@@ -66,6 +67,7 @@ modified: 2026-06-30
 - [[sources/papers/2024-fineweb|FineWeb]]
 - [[sources/papers/2024-longllmlingua-accelerating-and-enhancing-llms-in-long-context-scenarios|LongLLMLingua: Accelerating and Enhancing LLMs in Long Context Scenarios via Prompt Compression]]
 - [[sources/papers/2024-longrope|LongRoPE]]
+- [[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]
 - [[sources/papers/2024-repoformer-selective-retrieval-for-repository-level-code-completion|Repoformer: Selective Retrieval for Repository-Level Code Completion]]
 - [[sources/papers/2025-coderag-relevant-and-necessary-knowledge|CodeRAG: Finding Relevant and Necessary Knowledge for Retrieval-Augmented Repository-Level Code Completion]]
 - [[sources/papers/2025-longcodezip-compress-long-context-for-code-language-models|LongCodeZip: Compress Long Context for Code Language Models]]
@@ -77,8 +79,11 @@ modified: 2026-06-30
 - [[sources/papers/2026-squeez-task-conditioned-tool-output-pruning-for-coding-agents|Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents]]
 - [[sources/papers/2026-codepromptzip-code-specific-prompt-compression|CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs]]
 - [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev: Agent-native Mid-training for Software Engineering]]
+- [[sources/papers/2026-learning-beyond-teacher-generalized-on-policy-distillation-with-reward-extrapolation|Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation]]
+- [[sources/papers/2026-rethinking-on-policy-distillation-of-large-language-models-phenomenology-mechanism-and-recipe|Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe]]
 - [[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning]]
 - [[sources/papers/2026-on-policy-delta-distillation|On-Policy Delta Distillation]]
+- [[sources/papers/2026-self-distilled-reasoner-on-policy-self-distillation-for-large-language-models|Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models]]
 - [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]
 - [[sources/papers/2026-single-rollout-asynchronous-optimization-agentic-reinforcement-learning|Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
