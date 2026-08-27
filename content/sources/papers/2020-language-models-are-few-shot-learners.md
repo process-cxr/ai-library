@@ -13,6 +13,8 @@ tags:
   - decoder-only
   - language-model
 source_url: https://arxiv.org/abs/2005.14165
+paper_date: "2020-05"
+paper_order: "14165"
 ---
 
 ## 基本信息

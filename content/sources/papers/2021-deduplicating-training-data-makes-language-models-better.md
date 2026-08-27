@@ -14,6 +14,8 @@ tags:
   - pretraining-data
   - memorization
 source_url: https://arxiv.org/abs/2107.06499
+paper_date: "2021-07"
+paper_order: "06499"
 ---
 
 ## 基本信息

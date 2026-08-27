@@ -21,6 +21,8 @@ aliases:
   - On-Policy Distillation
   - Learning from Self-Generated Mistakes
 source_url: https://arxiv.org/abs/2306.13649
+paper_date: "2023-06"
+paper_order: "13649"
 ---
 
 # On-Policy Distillation of Language Models

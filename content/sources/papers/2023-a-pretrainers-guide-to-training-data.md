@@ -14,6 +14,8 @@ tags:
   - data-quality
   - data-mix
 source_url: https://arxiv.org/abs/2305.13169
+paper_date: "2023-05"
+paper_order: "13169"
 ---
 
 ## 基本信息

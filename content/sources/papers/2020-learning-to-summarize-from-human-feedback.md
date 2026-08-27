@@ -14,6 +14,8 @@ tags:
   - summarization
   - reward-model
 source_url: https://arxiv.org/abs/2009.01325
+paper_date: "2020-09"
+paper_order: "01325"
 ---
 
 ## 基本信息

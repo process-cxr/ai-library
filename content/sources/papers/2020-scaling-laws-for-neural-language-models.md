@@ -14,6 +14,8 @@ tags:
   - compute
   - pretraining
 source_url: https://arxiv.org/abs/2001.08361
+paper_date: "2020-01"
+paper_order: "08361"
 ---
 
 ## 基本信息

@@ -58,6 +58,8 @@ MiniLLM 可以看成这个方向更早的一种 generative KD 版本：它已经
 
 [[sources/papers/2026-self-distilled-reasoner-on-policy-self-distillation-for-large-language-models|Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models]] 把这条线进一步推进到 self-distillation：teacher 和 student 来自同一个模型，只是 teacher 看到 privileged solution / trace，student 只看到问题本身。这说明 on-policy KD 不一定要求外部 teacher，关键是要有能提供更强条件信息的监督视图。
 
+[[sources/papers/2026-mopd-multi-teacher-on-policy-distillation-for-capability-integration|MOPD: Multi-Teacher On-Policy Distillation for Capability Integration in LLM Post-Training]] 则把 on-policy KD 推到多 teacher、multi-domain 的能力整合场景：每个 domain 先独立训练 specialist teacher，再按 prompt 域路由到对应 teacher，在 student 自己的 rollout 上做 token-level distillation。它说明 on-policy KD 也可以承担 capability integration 的角色，而不只是单 teacher 的纠错式蒸馏。
+
 GKD 用 $\lambda$ 控制 student-generated data fraction：
 
 - $\lambda=0$：退化为固定数据上的 supervised KD；

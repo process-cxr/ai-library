@@ -21,6 +21,8 @@ aliases:
   - STEER
   - Stabilizing Token-level Entropy-changE via Reweighting
 source_url: https://arxiv.org/abs/2510.10150
+paper_date: "2025-10"
+paper_order: "10150"
 ---
 
 # Rethinking Entropy Interventions in RLVR: An Entropy Change Perspective

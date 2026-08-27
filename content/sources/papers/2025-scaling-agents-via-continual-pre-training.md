@@ -18,6 +18,8 @@ aliases:
   - AgentFounder
   - Agentic CPT
 source_url: https://arxiv.org/abs/2509.13310
+paper_date: "2025-09"
+paper_order: "13310"
 code_url: https://github.com/Alibaba-NLP/DeepResearch
 ---
 

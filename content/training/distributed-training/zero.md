@@ -17,6 +17,8 @@ ZeRO 的核心问题是：**数据并行需要复制模型状态，但复制并�
 
 它解决的是 data parallel 维度上的冗余，而不是直接改变模型结构或数学目标。模型仍然执行同样的 forward/backward，区别在于参数、梯度和 optimizer state 在不同 GPU 上如何驻留、同步和恢复。
 
+这套设计来自 [[sources/papers/2019-zero|ZeRO: Memory Optimizations Toward Training Trillion Parameter Models]]。论文将完整方案写成 `Pos`、`Pg`、`Pp` 三个累积阶段，后来通常分别称为 ZeRO-1、ZeRO-2、ZeRO-3。论文评测中的 `ZeRO-100B` 主要启用 `Pos+g` 与 ZeRO-R，不能把它直接等同于完整参数分片阶段的实验结果。
+
 ## 显存背景
 
 在 bf16/fp16 + AdamW + fp32 master weights 的 full fine-tuning 中，模型状态常可粗略估为 16 bytes / parameter：
@@ -75,6 +77,8 @@ $$
 - 比 ZeRO-1 更省显存；
 - 仍需要每卡放得下完整参数。
 
+论文将 gradient partitioning 描述为 reduce-scatter 语义：反向传播产生 gradient 后，每个参数区间被 reduce 到负责更新该区间的 rank，而不是让所有 rank 都保留完整 reduced gradient。实际实现会按目标 partition 做 bucketization，以增大通信消息并尝试和 backward 计算重叠。
+
 如果模型参数本身已经接近单卡显存上限，ZeRO-2 可能仍不够。
 
 ## ZeRO-3：切分 Parameters、Gradients 和 Optimizer States
@@ -97,6 +101,8 @@ $$
 ZeRO-3 是训练超大模型或在较少 GPU 上微调大模型的关键技术之一。但它不意味着显存严格除以 $D$，因为 activation、通信 buffer、临时 full parameter、allocator overhead 仍会造成峰值。
 
 ZeRO-3 的运行时可以理解为“分片驻留、按需聚合、用后释放”。这也是它比 ZeRO-1/2 更复杂的原因：每一层何时 all-gather、是否 prefetch、backward 后是否立即 reshard、通信是否与计算重叠，都会影响速度和峰值显存。
+
+从论文的通信账本看，标准 data parallel 的 gradient all-reduce 可以理解为一次 reduce-scatter 加一次 all-gather，总 data movement 约为 $2N$（$N$ 为参数元素数量）。ZeRO-2 用 gradient reduce-scatter 加 updated parameter all-gather，通信量仍约为 $2N$；ZeRO-3 还需要在 forward 和 backward 按需聚合参数，论文给出的总量约为 $3N$，即 baseline 的 1.5 倍。这里是带宽级别的理想化分析，真实耗时还取决于 bucket、拓扑和通信计算重叠。
 
 ## 与 FSDP 的关系
 
@@ -125,6 +131,8 @@ offload 的本质是把瓶颈从 GPU memory 转移到异构内存层级：
 - NVMe：容量更大但更慢。
 
 因此 offload 适合“显存容量是硬瓶颈、吞吐可以下降”的场景。若训练目标是最大化大集群吞吐，过度 offload 可能让 GPU 等待数据搬运，反而降低整体效率。
+
+论文中的 ZeRO-R 还处理了 model states 之外的 residual memory：`partitioned activation checkpointing` 沿 model-parallel group 分片保存 activation checkpoint，在 backward 重计算前通过 all-gather 恢复；constant-size buffer 避免 fused buffer 随模型规模增长；预分配连续区域并搬运 checkpoint/gradient，减少 memory fragmentation。这些机制与 ZeRO-DP 正交，也说明 ZeRO/FSDP 解决 model-state memory 后，activation 和临时 workspace 仍需单独预算。
 
 ## 与其他并行策略的关系
 
@@ -159,6 +167,8 @@ ZeRO 训练通常使用 [[training/optimization/checkpoint-sharding|sharded chec
 - **Activation 不自动切分**：activation memory 仍需 checkpointing、sequence parallel 或减小 micro-batch。
 - **Checkpoint 复杂**：sharded checkpoint 保存、加载、合并和迁移需要额外处理。
 - **小模型收益有限**：模型不大时，通信开销可能抵消显存收益。
+
+论文还展示了一个容易误读的现象：`Pos+g` 随 data parallel degree 增大而降低单卡模型状态显存，使单卡可以容纳更大的 batch，从而在特定受显存约束的区间出现 super-linear speedup。这不是普遍的扩展规律；当 batch 已超过优化上的合适范围，继续增大 batch 可能不再带来吞吐和收敛收益。
 
 ## 经典论文与资料
 

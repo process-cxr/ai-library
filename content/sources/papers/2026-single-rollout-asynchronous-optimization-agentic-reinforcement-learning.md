@@ -19,6 +19,8 @@ aliases:
   - SAO
   - Single-Rollout Asynchronous Optimization
 source_url: https://arxiv.org/abs/2607.07508
+paper_date: "2026-07"
+paper_order: "07508"
 ---
 
 # Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning

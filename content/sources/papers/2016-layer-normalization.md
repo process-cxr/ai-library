@@ -13,6 +13,8 @@ tags:
   - normalization
   - layernorm
 source_url: https://arxiv.org/abs/1607.06450
+paper_date: "2016-07"
+paper_order: "06450"
 ---
 
 ## 基本信息

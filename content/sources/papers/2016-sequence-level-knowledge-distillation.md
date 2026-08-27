@@ -13,6 +13,8 @@ tags:
   - distillation
   - sequence-level
 source_url: https://arxiv.org/abs/1606.07947
+paper_date: "2016-06"
+paper_order: "07947"
 ---
 
 ## 基本信息

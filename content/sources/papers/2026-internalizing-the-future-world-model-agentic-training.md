@@ -20,6 +20,8 @@ aliases:
   - FE-SFT
   - FC-RL
 source_url: https://arxiv.org/abs/2606.27483
+paper_date: "2026-06"
+paper_order: "27483"
 ---
 
 # Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning

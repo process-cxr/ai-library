@@ -18,6 +18,8 @@ aliases:
   - daVinci-Dev
   - Agent-native Mid-training
 source_url: https://arxiv.org/abs/2601.18418
+paper_date: "2026-01"
+paper_order: "18418"
 ---
 
 # daVinci-Dev: Agent-native Mid-training for Software Engineering

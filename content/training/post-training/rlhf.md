@@ -14,6 +14,10 @@ tags:
 
 RLHF，Reinforcement Learning from Human Feedback，是用人类偏好数据训练 reward signal，并用强化学习优化语言模型策略的后训练方法。它的目标不是让模型复现单个参考答案，而是在开放生成空间中提高人类更偏好的回答概率。
 
+[[sources/papers/2022-instructgpt|Training language models to follow instructions with human feedback]] 是将这条路线系统应用到 GPT-3 的代表性工作：先用 demonstrations 做 SFT，再用 response rankings 训练 reward model，最后用 PPO 优化 policy，并用 pretraining mix 缓解能力回退。这里的三阶段分别承担行为初始化、偏好建模和 reward-driven policy update，不应混成一个统一的监督目标。
+
+这条路线的早期系统化代表是 [[sources/papers/2017-deep-rl-from-human-preferences|Deep Reinforcement Learning from Human Preferences]]：人类比较两个短 trajectory segments，reward predictor 从 pairwise preferences 中学习，policy 再在持续更新的 predicted reward 上进行 RL。现代 LLM RLHF 将视觉行为片段换成 prompt-response，但仍然保留 preference data、reward model、policy rollout 和在线更新之间的基本闭环。
+
 在现代 assistant 训练中，RLHF 通常指一条 pipeline：先进行 [[training/post-training/sft|SFT]] 得到可用初始 policy，再训练 [[training/post-training/reward-model|Reward Model]]，最后用 [[training/post-training/ppo|PPO]] 或其他 policy optimization 方法更新模型，同时用 KL penalty 限制模型偏离 reference model。
 
 ## 目标与问题

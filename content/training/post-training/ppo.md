@@ -14,6 +14,8 @@ tags:
 
 PPO，Proximal Policy Optimization，是一种 policy gradient 强化学习算法。它的核心目标是：**在提高 reward 的同时，限制新 policy 相对旧 policy 的单次更新幅度**。在大模型后训练中，PPO 最典型的用途是 [[training/post-training/rlhf|RLHF]]：语言模型作为 policy 生成回答，[[training/post-training/reward-model|Reward Model]] 或 verifier 提供 reward，PPO 根据 reward 更新 policy，并通过 clipping、KL penalty、value baseline 等机制控制训练稳定性。
 
+原始 PPO 论文是 [[sources/papers/2017-ppo|Proximal Policy Optimization Algorithms]]。论文的 clipped objective 允许同一批 rollout 做多个 minibatch epochs，同时通过 old-policy probability ratio 的截断限制过度更新。需要注意：ratio clipping 是 surrogate objective 中的局部保护，不等价于严格限制所有状态上的 full-distribution KL，也不等价于 gradient clipping。
+
 PPO 的直觉可以先压缩成一句话：
 
 ```text

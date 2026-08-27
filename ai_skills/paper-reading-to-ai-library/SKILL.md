@@ -27,6 +27,8 @@ Use this skill to convert an external AI source into maintainable notes for the 
    - Blogs/articles/docs/courses/talks: `content/sources/blogs/` unless a more specific existing source subdirectory fits.
    - Create the destination `index.md` only when needed and follow existing frontmatter/date conventions.
    - Use stable English kebab-case filenames.
+   - For paper notes, keep the paper's publication month separate from the note lifecycle dates: use `paper_date: "YYYY-MM"`; for arXiv sources, derive it from the identifier's `YYMM` prefix.
+   - For arXiv sources, also keep `paper_order: "NNNNN"` from the identifier's submission sequence. Quote the value so leading zeroes are preserved; use it as the tie-breaker when papers share a month.
 
 4. Write the source note in Chinese.
    - Keep the page title in English for sidebar consistency.
@@ -46,6 +48,8 @@ Use this skill to convert an external AI source into maintainable notes for the 
 6. Validate before finishing.
    - Dates must not be later than the current date.
    - `published` is the date Quartz displays in this repository unless the config changes.
+   - `paper_date` is the paper's original public publication month, not the knowledge-base note's `created`, `published`, or `modified` date. For arXiv papers, use the submission month from the source identifier; use the exact first-public date only when the note explicitly needs day-level precision.
+   - `paper_order` is an arXiv submission sequence, not a date. Keep it as a quoted string and use it only to order papers within the same `paper_date` month.
    - Frontmatter should preserve existing fields unless there is a clear reason to change them.
    - Wikilinks should point to stable conceptual locations.
    - The note should be useful for future review without requiring the original conversation.
@@ -93,6 +97,15 @@ tags:
 
 For closed or speculative sources, clearly separate public facts, paper claims, experimental evidence, and inference.
 Treat the closing links section as optional navigation, not as a required analytical conclusion. Use it only when links do not fit naturally into earlier sections, and keep it concise.
+
+For `source_type: paper`, add the paper chronology fields:
+
+```yaml
+paper_date: "YYYY-MM"
+paper_order: "NNNNN"
+```
+
+`paper_order` is required only for arXiv sources; omit it for papers without an arXiv submission sequence.
 
 ## Topic Backfill Rules
 

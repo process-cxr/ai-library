@@ -14,6 +14,8 @@ tags:
   - moe
   - mla
 source_url: https://arxiv.org/abs/2412.19437
+paper_date: "2024-12"
+paper_order: "19437"
 ---
 
 ## 基本信息

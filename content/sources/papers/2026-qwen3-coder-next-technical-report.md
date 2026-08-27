@@ -19,6 +19,8 @@ tags:
 aliases:
   - Qwen3-Coder-Next
 source_url: https://arxiv.org/abs/2603.00729
+paper_date: "2026-03"
+paper_order: "00729"
 ---
 
 # Qwen3-Coder-Next Technical Report

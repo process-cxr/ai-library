@@ -14,6 +14,8 @@ tags:
 aliases:
   - CodeRAG
 source_url: "https://arxiv.org/abs/2509.16112"
+paper_date: "2025-09"
+paper_order: "16112"
 code_url: "https://github.com/KDEGroup/CodeRAG"
 type: source
 source_type: paper

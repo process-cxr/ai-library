@@ -18,6 +18,8 @@ aliases:
   - RLP
   - Reinforcement Learning Pretraining
 source_url: https://arxiv.org/pdf/2510.01265
+paper_date: "2025-10"
+paper_order: "01265"
 publisher: NVIDIA
 ---
 

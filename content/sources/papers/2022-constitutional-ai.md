@@ -14,6 +14,8 @@ tags:
   - rlaif
   - safety
 source_url: https://arxiv.org/abs/2212.08073
+paper_date: "2022-12"
+paper_order: "08073"
 ---
 
 ## 基本信息

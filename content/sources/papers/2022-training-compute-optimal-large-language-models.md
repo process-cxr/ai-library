@@ -14,6 +14,8 @@ tags:
   - compute-optimal
   - scaling-law
 source_url: https://arxiv.org/abs/2203.15556
+paper_date: "2022-03"
+paper_order: "15556"
 ---
 
 ## 基本信息

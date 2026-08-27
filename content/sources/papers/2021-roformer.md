@@ -13,6 +13,8 @@ tags:
   - positional-encoding
   - rope
 source_url: https://arxiv.org/abs/2104.09864
+paper_date: "2021-04"
+paper_order: "09864"
 ---
 
 ## 基本信息

@@ -14,6 +14,8 @@ tags:
   - long-context
   - rope
 source_url: https://arxiv.org/abs/2402.13753
+paper_date: "2024-02"
+paper_order: "13753"
 ---
 
 ## 基本信息

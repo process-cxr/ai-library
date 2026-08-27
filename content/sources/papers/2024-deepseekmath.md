@@ -14,6 +14,8 @@ tags:
   - grpo
   - math
 source_url: https://arxiv.org/abs/2402.03300
+paper_date: "2024-02"
+paper_order: "03300"
 ---
 
 ## 基本信息

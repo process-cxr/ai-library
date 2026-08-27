@@ -13,6 +13,8 @@ tags:
   - residual
   - deep-learning
 source_url: https://arxiv.org/abs/1512.03385
+paper_date: "2015-12"
+paper_order: "03385"
 ---
 
 ## 基本信息

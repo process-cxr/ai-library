@@ -14,6 +14,8 @@ tags:
 aliases:
   - RepoCoder
 source_url: "https://arxiv.org/abs/2303.12570"
+paper_date: "2023-03"
+paper_order: "12570"
 code_url: "https://github.com/microsoft/CodeT/tree/main/RepoCoder"
 type: source
 source_type: paper

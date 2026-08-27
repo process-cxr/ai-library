@@ -24,7 +24,7 @@ Transformer 模块负责整理标准 Transformer 架构及其核心组成，包�
 - [[architecture/transformer/normalization|Normalization in Transformer]]
 - [[architecture/transformer/residual|Residual in Transformer]]
 
-## Related Source TODOs
+## Related Source Notes
 
 - [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
 - [[sources/papers/2020-language-models-are-few-shot-learners|Language Models are Few-Shot Learners]]

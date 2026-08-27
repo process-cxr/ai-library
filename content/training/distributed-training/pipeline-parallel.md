@@ -55,6 +55,25 @@ micro-batch 数越多，bubble 占比通常越低，但 activation buffering、�
 
 1F1B 是大模型训练中常见策略，因为它在显存和吞吐之间更平衡。
 
+## GPipe 的同步更新语义
+
+[[sources/papers/2018-gpipe|GPipe]] 的关键设计是：把一个 mini-batch 切成多个 micro-batches，先让它们流水通过所有 stages，再累积所有 micro-batch 的梯度，最后统一执行一次 optimizer update。
+
+```text
+固定参数 W
+  -> mb_1 forward / backward
+  -> mb_2 forward / backward
+  -> ...
+  -> 累积梯度
+  -> 一次更新得到 W'
+```
+
+因此，同一个 mini-batch 内的 micro-batch 使用同一组参数。它与异步 pipeline 的主要差异在于不会因为 stage 更新时序不同而产生 weight staleness，但代价是需要等待整个 mini-batch 的梯度完成。
+
+GPipe 还结合 rematerialization：forward 阶段主要保存 pipeline partition 边界的 activation，backward 阶段重新计算 cell 内部的 forward，以降低 activation memory。论文实验中，当 micro-batch 数量达到 partition 数量的约 4 倍时，pipeline bubble 通常已经较小。
+
+GPipe 的通信只发生在相邻 stage 边界，主要传递 activation 和 activation gradient；它不负责切分单个 layer 内部的矩阵。后者属于 [[training/distributed-training/tensor-parallel|Tensor Parallel]]，也是 Megatron-LM 的主要方向。
+
 ## 通信
 
 PP 的通信主要是相邻 stage 之间传 activation 和 activation gradient。通信量与 micro-batch size、sequence length、hidden size 相关：

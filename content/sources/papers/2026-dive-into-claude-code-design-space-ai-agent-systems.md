@@ -20,6 +20,8 @@ aliases:
   - Dive into Claude Code
   - Claude Code Design Space
 source_url: https://arxiv.org/pdf/2604.14228
+paper_date: "2026-04"
+paper_order: "14228"
 ---
 
 ## 基本信息

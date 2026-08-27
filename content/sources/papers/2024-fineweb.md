@@ -14,6 +14,8 @@ tags:
   - web-data
   - pretraining-data
 source_url: https://arxiv.org/abs/2406.17557
+paper_date: "2024-06"
+paper_order: "17557"
 ---
 
 ## 基本信息

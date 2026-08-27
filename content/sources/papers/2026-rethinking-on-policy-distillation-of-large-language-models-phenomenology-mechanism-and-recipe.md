@@ -20,6 +20,8 @@ aliases:
   - OPD Phenomenology
   - Rethinking OPD
 source_url: https://arxiv.org/abs/2604.13016
+paper_date: "2026-04"
+paper_order: "13016"
 ---
 
 # Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe

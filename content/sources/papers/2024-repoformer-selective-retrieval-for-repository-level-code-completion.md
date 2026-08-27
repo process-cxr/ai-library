@@ -15,6 +15,8 @@ tags:
 aliases:
   - Repoformer
 source_url: "https://arxiv.org/abs/2403.10059"
+paper_date: "2024-03"
+paper_order: "10059"
 project_url: "https://repoformer.github.io/"
 type: source
 source_type: paper

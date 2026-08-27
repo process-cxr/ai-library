@@ -19,6 +19,8 @@ aliases:
   - MiniLLM: On-Policy Distillation of Large Language Models
   - On-Policy Distillation of Large Language Models
 source_url: https://arxiv.org/abs/2306.08543
+paper_date: "2023-06"
+paper_order: "08543"
 ---
 
 # MiniLLM: Knowledge Distillation of Large Language Models
