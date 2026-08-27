@@ -13,6 +13,8 @@ tags:
   - moe
   - deepseek
 source_url: https://arxiv.org/abs/2401.06066
+paper_date: "2024-01"
+paper_order: "06066"
 ---
 
 ## 基本信息

@@ -16,6 +16,8 @@ tags:
 aliases:
   - SWE-Pruner
 source_url: https://arxiv.org/abs/2601.16746
+paper_date: "2026-01"
+paper_order: "16746"
 code_url: https://github.com/Ayanami1314/swe-pruner
 ---
 

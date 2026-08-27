@@ -14,6 +14,8 @@ tags:
   - sentencepiece
   - subword
 source_url: https://arxiv.org/abs/1808.06226
+paper_date: "2018-08"
+paper_order: "06226"
 ---
 
 ## 基本信息

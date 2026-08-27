@@ -80,6 +80,36 @@ Megatron-LM 的 MLP 常用 column-parallel + row-parallel 配对，以减少不�
 - MLP 的 up/gate projection 常用 column parallel；
 - MLP 的 down projection 常用 row parallel。
 
+## Megatron-LM 的最小通信 Pattern
+
+[[sources/papers/2019-megatron-lm|Megatron-LM]] 给出了一个经典的 Tensor Parallel 组合。它的目标不是让每一步都产生完整复制的 hidden states，而是让中间结果尽量保持分片，只在需要合并 partial output 时通信。
+
+```text
+MLP:
+  Column Parallel Linear
+    -> local GeLU
+  Row Parallel Linear
+    -> AllReduce partial output
+
+Self-Attention:
+  Column Parallel Q/K/V
+    -> local attention heads
+  Row Parallel output projection
+    -> AllReduce partial output
+```
+
+因此，一个 Transformer layer 的主要通信可以概括为：
+
+- forward：MLP 的 Row Parallel 输出 1 次 AllReduce，attention output projection 1 次 AllReduce；
+- backward：对应位置各 1 次 AllReduce；
+- 每个 layer 合计 2 次 forward AllReduce 和 2 次 backward AllReduce。
+
+论文还使用两个 autograd-aware operator 表达 forward/backward 的通信位置：`g` 在 forward 执行 AllReduce、backward 保持 identity；`f` 在 forward 保持 identity、backward 执行 AllReduce。这个设计说明通信语义可以嵌入计算图，而不必由训练循环手工拼接。
+
+Vocabulary Parallel 处理 input embedding 和 output projection。input embedding 沿 vocabulary dimension 分片；output projection 则将 vocabulary-sized projection 与 cross-entropy 融合，避免为了计算标量 loss 而 AllGather 完整 logits。
+
+读这部分源码或实现时，应该始终同时追踪三件事：当前 tensor 沿哪个维度分片、当前通信属于哪个 TP process group、通信完成后输出是 replicated 还是仍然 sharded。
+
 这种设计让每个 GPU 只处理部分 heads 或部分 intermediate dimension，降低单卡计算和参数压力。
 
 ## 通信模式

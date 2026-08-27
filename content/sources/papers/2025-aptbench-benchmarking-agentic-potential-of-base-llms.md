@@ -17,6 +17,8 @@ tags:
 aliases:
   - APTBench
 source_url: https://arxiv.org/abs/2510.24397
+paper_date: "2025-10"
+paper_order: "24397"
 code_url: https://github.com/TencentYoutuResearch/APTBench
 ---
 

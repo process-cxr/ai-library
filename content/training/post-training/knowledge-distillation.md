@@ -95,6 +95,8 @@ Sequence-level distillation 让 teacher 直接生成完整回答，student 对�
 - 多模型 ensemble：ensemble teacher -> single student；
 - 专家流程：工具/检索/评审结果 -> 直接回答模型。
 
+`Distilling Step-by-Step` 展示了 rationale distillation 的一种重要变体：teacher 先用 few-shot CoT 生成 rationale 和 label，student 再以 multi-task 方式分别学习两者。通过 `[label]` 与 `[rationale]` task prefixes，rationale 成为训练期的 auxiliary target，而不是推理期必须提供的输入；部署时只使用 `[label]` 即可。该论文的 ablation 还表明，直接把 rationale 与 label 拼成一个长 target sequence 并不稳定，甚至可能低于 standard fine-tuning。详见 [[sources/papers/2023-distilling-step-by-step|Distilling Step-by-Step]]。
+
 因此，蒸馏是训练成本、推理成本和质量之间的桥梁。
 
 ## 与 RLHF / DPO / GRPO 的关系

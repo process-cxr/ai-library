@@ -14,6 +14,8 @@ tags:
   - data-mix
   - dataset
 source_url: https://arxiv.org/abs/2101.00027
+paper_date: "2021-01"
+paper_order: "00027"
 ---
 
 ## 基本信息

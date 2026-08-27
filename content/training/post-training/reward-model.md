@@ -14,6 +14,10 @@ tags:
 
 Reward Model，简称 RM，是后训练中把“哪个回答更好”转换为可优化数值信号的模型。它通常接收 prompt 和 response，输出一个 scalar reward，用于 [[training/post-training/rlhf|RLHF]] policy optimization、[[training/post-training/rejection-sampling|Rejection Sampling]] 筛选、best-of-N inference 或数据质量过滤。
 
+早期代表性工作 [[sources/papers/2022-instructgpt|Training language models to follow instructions with human feedback]] 将这一结构用于大语言模型：对同一 prompt 的多个 responses 做排序，训练 reward model，再让 policy 优化预测 reward。论文还展示了一个重要工程细节：$K=4$ 到 $9$ 个 responses 产生的组合 comparisons 应作为同一 prompt 的 batch 处理，否则相关 pair 会让 RM 很快过拟合。
+
+早期代表性工作 [[sources/papers/2017-deep-rl-from-human-preferences|Deep Reinforcement Learning from Human Preferences]] 已经给出了今天常见的基本结构：从两个 trajectory segments 的 pairwise preference 学习 reward predictor，再让 policy 在大量环境交互中最大化预测 reward。现代 LLM RLHF 将 segment comparison 换成 response comparison，但仍然继承了“少量偏好标签 -> 可泛化 reward -> policy optimization”的分工。
+
 Reward Model 的核心价值在于：很多 assistant 行为无法用单一参考答案监督。开放问答、写作、总结、安全拒答、复杂推理和多轮对话都可能存在多个合理回答。RM 不要求给出唯一标准答案，而是学习在候选回答之间排序。
 
 ## 目标与问题
@@ -48,6 +52,10 @@ rejected response y_l
 - 线上用户反馈。
 
 高质量偏好数据要尽量保证候选具有可比性。如果一个候选明显乱码、另一个候选正常，RM 学到的是低层质量过滤；如果候选都较强，RM 才能学习更细粒度的 helpfulness、truthfulness 和 reasoning quality。
+
+偏好数据还应覆盖 policy 实际会访问的分布。若只用训练早期或旧 policy 的候选训练 RM，policy 更新后可能进入 reward model 没见过的区域，并利用预测器漏洞。InstructGPT 的 comparison data 主要来自 SFT policy，也有一部分来自 PPO policy，体现了从当前模型行为持续补充偏好数据的思路。
+
+偏好数据还应覆盖 policy 实际会访问的分布。若只用训练早期或旧 policy 的候选训练 RM，policy 更新后可能进入 reward model 没见过的区域，并利用预测器漏洞。论文中的 online query 和 reward predictor ensemble 正是为了缓解这种 occupancy distribution shift；因此，RM pipeline 不能只看静态 preference accuracy，还要持续检查新 policy rollout。
 
 ## Bradley-Terry 偏好模型
 

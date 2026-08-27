@@ -84,6 +84,7 @@ modified: 2026-08-12
 - [[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning]]
 - [[sources/papers/2026-on-policy-delta-distillation|On-Policy Delta Distillation]]
 - [[sources/papers/2026-self-distilled-reasoner-on-policy-self-distillation-for-large-language-models|Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models]]
+- [[sources/papers/2026-mopd-multi-teacher-on-policy-distillation-for-capability-integration|MOPD: Multi-Teacher On-Policy Distillation for Capability Integration in LLM Post-Training]]
 - [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]
 - [[sources/papers/2026-single-rollout-asynchronous-optimization-agentic-reinforcement-learning|Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]

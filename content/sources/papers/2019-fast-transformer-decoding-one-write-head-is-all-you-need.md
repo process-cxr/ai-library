@@ -14,6 +14,8 @@ tags:
   - mqa
   - kv-cache
 source_url: https://arxiv.org/abs/1911.02150
+paper_date: "2019-11"
+paper_order: "02150"
 ---
 
 ## 基本信息

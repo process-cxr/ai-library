@@ -14,6 +14,8 @@ tags:
   - web-data
   - data-filtering
 source_url: https://arxiv.org/abs/2306.01116
+paper_date: "2023-06"
+paper_order: "01116"
 ---
 
 ## 基本信息

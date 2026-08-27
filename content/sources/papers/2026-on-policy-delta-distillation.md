@@ -19,6 +19,8 @@ aliases:
   - OPD2
   - On-Policy Delta Distillation
 source_url: https://arxiv.org/abs/2607.15161
+paper_date: "2026-07"
+paper_order: "15161"
 ---
 
 # On-Policy Delta Distillation

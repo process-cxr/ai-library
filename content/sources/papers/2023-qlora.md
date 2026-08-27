@@ -14,6 +14,8 @@ tags:
   - quantization
   - parameter-efficient-finetuning
 source_url: https://arxiv.org/abs/2305.14314
+paper_date: "2023-05"
+paper_order: "14314"
 ---
 
 ## 基本信息

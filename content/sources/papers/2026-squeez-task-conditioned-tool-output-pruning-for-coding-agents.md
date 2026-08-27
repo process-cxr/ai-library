@@ -16,6 +16,8 @@ tags:
 aliases:
   - Squeez
 source_url: https://arxiv.org/abs/2604.04979
+paper_date: "2026-04"
+paper_order: "04979"
 code_url: https://github.com/KRLabsOrg/squeez
 ---
 

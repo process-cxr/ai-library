@@ -14,6 +14,8 @@ tags:
   - memory
   - activation-checkpointing
 source_url: https://arxiv.org/abs/1604.06174
+paper_date: "2016-04"
+paper_order: "06174"
 ---
 
 ## 基本信息

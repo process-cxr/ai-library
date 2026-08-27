@@ -13,6 +13,8 @@ tags:
   - normalization
   - rmsnorm
 source_url: https://arxiv.org/abs/1910.07467
+paper_date: "2019-10"
+paper_order: "07467"
 ---
 
 ## 基本信息

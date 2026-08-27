@@ -18,6 +18,8 @@ tags:
 aliases:
   - KLong
 source_url: https://arxiv.org/pdf/2602.17547v2
+paper_date: "2026-02"
+paper_order: "17547"
 venue: Lifelong Agent Workshop @ ICLR 2026
 ---
 

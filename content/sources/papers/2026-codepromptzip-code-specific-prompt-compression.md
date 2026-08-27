@@ -14,6 +14,8 @@ tags:
 aliases:
   - CodePromptZip
 source_url: "https://arxiv.org/abs/2502.14925"
+paper_date: "2025-02"
+paper_order: "14925"
 type: source
 source_type: paper
 area: sources

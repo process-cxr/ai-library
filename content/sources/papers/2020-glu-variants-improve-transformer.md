@@ -14,6 +14,8 @@ tags:
   - swiglu
   - transformer
 source_url: https://arxiv.org/abs/2002.05202
+paper_date: "2020-02"
+paper_order: "05202"
 ---
 
 ## 基本信息

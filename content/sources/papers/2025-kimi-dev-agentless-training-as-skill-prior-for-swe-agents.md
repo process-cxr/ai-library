@@ -18,6 +18,8 @@ tags:
 aliases:
   - Kimi-Dev
 source_url: https://arxiv.org/abs/2509.23045
+paper_date: "2025-09"
+paper_order: "23045"
 ---
 
 # Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents

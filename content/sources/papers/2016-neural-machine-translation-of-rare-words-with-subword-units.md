@@ -14,6 +14,8 @@ tags:
   - bpe
   - subword
 source_url: https://arxiv.org/abs/1508.07909
+paper_date: "2015-08"
+paper_order: "07909"
 ---
 
 ## 基本信息

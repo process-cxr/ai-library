@@ -26,7 +26,7 @@ Attention 模块负责整理注意力机制及其现代变体，包括 self-atte
 - [[architecture/attention/sliding-window-attention|Sliding Window Attention]]
 - [[architecture/attention/hybrid-attention|Hybrid Attention]]
 
-## Related Source TODOs
+## Related Source Notes
 
 - [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
 - [[sources/papers/2019-fast-transformer-decoding-one-write-head-is-all-you-need|Fast Transformer Decoding]]

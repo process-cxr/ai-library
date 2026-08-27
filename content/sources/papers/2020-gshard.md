@@ -13,6 +13,8 @@ tags:
   - moe
   - distributed-training
 source_url: https://arxiv.org/abs/2006.16668
+paper_date: "2020-06"
+paper_order: "16668"
 ---
 
 ## 基本信息

@@ -24,6 +24,8 @@ aliases:
   - Reward Extrapolation
   - Reward Correction
 source_url: https://arxiv.org/abs/2602.12125
+paper_date: "2026-02"
+paper_order: "12125"
 ---
 
 # Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation

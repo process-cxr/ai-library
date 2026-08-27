@@ -93,7 +93,7 @@ Instruction Tuning 的泛化来自三个层次：
 
 ## 合成指令数据
 
-Self-Instruct 一类方法使用强模型自动生成 instruction、input 和 output，再经过过滤构造 instruction tuning 数据。这条路线降低了人工标注成本，也成为很多开放模型构建指令数据的基础思想。
+Self-Instruct 一类方法使用少量 seed tasks 启动递归 task pool，让模型自动生成 instruction、input 和 output，再经过去重、冲突处理和启发式过滤构造 instruction tuning 数据。这条路线降低了人工标注成本，也成为很多开放模型构建指令数据的基础思想。它的关键不只是生成更多 instruction：classification task 需要采用 output-first 的生成顺序控制 label coverage，non-classification task 则可以采用 input-first；论文对 200 条抽样数据的检查显示，instruction 有效率为 92%，但 instruction、input、output 全部有效的比例只有 54%，说明实例与答案质量往往是主要瓶颈。
 
 合成数据的优势是覆盖广、成本低、迭代快；风险是 teacher bias、重复模板、事实错误和任务难度虚高。高质量合成 instruction tuning 通常需要：
 
@@ -102,6 +102,8 @@ Self-Instruct 一类方法使用强模型自动生成 instruction、input 和 ou
 - 难度分层；
 - 与人工或高质量公开数据混合；
 - 对输出格式和安全边界进行验证。
+
+Self-Instruct 在 GPT-3 上的实验还显示，生成数据规模增加带来的收益会逐渐趋于 plateau，而用更强模型重新生成 output 可以带来约 10% 的额外提升。对合成 instruction data 的处理，应同时记录 seed pool、生成模型、prompt template、过滤规则和数据版本，分别评估任务覆盖、实例正确性与下游 instruction-following，而不能只按生成 token 数衡量数据价值。详见 [[sources/papers/2022-self-instruct|Self-Instruct]]。
 
 ## 关键超参与工程点
 

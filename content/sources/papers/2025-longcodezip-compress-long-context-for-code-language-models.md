@@ -16,6 +16,8 @@ tags:
 aliases:
   - LongCodeZip
 source_url: https://arxiv.org/abs/2510.00446
+paper_date: "2025-10"
+paper_order: "00446"
 code_url: https://github.com/YerbaPage/LongCodeZip
 ---
 

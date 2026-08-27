@@ -13,6 +13,8 @@ tags:
   - moe
   - sparse-model
 source_url: https://arxiv.org/abs/2101.03961
+paper_date: "2021-01"
+paper_order: "03961"
 ---
 
 ## 基本信息

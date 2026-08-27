@@ -16,6 +16,8 @@ tags:
 aliases:
   - LongLLMLingua
 source_url: https://arxiv.org/abs/2310.06839
+paper_date: "2023-10"
+paper_order: "06839"
 code_url: https://aka.ms/LongLLMLingua
 ---
 

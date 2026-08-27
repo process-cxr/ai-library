@@ -14,6 +14,8 @@ tags:
   - datacomp
   - data-curation
 source_url: https://arxiv.org/abs/2406.11794
+paper_date: "2024-06"
+paper_order: "11794"
 ---
 
 ## 基本信息

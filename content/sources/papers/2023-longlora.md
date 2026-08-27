@@ -14,6 +14,8 @@ tags:
   - lora
   - fine-tuning
 source_url: https://arxiv.org/abs/2309.12307
+paper_date: "2023-09"
+paper_order: "12307"
 ---
 
 ## 基本信息

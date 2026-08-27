@@ -20,6 +20,8 @@ aliases:
   - On-Policy Self-Distillation
   - Self-Distilled Reasoner
 source_url: https://arxiv.org/abs/2601.18734
+paper_date: "2026-01"
+paper_order: "18734"
 ---
 
 # Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models

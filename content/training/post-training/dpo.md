@@ -16,6 +16,8 @@ DPO，Direct Preference Optimization，是一种直接从 pairwise preference da
 
 DPO 在工程上很重要，因为它把 RLHF pipeline 中最复杂的 online RL 部分转换成离线 preference learning。训练过程更像 SFT：给定 prompt、chosen answer、rejected answer，计算两条回答在 policy 与 reference model 下的 log-prob，并优化一个 pairwise logistic loss。
 
+原论文 [[sources/papers/2023-dpo|Direct Preference Optimization: Your Language Model is Secretly a Reward Model]] 的关键不是经验性地把 chosen 做 SFT，而是从 KL-regularized reward maximization 的闭式最优 policy 出发，把 reward difference 改写成 policy/reference log-ratio。DPO 因此去掉的是 policy optimization 阶段的显式 reward model、online rollout 和 value model；preference data 的采样、排序和标注成本仍然存在。
+
 ## 目标与问题
 
 传统 [[training/post-training/rlhf|RLHF]] pipeline 包括：
@@ -149,6 +151,8 @@ DPO 同时比较 chosen 和 rejected，并考虑 reference model：
 
 因此 DPO 更接近 preference learning，而不是单纯 imitation。
 
+DPO 的梯度还带有动态样本权重：当前 policy 越容易把 rejected 的 implicit reward 估得过高，pair 的更新信号越强；已经被正确排序的 pair，梯度会逐渐减弱。这是它与简单的 chosen-only SFT 或固定权重 unlikelihood 的重要区别。
+
 ## 实践细节
 
 ### Sequence Log-Probability
@@ -171,6 +175,8 @@ Reference model 通常冻结为 SFT checkpoint。它的作用是提供“不要�
 
 Rejected response 的质量决定学习信号。高质量 hard negatives 能教模型细微偏好；低质量 negatives 只能教模型避开明显错误。
 
+原论文还说明，若一个 prompt 有多个完整 ranking，可以使用 Plackett-Luce preference model，而不必强行把所有排序拆成独立 pair。Bradley-Terry 是只有两个候选时的特例；实际数据处理仍要注意同一 prompt 下多个 pair 的相关性，避免重复样本导致过拟合。
+
 ## 失败模式与边界
 
 - **数据噪声**：偏好标签错误会直接推动 policy 错方向。
@@ -179,6 +185,7 @@ Rejected response 的质量决定学习信号。高质量 hard negatives 能教�
 - **长度偏差**：chosen response 更长时，模型可能学到 verbosity。
 - **静态数据限制**：DPO 不会像 RLHF rollout 那样发现当前 policy 的新错误。
 - **多目标混淆**：helpfulness、harmlessness、truthfulness 混在一个 preference 标签里，可能产生不透明权衡。
+- **Reference mismatch**：如果 reference policy 与 preference data 的生成策略差异较大，或者没有可靠的 SFT reference，policy/reference log-ratio 对 preference 的解释会变弱。
 
 ## 经典论文与资料
 

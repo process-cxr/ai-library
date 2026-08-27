@@ -14,6 +14,8 @@ tags:
   - zero
   - offload
 source_url: https://arxiv.org/abs/2104.07857
+paper_date: "2021-04"
+paper_order: "07857"
 ---
 
 ## 基本信息
