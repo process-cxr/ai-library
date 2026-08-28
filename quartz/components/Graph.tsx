@@ -23,6 +23,7 @@ export interface D3Config {
 
 interface GraphOptions {
   localGraph: Partial<D3Config> | undefined
+  homeGraph: Partial<D3Config> | undefined
   globalGraph: Partial<D3Config> | undefined
 }
 
@@ -42,6 +43,17 @@ const defaultOptions: GraphOptions = {
     focusOnHover: false,
     enableRadial: false,
   },
+  homeGraph: {
+    depth: 2,
+    scale: 0.8,
+    repelForce: 0.65,
+    centerForce: 0.2,
+    linkDistance: 18,
+    fontSize: 0.55,
+    focusOnHover: true,
+    enableRadial: true,
+    showTags: false,
+  },
   globalGraph: {
     drag: true,
     zoom: true,
@@ -60,14 +72,19 @@ const defaultOptions: GraphOptions = {
 }
 
 export default ((opts?: Partial<GraphOptions>) => {
-  const Graph: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
+  const Graph: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
     const localGraph = { ...defaultOptions.localGraph, ...opts?.localGraph }
+    const homeGraph = { ...localGraph, ...defaultOptions.homeGraph, ...opts?.homeGraph }
     const globalGraph = { ...defaultOptions.globalGraph, ...opts?.globalGraph }
+    const isHome = fileData.slug === "index"
     return (
       <div class={classNames(displayClass, "graph")}>
         <h3>{i18n(cfg.locale).components.graph.title}</h3>
         <div class="graph-outer">
-          <div class="graph-container" data-cfg={JSON.stringify(localGraph)}></div>
+          <div
+            class="graph-container"
+            data-cfg={JSON.stringify(isHome ? homeGraph : localGraph)}
+          ></div>
           <button class="global-graph-icon" aria-label="Global Graph">
             <svg
               version="1.1"

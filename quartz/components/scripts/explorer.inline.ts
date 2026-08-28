@@ -8,6 +8,7 @@ interface ParsedOptions {
   folderClickBehavior: "collapse" | "link"
   folderDefaultState: "collapsed" | "open"
   useSavedState: boolean
+  homeDefaultOpenPaths: string[]
   sortFn: (a: FileTrieNode, b: FileTrieNode) => number
   filterFn: (node: FileTrieNode) => boolean
   mapFn: (node: FileTrieNode) => void
@@ -110,6 +111,7 @@ function createFolderNode(
 
   const folderPath = node.slug
   folderContainer.dataset.folderpath = folderPath
+  li.dataset.rootFolder = simplifySlug(folderPath).split("/")[0]
 
   if (currentSlug === folderPath) {
     folderContainer.classList.add("active")
@@ -163,6 +165,7 @@ async function setupExplorer(currentSlug: FullSlug) {
       folderClickBehavior: (explorer.dataset.behavior || "collapse") as "collapse" | "link",
       folderDefaultState: (explorer.dataset.collapsed || "collapsed") as "collapsed" | "open",
       useSavedState: explorer.dataset.savestate === "true",
+      homeDefaultOpenPaths: JSON.parse(explorer.dataset.homeOpenPaths || "[]"),
       order: dataFns.order || ["filter", "map", "sort"],
       sortFn: new Function("return " + (dataFns.sortFn || "undefined"))(),
       filterFn: new Function("return " + (dataFns.filterFn || "undefined"))(),
@@ -197,12 +200,37 @@ async function setupExplorer(currentSlug: FullSlug) {
 
     // Get folder paths for state management
     const folderPaths = trie.getFolderPaths()
+    const isHome =
+      window.location.pathname === "/" ||
+      currentSlug === "index" ||
+      currentSlug === "" ||
+      currentSlug === "/"
+    const homeDefaultsKey = "homeExplorerDefaultsV3"
+    const shouldApplyHomeDefaults =
+      isHome && localStorage.getItem(homeDefaultsKey) !== "true"
+
+    if (shouldApplyHomeDefaults) {
+      for (const path of folderPaths) {
+        const folderSlug = path.endsWith("/index") ? path.slice(0, -"/index".length) : path
+        if (opts.homeDefaultOpenPaths.includes(folderSlug)) {
+          oldIndex.set(path, false)
+        }
+      }
+      localStorage.setItem(homeDefaultsKey, "true")
+    }
+
     currentExplorerState = folderPaths.map((path) => {
       const previousState = oldIndex.get(path)
+      const simplePath = path.endsWith("/index") ? path.slice(0, -"/index".length) : path
+      const homeDefaultOpen = isHome && opts.homeDefaultOpenPaths.includes(simplePath)
       return {
         path,
         collapsed:
-          previousState === undefined ? opts.folderDefaultState === "collapsed" : previousState,
+          previousState === undefined
+            ? homeDefaultOpen
+              ? false
+              : opts.folderDefaultState === "collapsed"
+            : previousState,
       }
     })
 

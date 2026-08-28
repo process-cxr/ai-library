@@ -1,8 +1,8 @@
-# Latent Atlas Code of Conduct
+# The Latent Field Code of Conduct
 
 ## 1. Purpose
 
-Latent Atlas 是一个面向 AI / 大模型学习、研究和工程实践的长期知识库，也可能在未来接收更多建议、修订或协作内容。
+The Latent Field 是一个面向 AI / 大模型学习、研究和工程实践的长期知识库，也可能在未来接收更多建议、修订或协作内容。
 
 本行为准则用于约定围绕本知识库进行讨论、协作、提交和评审时的基本沟通原则，目标是让知识整理保持清晰、尊重、可持续。
 
@@ -48,4 +48,4 @@ Latent Atlas 是一个面向 AI / 大模型学习、研究和工程实践的长�
 
 ## 6. Attribution
 
-本项目基于 Quartz 构建，Quartz 相关源码和上游材料遵循其原始许可和归属说明。本行为准则仅用于 Latent Atlas 知识库自身的协作维护，不代表 Quartz 上游社区政策。
+本项目基于 Quartz 构建，Quartz 相关源码和上游材料遵循其原始许可和归属说明。本行为准则仅用于 The Latent Field 知识库自身的协作维护，不代表 Quartz 上游社区政策。

@@ -1,0 +1,129 @@
+@use "../../styles/variables.scss" as *;
+
+.recent-papers {
+  margin: 2.25rem 0 1.2rem;
+  padding: 0;
+}
+
+.recent-papers-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.recent-papers-kicker {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.recent-papers-more {
+  flex: 0 0 auto;
+  background: transparent !important;
+  color: var(--secondary) !important;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.recent-papers-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.5rem;
+  row-gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recent-paper-item {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: start;
+  min-width: 0;
+  padding: 0.9rem 0 0.95rem;
+  border-top: 1px solid var(--lightgray);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.recent-paper-item:hover {
+  border-top-color: var(--tertiary);
+  transform: translateX(0.2rem);
+}
+
+.recent-paper-index {
+  padding-top: 0.2rem;
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.recent-paper-link {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.recent-paper-copy {
+  display: grid;
+  gap: 0.32rem;
+  min-width: 0;
+}
+
+.recent-paper-copy time {
+  color: var(--secondary);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.recent-paper-title {
+  color: var(--darkgray);
+  font-size: 0.94rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.recent-paper-link:hover .recent-paper-title {
+  color: var(--secondary);
+}
+
+.recent-paper-arrow {
+  flex: 0 0 auto;
+  padding-top: 0.15rem;
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.recent-paper-link:hover .recent-paper-arrow {
+  color: var(--secondary);
+  transform: translateX(0.2rem);
+}
+
+@media all and ($mobile) {
+  .recent-papers-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .recent-papers-list {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-papers-more {
+    white-space: nowrap;
+  }
+}
