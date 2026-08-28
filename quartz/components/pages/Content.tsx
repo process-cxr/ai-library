@@ -1,9 +1,73 @@
 import { ComponentChildren } from "preact"
+import { Node, Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import sourcePanelStyle from "../styles/sourcePanel.scss"
+import recentPapersStyle from "../styles/recentPapers.scss"
+import { concatenateResources } from "../../util/resources"
+import RecentPapers from "../RecentPapers"
 // @ts-ignore
 import sourcePanelScript from "../scripts/sourcePanel.inline"
+
+const RecentPapersBlock = RecentPapers({ limit: 8 })
+
+function nodeText(node: Node): string {
+  if (node.type === "text") return node.value
+  if ("children" in node) return node.children.map(nodeText).join("")
+  return ""
+}
+
+function renderHomeContent(
+  filePath: QuartzComponentProps["fileData"]["filePath"],
+  tree: Node,
+  props: QuartzComponentProps,
+): ComponentChildren {
+  if (tree.type !== "root") return htmlToJsx(filePath!, tree) as ComponentChildren
+
+  const root = tree as Root
+  const firstHeadingIndex = root.children.findIndex(
+    (node) => node.type === "element" && node.tagName === "h2",
+  )
+
+  if (firstHeadingIndex < 0) return htmlToJsx(filePath!, root) as ComponentChildren
+
+  const prefix: Root = {
+    ...root,
+    children: root.children.slice(0, firstHeadingIndex),
+  }
+  const sections: Array<{ heading: string; root: Root }> = []
+
+  for (const node of root.children.slice(firstHeadingIndex)) {
+    if (node.type === "element" && node.tagName === "h2") {
+      sections.push({
+        heading: nodeText(node).trim(),
+        root: { ...root, children: [node] },
+      })
+      continue
+    }
+
+    const current = sections[sections.length - 1]
+    if (current) current.root.children = [...current.root.children, node]
+  }
+
+  return (
+    <>
+      {htmlToJsx(filePath!, prefix)}
+      <section class="home-chapters-shell">
+        {sections.map((section, index) => {
+          const sectionClass = `home-chapter home-chapter-${index + 1}`
+          const isWorkbench = section.heading.startsWith("Research Workbench")
+          return (
+            <section class={sectionClass} key={section.heading}>
+              {htmlToJsx(filePath!, section.root)}
+              {isWorkbench && <RecentPapersBlock {...props} />}
+            </section>
+          )
+        })}
+      </section>
+    </>
+  )
+}
 
 function resolvePaperPdfUrl(
   frontmatter: QuartzComponentProps["fileData"]["frontmatter"],
@@ -62,8 +126,12 @@ function formatPdfLabel(pdfUrl: string): string {
   }
 }
 
-const Content: QuartzComponent = ({ fileData, tree }: QuartzComponentProps) => {
-  const content = htmlToJsx(fileData.filePath!, tree) as ComponentChildren
+const Content: QuartzComponent = (props: QuartzComponentProps) => {
+  const { fileData, tree } = props
+  const content =
+    fileData.slug === "index"
+      ? renderHomeContent(fileData.filePath, tree, props)
+      : (htmlToJsx(fileData.filePath!, tree) as ComponentChildren)
   const classes: string[] = fileData.frontmatter?.cssclasses ?? []
   const classString = ["popover-hint", ...classes].join(" ")
   const isPaper = fileData.frontmatter?.source_type === "paper"
@@ -135,7 +203,7 @@ const Content: QuartzComponent = ({ fileData, tree }: QuartzComponentProps) => {
   )
 }
 
-Content.css = sourcePanelStyle
+Content.css = concatenateResources(sourcePanelStyle, recentPapersStyle)
 Content.afterDOMLoaded = sourcePanelScript
 
 export default (() => Content) satisfies QuartzComponentConstructor

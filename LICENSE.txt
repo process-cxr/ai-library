@@ -2,10 +2,10 @@ MIT License
 
 This repository contains two kinds of materials:
 
-1. Knowledge content maintained for Latent Atlas, including Markdown notes, reading notes, project records, and related documentation written for this AI knowledge base.
+1. Knowledge content maintained for The Latent Field, including Markdown notes, reading notes, project records, and related documentation written for this AI knowledge base.
 2. Quartz source code and upstream materials used to build and publish the knowledge base.
 
-Unless otherwise noted, the Latent Atlas knowledge content and project-specific documentation are released under the MIT License below.
+Unless otherwise noted, The Latent Field knowledge content and project-specific documentation are released under the MIT License below.
 
 Quartz is an upstream open-source project created by Jacky Zhao. Quartz source code and upstream materials retain their original copyright and license notices, including:
 

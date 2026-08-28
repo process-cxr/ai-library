@@ -12,7 +12,7 @@ export default ((opts?: Options) => {
     return (
       <footer class={`${displayClass ?? ""}`}>
         <p>
-          <a href="https://github.com/process-cxr/ai-library">🍊 Latent Atlas 🍉</a> · An AI
+          <a href="https://github.com/process-cxr/ai-library">The Latent Field</a> · An AI
           knowledge atlas built with <a href="https://quartz.jzhao.xyz/">Quartz</a> © {year}
         </p>
         <ul>
