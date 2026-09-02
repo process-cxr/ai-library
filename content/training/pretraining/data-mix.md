@@ -2,7 +2,7 @@
 title: Data Mix
 created: 2026-02-22
 published: 2026-02-22
-modified: 2026-05-31
+modified: 2026-08-31
 type: topic
 status: mature
 area: training
@@ -138,6 +138,37 @@ Data mix 需要用分域评测闭环，而不是只看总 validation loss。
 
 如果总 loss 改善但 code loss 变差，说明 mix 可能牺牲了代码能力。如果多语言平均 loss 正常但低资源语言很差，说明采样或 tokenizer 仍有问题。如果 benchmark 提升异常大，优先检查 contamination。
 
+## 经验依据：异构性与目标覆盖
+
+[[sources/papers/2023-a-pretrainers-guide-to-training-data|A Pretrainer's Guide to Training Data]] 将 The Pile 的 22 个来源划分为 9 个 domain cluster，并逐一做删除实验。结果显示，删除 Common Crawl、Books 和 OpenWeb 对平均 QA 性能的损失最大；删除 Common Crawl 后数据量仍约为完整数据的 73%，但平均 QA 性能相对下降约 4.8 个百分点。
+
+直接对应某个评测领域的数据并不总是最重要。删除 Academic 对平均 QA 的影响接近零，而删除 Common Crawl 对 Academic QA 的影响更大。论文据此说明，大型异构来源能够提供跨主题、跨文体和跨任务的覆盖，不能只按“与 benchmark 名称是否相同”判断数据价值。
+
+另一方面，Books、OpenWeb 和 Common Crawl 也包含更多被判为 toxic 的内容。它们对泛化有益、同时增加生成风险，说明 data mix 的决策目标至少包括能力覆盖、domain transfer、风险控制和数据质量四个维度。
+
+## Data Mix 的实验记录
+
+数据 mixture 进入训练前，应至少留下以下可比较信息：
+
+- 每个 source / domain 的名义 token 数和实际采样比例；
+- 过滤、去重和重复 epoch 后的保留量；
+- 各 domain 的 quality、toxicity、PII 和时间分布；
+- general、domain-specific、long-context 和目标能力 validation loss；
+- 每个 ablation 版本的训练预算、tokenizer、优化 recipe 和 downstream 结果。
+
+这样才能区分“数据更多带来的收益”“来源异构性带来的收益”和“过滤策略改变分布带来的收益”。
+
+## DeepSeek-V3 的数据配方经验
+
+DeepSeek-V3 的 pre-training corpus 约为 14.8T tokens。相较前代，作者提高数学与 programming 数据比例，扩展多语言覆盖，并优化去冗余与 document packing。它还以 0.1 的比例加入 FIM 数据，使模型学习根据 prefix 与 suffix 恢复 middle。
+
+这组设计提供了两个可复用的记录原则：
+
+1. 数据总量之外，要记录 domain mixture、FIM / synthetic / natural data 比例、重复次数、packing 方式和 tokenizer 后 token 数。
+2. 数据结构改变会改变模型的条件分布。document packing 如果强调文档完整性，和 SFT packing 中通过 sample masking 隔离不同样本，是两种不同的训练语义，不能混为普通的“拼接”。
+
+DeepSeek-V3 的 tokenizer 也与 data mix 强耦合：它使用 128K byte-level BPE，并针对多语言 compression 引入 punctuation / line-break 组合 token。组合 token 可能造成 token boundary bias，因此训练时随机拆分一部分组合 token。对多语言或代码数据，tokenizer fertility、边界形式和 FIM 格式都应该作为 data pipeline 的一部分记录。
+
 ## 常见失败模式
 
 - **把更多数据等同于更好数据**：名义 token 增加不一定带来有效 token 增加。
@@ -146,6 +177,24 @@ Data mix 需要用分域评测闭环，而不是只看总 validation loss。
 - **混入过多低质合成数据**：模型会学习模板化、错误或过窄分布。
 - **过滤策略过强**：可能丢失长尾知识、真实噪声和低资源语言。
 - **数据来源不可追溯**：后续无法解释能力变化、版权风险和污染问题。
+
+## DeepSeekMath：数学语料与 Code/Math 配比
+
+DeepSeekMath 从 Common Crawl 构造数学语料的过程说明，大规模 data mix 的核心不只是收集更多网页，而是建立可迭代的 quality-controlled recall pipeline。作者以 OpenWebMath 作为 positive seed，用 500K positive examples 和 500K Common Crawl negative examples 训练 fastText classifier；之后根据 domain 的召回比例发现新的数学来源，再人工标注数学 URL path，扩充 seed 并更新 classifier。四轮迭代后得到约 35.5M 数学网页和 120B math tokens，并对 GSM8K、MATH、CMATH、AGIEval 做 n-gram contamination filtering。
+
+在相同 1.3B 模型、150B math-training tokens 的对照中，DeepSeekMath Corpus 的 GSM8K / MATH / CMATH 结果为 `23.8% / 13.6% / 41.5%`，高于 MathPile、OpenWebMath 和 Proof-Pile-2；中文 benchmark 的优势也更明显。这支持一个可复用的判断：domain data 的有效性同时取决于内容质量、覆盖范围、语言分布和重复程度，不能只按 corpus 名义 token 数排序。
+
+论文还比较了 code 与 math 的训练顺序。对 1.3B 模型，`Code 400B -> Math 150B` 相比 `General 400B -> Math 150B` 提高了 GSM8K、MATH 以及 `GSM8K + Python`、`MATH + Python`；`Code + Math mixed` 则在保持 HumanEval / MBPP 方面更有优势，但牺牲了部分不使用工具的数学 reasoning。这个结果可作为 data mix ablation 的参考：目标能力提升、跨域迁移和 catastrophic forgetting 需要联合评估，不能只看单一领域 benchmark。
+
+在论文测试的 arXiv-only 设置中，MathPile 和 ArXiv-RedPajama 没有带来稳定数学收益，部分结果出现退化。作者没有测试 arXiv 与其他数据混合、更大模型规模以及 theorem informalization，因此这里只能得出“当前配置下 arXiv-only 未显示明显收益”，不能推导出 arXiv 来源本身没有价值。
+
+## DataComp-LM：把 Data Mix 变成受控实验
+
+[[sources/papers/2024-datacomp-lm|DataComp-LM]] 将数据研究拆成 filtering track 和 mixing track：前者只从统一的 Common Crawl pool 选择数据，后者允许加入 Wikipedia、Books、StackExchange、arXiv、GitHub 等外部来源。这样可以把“从同一原始分布中筛选更好样本”和“不同来源如何混合”分开评估。
+
+在 1B-1x scale，加入 RPJ extras 能改善 C4、RedPajama-CC 和 RefinedWeb，但对已经经过强 model-based filtering 的 DCLM-Baseline，CORE 从 `31.1` 降到 `29.9`，EXTENDED 从 `16.0` 降到 `15.0`。这说明外部高质量来源的边际收益取决于 base dataset 是否已经覆盖相同信息，混合不是默认正收益操作。
+
+DataComp-LM 的另一个重要做法是使用 small proxy models 先比较数据策略，再用更大模型验证。400M、1B、3B 与 7B-1x 的 dataset ranking 相关性分别达到 `0.838`、`0.956` 和 `0.982`。这为大规模 data mix 的快速迭代提供了可操作路径，但 proxy 仍不能替代目标规模对长上下文、代码、数学和训练稳定性的最终验证。
 
 ## 相关概念
 

@@ -2,7 +2,7 @@
 title: "GPipe"
 created: 2026-05-31
 published: 2026-08-26
-modified: 2026-08-26
+modified: 2026-08-31
 type: source
 status: processed
 source_type: paper
@@ -359,9 +359,9 @@ GPipe 只在相邻 partition 间传递 activation 和 gradient；Tensor Parallel
 
 GPipe 的实验同时显示了三件事：partition 可以提升可容纳的模型规模，micro-batch 可以提升吞吐，深层模型又可能需要初始化和 logit clipping 才能稳定训练。模型并行的成功不是单一通信优化的结果。
 
-## 我的理解
+## 分析与判断
 
-我把 GPipe 看作 Pipeline Parallel 的基础范式：它把“模型太深、单卡放不下”转化为“把 layer sequence 切成 stage，再让多个 micro-batch 在 stage 间流水流动”。其中最关键的并不是 pipeline 图看起来有多复杂，而是同步梯度更新和 rematerialization 两个约束共同确定了训练语义。
+GPipe 可以看作 Pipeline Parallel 的基础范式：它把“模型太深、单卡放不下”转化为“把 layer sequence 切成 stage，再让多个 micro-batch 在 stage 间流水流动”。其中最关键的并不是 pipeline 图看起来有多复杂，而是同步梯度更新和 rematerialization 两个约束共同确定了训练语义。
 
 读 GPipe 时，应该把三个数量区分清楚：$K$ 是 partition/stage 数，决定模型被切成多少段；$M$ 是 micro-batch 数，决定 pipeline bubble 能被摊薄多少；$N$ 是一个 mini-batch 的总大小，决定梯度更新和优化统计的粒度。很多 Pipeline Parallel 配置问题，本质上都是这三个量没有和显存、吞吐、global batch size 一起考虑。
 

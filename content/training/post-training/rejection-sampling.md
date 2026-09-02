@@ -107,6 +107,10 @@ Rejection sampling 可以看作比 RL 更保守的数据改进方法。它不直
 
 两者可以组合：先用 rejection sampling 生成高质量 warmup 数据，再用 GRPO / RLHF 继续优化。
 
+DeepSeekMath 对 RFT 和 Online RFT 做了直接对照。RFT 从初始 SFT model 采样并离线筛选正确 responses；Online RFT 则在训练过程中从实时 policy 采样，再对正确 responses 做 supervised update。训练早期两者分布接近，差异较小；随着 policy 改变，Online RFT 的 samples 更贴近当前模型的错误模式，因此在论文实验后期明显优于 RFT。
+
+这组结果说明 rejection sampling 的关键变量不只是筛选器，还包括 samples 的时效性。离线高质量数据适合稳定复用，但如果 policy 已经发生明显变化，继续训练过时 samples 可能降低探索和适配效率。Online RFT 可以看作在不引入完整 policy-gradient objective 的情况下，把 data construction 变成一个轻量的 on-policy 闭环。
+
 ## Scorer 设计
 
 不同 scorer 决定不同能力：

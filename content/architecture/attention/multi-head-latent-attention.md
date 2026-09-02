@@ -2,7 +2,7 @@
 title: Multi-Head Latent Attention
 created: 2026-01-31
 published: 2026-01-31
-modified: 2026-05-31
+modified: 2026-08-31
 type: topic
 status: mature
 area: architecture
@@ -110,18 +110,20 @@ $$
 
 如果只是压缩 K/V，会遇到一个位置编码问题。DeepSeek 系列使用 [[architecture/positional-encoding/rope|RoPE]]，而 RoPE 通常作用在 query/key 上，用旋转方式注入位置信息。
 
-位置相关的信息不能被随便压进同一个 latent vector 后再恢复，否则可能影响 attention score 中的相对位置信息。因此 MLA 会把 key 拆成两部分：
+问题不只是“位置信息可能被压缩”。更直接的冲突是，RoPE 是随 token position 变化的线性变换；如果它直接作用在 content key 上，位置相关的旋转矩阵会位于 query projection 与 key up-projection 之间。此时 key up-projection 不能再预先吸收到 query-side projection，生成每个新 token 时可能需要重新构造 prefix keys，latent cache 的效率收益会被破坏。
+
+因此 MLA 会把 key 拆成两部分：
 
 - content part：来自 latent compression。
 - RoPE part：专门承载位置信息。
 
-DeepSeek-V3 技术报告中提到，生成时需要缓存的是 $c_t^{KV}$ 和 $k_t^R$。其中 $k_t^R$ 是和 RoPE 相关的 key 部分。
+[[sources/papers/2024-deepseek-v2|DeepSeek-V2]] 将 RoPE 放在额外的 multi-head query $q_{t,i}^R$ 与所有 heads 共享的 key $k_t^R$ 上。生成时需要缓存的是 $c_t^{KV}$ 和 $k_t^R$，其中 $k_t^R$ 是位置相关的 shared key。
 
 可以把它理解为：MLA 压缩主要内容信息，但保留一条专门处理位置信息的路径，以避免 RoPE 信息在压缩中损失过多。
 
 ## Query 也可以压缩
 
-DeepSeek-V3 技术报告还提到对 query 也进行 low-rank compression，以减少训练时的 activation memory。
+DeepSeek-V2 同时对 query 进行 low-rank compression，以减少训练时的 activation memory；DeepSeek-V3 继承了这一结构。
 
 大致流程是：
 
@@ -149,9 +151,23 @@ MQA/GQA 的直觉是“减少 K/V heads 数量”。MLA 的直觉是“保留多
 
 这也是为什么 MLA 不能简单等同于 GQA。GQA 是 head sharing，MLA 是 latent compression。
 
+## DeepSeek-V2 的定量证据
+
+DeepSeek-V2 的配置为 $d_c=4d_h$、$d_h^R=d_h/2$。因此 MLA 每 token、每层缓存：
+
+$$
+(d_c+d_h^R)l=4.5d_hl
+$$
+
+按缓存元素数计算，它相当于 2.25-group GQA，但计算图和表示方式并不等同于 GQA。
+
+论文还在两个 MoE 规模上进行 attention-only 对照。约 16B total parameters 的 small MoE 中，MHA 与 MLA 的 KV Cache 分别为 110.6K 和 15.6K elements / token；约 250B total parameters 的 large MoE 中，两者分别为 860.2K 和 34.6K。MLA 在 BBH、MMLU、C-Eval、CMMLU 共 8 个规模-任务对照中的 7 项更高，唯一例外是 small-scale C-Eval。
+
+这组实验支持“显著压缩缓存而不必接受 MQA/GQA 式能力退化”，但不应解释为 MLA 对 MHA 的逐任务严格支配。最终部署中的 93.3% KV Cache reduction 还叠加了平均 6-bit KV quantization，不能全部归因于 attention architecture。
+
 ## 为什么 MLA 适合 DeepSeek
 
-DeepSeek-V3 是 671B total / 37B activated parameters 的 MoE 模型，目标之一是高性价比训练和推理。MoE 主要降低每 token FFN 计算成本，但 attention 的 KV Cache 仍然会随上下文增长。
+DeepSeek-V2 首次在 236B total / 21B activated parameters 的规模上部署 MLA，DeepSeek-V3 随后在 671B total / 37B activated parameters 上继承这一结构。MoE 主要降低每 token FFN 计算成本，但 attention 的 KV Cache 仍然会随上下文增长。
 
 因此，DeepSeek 需要同时处理两个瓶颈：
 
@@ -164,7 +180,7 @@ DeepSeek-V3 是 671B total / 37B activated parameters 的 MoE 模型，目标之
 
 ### 1. 降低 KV Cache
 
-MLA 最直接的优势是减少生成时需要缓存的内容。DeepSeek-V3 技术报告明确说，MLA 只需要缓存 $c_t^{KV}$ 和 $k_t^R$，从而显著降低 KV Cache。
+MLA 最直接的优势是减少生成时需要缓存的内容。DeepSeek-V2 与 DeepSeek-V3 都只需缓存 $c_t^{KV}$ 和 $k_t^R$，从而显著降低 KV Cache。
 
 ### 2. 保留较强表达能力
 

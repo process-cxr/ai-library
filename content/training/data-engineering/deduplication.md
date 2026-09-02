@@ -129,6 +129,12 @@ Benchmark contamination 是去重中最敏感的场景。训练数据如果包�
 - **没有保留 cluster 信息**：无法解释哪些数据被删除以及为什么。
 - **把去重等同于质量过滤**：去重解决重复，不直接判断语义质量。
 
+## DataComp-LM 的工程对照
+
+[[sources/papers/2024-datacomp-lm|DataComp-LM]] 在统一训练协议下比较 MinHash、suffix array 和 modified Bloom filter。两类 pipeline 在 7B-2x scale 的 downstream performance 差异约在 `0.2 CORE` 以内，但 Bloom filter 同时处理 document-level 与 paragraph-level near duplicate，更容易扩展到超过 10TB 的数据，因此被用于 DCLM-Baseline。
+
+论文还显示，去重超参会影响不同任务：在 7B-2x 实验中，较短的 `min_ngram_size=5` 可以保持较高 CORE，但会明显损害 MMLU；使用 `min_ngram_size=13` 的配置取得更均衡的结果。去重策略不能只按 removal rate 或剩余 token 数排序，还要观察短文本、任务覆盖、benchmark overlap 和数据来源分布。
+
 ## 相关概念
 
 - [[training/data-engineering/data-engineering|Data Engineering]]

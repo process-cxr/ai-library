@@ -93,6 +93,12 @@ AMP 降低了手写 mixed precision 的复杂度，但不代表可以忽略数�
 
 具体哪些 op 使用 fp32 取决于框架、硬件和 kernel。实践中应优先使用成熟 AMP / distributed training recipe，而不是手动对所有张量强制 cast。
 
+### Switch Transformer 的 Router Precision
+
+[[sources/papers/2021-switch-transformer|Switch Transformer]] 给出了 selective precision 的一个早期实证：纯 BF16 的 sparse router 可能导致训练 divergence，而把 router input、logits 和 softmax 局部提升到 FP32，可以在保留 BF16 expert computation 与通信的同时恢复稳定性。该策略的关键不在于“所有 router tensor 都长期用 FP32 存储”，而在于把 FP32 限制在产生离散 expert assignment 的局部计算中，离开 router 后再将 dispatch / combine tensors 转回 BF16。
+
+这类做法适合需要先做离散选择、再进行大规模通信或稀疏计算的结构。它也提醒我们，mixed precision 的优先级不应只按算力占比决定：router 的计算量很小，却会改变 token 的整个 expert path，因此其数值误差可能比普通 GEMM 更敏感。最终 dtype policy 仍需结合硬件、kernel、loss curve、NaN/Inf 和 assignment stability 验证。
+
 ## 与 FSDP / ZeRO 的配合
 
 [[training/distributed-training/fsdp|FSDP]] 和 [[training/distributed-training/zero|ZeRO]] 会切分 parameters、gradients 和 optimizer states。Mixed precision 决定这些状态的 dtype，FSDP/ZeRO 决定这些状态是否在 data parallel 维度上复制。
@@ -117,6 +123,25 @@ FP8 进一步降低显存和带宽，但训练 recipe 更复杂，通常需要�
 - 更严格的 loss spike 和 NaN 监控。
 
 因此 FP8 更适合成熟训练栈中的性能优化，而不是初次训练或小规模实验的默认选择。对知识库中的通用估算，bf16/fp16 仍是更稳定的基准。
+
+### DeepSeek-V3 的 FP8 训练策略
+
+DeepSeek-V3 的 FP8 经验说明，低精度训练需要按算子和 tensor 类型设计 mixed-precision policy，而不是把所有计算统一 cast 到 FP8：
+
+- Linear 的 Fprop、Dgrad 和 Wgrad GEMM 使用 FP8；
+- embedding、output head、MoE gating、normalization 和 attention 保持 BF16 或 FP32；
+- master weights、weight gradients 和关键 optimizer state 保留更高精度；
+- MoE dispatch 前的部分 activation 使用 FP8，combine 保持 BF16。
+
+为处理 outlier，DeepSeek-V3 使用 fine-grained quantization：
+
+- activation 按每个 token 的 1x128 tile 做 scale；
+- weight 按 128x128 block 做 scale；
+- scale 在当前 tile / block 上在线计算，而不是只依赖历史 maximum。
+
+H800 Tensor Core 的 FP8 accumulation 有效精度有限，因此 DeepSeek-V3 每累计 128 个 FP8 乘积，就把 partial result promotion 到 CUDA Core 的 FP32 registers 中继续累加。这个高精度 accumulation 与 group-wise scale 配合，才能把 FP8 与 BF16 的 relative loss error 控制在报告的 0.25% 以内。
+
+报告同时展示了一个重要失败模式：activation gradient 如果简单使用与 weight 相同的 128x128 block-wise quantization，MoE 模型可能在数百 billion tokens 后 divergence。activation gradient 的 token-correlated outliers 需要更适合反向传播方向的分组方式。因此 FP8 的验证必须包含长期 loss curve、NaN/Inf、gradient norm 和 divergence monitoring，不能只做短时间吞吐测试。
 
 ## 失败模式与边界
 

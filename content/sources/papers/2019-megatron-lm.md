@@ -2,7 +2,7 @@
 title: "Megatron-LM"
 created: 2026-05-31
 published: 2026-08-26
-modified: 2026-08-26
+modified: 2026-08-31
 type: source
 status: processed
 source_type: paper
@@ -409,9 +409,9 @@ Tensor Parallel 主要解决单层太大的问题，Data Parallel 主要扩展 b
 
 论文同时使用 Tensor Parallel、mixed precision、activation checkpointing、gradient clipping、数据去重和 LayerNorm 调整。大模型能否稳定训练，不能只归因于参数切分；模型结构、优化 recipe、数据工程、硬件拓扑和通信实现必须共同成立。
 
-## 我的理解
+## 分析与判断
 
-我把这篇论文看成 Megatron 训练系统的原点。它真正留下来的不是“用 8 张 GPU 训练 8B 模型”这个历史数字，而是一套非常清晰的分层思路：底层通信库只负责 collective，Megatron 负责定义 process group、tensor layout 和并行层语义，训练循环再把这些组件串成可恢复的 pretraining run。
+这篇论文可以看作 Megatron 训练系统的原点。它真正留下来的不是“用 8 张 GPU 训练 8B 模型”这个历史数字，而是一套非常清晰的分层思路：底层通信库只负责 collective，Megatron 负责定义 process group、tensor layout 和并行层语义，训练循环再把这些组件串成可恢复的 pretraining run。
 
 读懂这篇论文后，看到 `ColumnParallelLinear` 或 `RowParallelLinear` 时，不能只把它们理解成两个带参数的 Linear module。更重要的问题是：输入在当前 rank 上是完整的还是分片的，输出为什么可以继续保持 shard，哪个 block 边界必须 AllReduce，反向传播时梯度又应该在哪个 group 中合并。Megatron 的很多代码细节，实际上都是在维护这个 layout invariant。
 

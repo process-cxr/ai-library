@@ -25,6 +25,8 @@ $$
 
 其中 $N$ 是参数量，$D$ 是训练 token 数。Chinchilla-style 经验常把 $D \approx 20N$ 当作 dense LM 的初始锚点。这个锚点适合帮助识别 undertrained 大模型，但预训练项目不能机械套用它。
 
+Chinchilla 的原始证据来自一组 dense autoregressive Transformer 实验：论文在约 70M 到超过 16B 参数、约 5B 到超过 400B/500B training tokens 的范围内构造多组训练曲线，再外推到 70B Chinchilla 与 280B Gopher 的同 compute 对照。三种估计方法都得到接近 $N_{opt}\propto C^{0.5}$、$D_{opt}\propto C^{0.5}$ 的结果。这里的 $D$ 是特定数据分布和训练 regime 下的 token 数，不能直接等同于任意领域或 agent trajectory 的名义 token 数。
+
 在真实预训练中，至少还有五个额外约束：
 
 - **有效数据量**：高质量、去重、无污染、目标相关的 token 是否足够；
@@ -128,6 +130,12 @@ Chinchilla-style 的 $D \approx 20N$ 是有用起点，但以下情况可能需�
 - **把 data mix 当数据工程细节**：混合比例会决定能力分布，是训练目标的一部分。
 - **pilot run 太少**：无法区分 scaling 趋势、数据问题和优化问题。
 - **没有中途停机标准**：训练异常时只能凭感觉继续烧 compute。
+
+## Data-centric Pilot Scale
+
+[[sources/papers/2024-datacomp-lm|DataComp-LM]] 给出了一个与 compute-optimal 规划互补的经验：数据策略可以先在较小模型上进行筛选。论文设计了 400M-1x、1B-1x、3B-1x、7B-1x 和 7B-2x 五个 scale，发现 400M、1B、3B 的 dataset ranking 与 7B-1x 的 Pearson correlation 分别为 `0.838`、`0.956` 和 `0.982`。
+
+这并不等于小模型能够准确预测目标模型的绝对性能，而是说明在固定 tokenizer、训练 recipe、token budget 定义和 evaluation suite 后，小规模 run 可以作为 data curation 的排序信号。实际决策仍应保留少量 target-scale confirmation，并检查长上下文、领域能力、遗忘和训练稳定性等 proxy 难以覆盖的指标。
 
 ## 相关概念
 

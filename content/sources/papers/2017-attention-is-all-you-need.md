@@ -2,7 +2,7 @@
 title: "Attention Is All You Need"
 created: 2026-06-01
 published: 2026-08-26
-modified: 2026-08-26
+modified: 2026-08-31
 type: source
 status: processed
 source_type: paper
@@ -408,9 +408,9 @@ Transformer 的成功也带来了后续系统问题：
 
 这些并不是原论文解决的问题，但都可以追溯到它确立的 attention-based block 和大规模矩阵计算范式。
 
-## 我的理解
+## 分析与判断
 
-我把这篇论文看成大模型架构史上的一个分水岭，但它最重要的地方不只是“用 attention 替代 RNN”。更关键的是，它把一个序列建模问题重新组织成了几类可以被现代硬件高效处理的算子：矩阵乘法完成 token 间信息路由，逐位置 FFN 提供非线性表达，residual 和 normalization 支撑深层堆叠，mask 保留自回归约束。
+这篇论文可以看作大模型架构史上的一个分水岭，但它最重要的地方不只是“用 attention 替代 RNN”。更关键的是，它把一个序列建模问题重新组织成了几类可以被现代硬件高效处理的算子：矩阵乘法完成 token 间信息路由，逐位置 FFN 提供非线性表达，residual 和 normalization 支撑深层堆叠，mask 保留自回归约束。
 
 这也解释了为什么它后来能够扩展到完全不同的模型形态。Encoder-only 模型保留了双向 self-attention，decoder-only 模型保留了 causal self-attention，encoder-decoder 模型则继续使用 cross-attention。外部形式发生了变化，但“每个 token 根据上下文动态读取信息，再进行逐位置变换”的基本计算结构没有消失。
 

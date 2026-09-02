@@ -75,6 +75,60 @@ Kaplan 等人的 Scaling Laws for Neural Language Models 系统研究了语言�
 
 这个结论解释了 GPT-3 时期“更大模型 + 相对有限 token”路线的合理性。但它依赖当时的模型族、数据设置、训练范围和拟合方式。后来的 Chinchilla 工作重新估计了 compute-optimal 分配，认为许多大模型在 token 数上显著 undertrained。
 
+Kaplan 论文的关键拟合值可以作为早期 scaling baseline：
+
+$$
+L(N)\approx\left(\frac{N_c}{N}\right)^{\alpha_N},
+\qquad \alpha_N\approx0.076
+$$
+
+$$
+L(D)\approx\left(\frac{D_c}{D}\right)^{\alpha_D},
+\qquad \alpha_D\approx0.095
+$$
+
+在其 WebText2、BPE tokenizer 和模型族下，联合 model-data 拟合得到 $\alpha_N\approx0.076$、$\alpha_D\approx0.103$。这些 exponent 的价值在于描述边际收益，而不是提供脱离实验上下文的常数；$N_c$、$D_c$ 等 scale constant 会随 tokenizer、loss normalization 和数据分布改变。
+
+论文同时给出两个容易被忽略的结论：
+
+- model shape 在合理范围内弱于总 non-embedding scale，但极浅模型和极端 depth-to-width ratio 会偏离主趋势；
+- 对 Books、Wikipedia、Common Crawl 等其他文本分布，loss 仍随模型规模平滑改善，且与 WebText2 validation loss 大致保持 domain-specific offset。
+
+因此，scaling pilot 不能只拟合一个总 loss。应在固定 tokenizer、data mix、optimizer、batch 和 learning-rate schedule 的前提下，同时记录 domain validation loss，检查跨分布 transfer 是否仍然沿着相似趋势变化。
+
+### Overfitting、Training Horizon 与 Batch
+
+Kaplan 论文将 model size 与 dataset size 的联合关系写成：
+
+$$
+L(N,D)=
+\left[
+\left(\frac{N_c}{N}\right)^{\alpha_N/\alpha_D}
+ +\frac{D_c}{D}
+\right]^{\alpha_D}
+$$
+
+在该拟合下，overfitting penalty 主要由 $N^{\alpha_N/\alpha_D}/D\approx N^{0.74}/D$ 决定。它给出了一个重要的诊断视角：增加参数和增加数据不是互相独立的两条收益曲线，模型扩大后需要更多数据才能保持相近的 data-limited 风险。
+
+训练时长也有独立的 scaling：
+
+$$
+L(N,S_{min})=
+\left(\frac{N_c}{N}\right)^{\alpha_N}
++\left(\frac{S_c}{S_{min}}\right)^{\alpha_S},
+\qquad \alpha_S\approx0.76
+$$
+
+论文用 critical batch size 把串行 steps 与处理 token 数联系起来，拟合得到：
+
+$$
+B_{crit}(L)\approx\frac{B^*}{L^{1/\alpha_B}},
+\qquad B^*\approx2\times10^8\ \text{tokens},
+\qquad \alpha_B\approx0.21
+$$
+
+$B_{crit}$ 主要由当前 loss 决定，而不是直接由参数量决定。训练越接近低 loss，gradient noise scale 越大，适合的 batch 往往也越大。这个结论对 batch scaling 和分布式数据并行的规划有参考价值，但不应脱离具体优化器、序列长度和硬件系统直接套用。
+
 ## Chinchilla Revision
 
 Chinchilla 的核心修正是：在固定训练 compute 下，应该更均衡地扩大模型参数量和训练 token 数。它的经验结论常被简化为：
