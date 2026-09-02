@@ -87,6 +87,23 @@ $$
 
 这类目标说明：预训练目标不一定只能是 likelihood。更一般地，它可以把普通文本转化为密集 reward，用来激励探索、推理或更好的内部表示。
 
+## Multi-Token Prediction
+
+Multi-Token Prediction，MTP，是在标准 next-token prediction 之外，让模型在同一个位置继续预测多个未来 token 的训练目标。它的动机是 densify training signal，并促使 hidden representation 提前组织未来内容。
+
+DeepSeek-V3 使用 sequential MTP modules，而不是彼此独立的多个 output heads。第 $k$ 个模块把上一深度的 representation 与未来 token embedding 拼接，再通过一个 Transformer block 预测更远位置的 token；embedding layer 和 output head 可以与主模型共享。其 loss 是不同预测深度的 cross-entropy 平均后乘以权重：
+
+$$
+L_{MTP}
+=
+\lambda\frac{1}{D}
+\sum_{k=1}^{D}L_{MTP}^k
+$$
+
+DeepSeek-V3 的 MTP depth 为 1，即额外预测一个未来 token。推理时可以丢弃 MTP modules，因此主模型 inference cost 不增加；也可以保留它们作为 speculative decoding 的 draft predictor。MTP 的训练收益和 speculative decoding 收益是两件事：前者来自额外监督，后者来自额外预测被接受时减少主模型 decoding steps。
+
+MTP 也有边界：它不等价于一次性生成多个 token，不保证所有 downstream benchmark 都提升，且额外模块会增加训练显存和调度复杂度。
+
 需要注意的是，这类方法仍处在研究探索阶段。当前大规模 LLM 的主干预训练目标仍是 NTP 或其相近变体；reinforcement-style objective 更适合被理解为对特定能力瓶颈的补充，而不是已经替代 maximum likelihood 的通用范式。
 
 ## 评估与诊断

@@ -2,7 +2,7 @@
 title: Mixture of Experts
 created: 2026-02-14
 published: 2026-02-14
-modified: 2026-05-31
+modified: 2026-08-31
 type: topic
 status: mature
 area: architecture
@@ -168,6 +168,49 @@ MoE 的训练通常需要组合多种并行方式：
 - batch size 是否足以填满 experts；
 - serving 时请求是否能形成稳定 batch。
 
+## Switch Transformer：Top-1 Routing 的基线
+
+[[sources/papers/2021-switch-transformer|Switch Transformer]] 将传统 MoE 的 top-$k$ routing 简化为 top-1：每个 token 只发送给最高 probability 的一个 expert，并用该 gate value 缩放 expert output。它保留了 conditional computation 的容量优势，同时减少了每 token 的 expert computation、capacity buffer 和 dispatch/communication 开销。
+
+对一个包含 $T$ 个 tokens、$N$ 个 experts 的 routing group，Switch 的 expert capacity 为：
+
+$$
+\text{capacity}=\frac{T}{N}\times\text{capacity factor}
+$$
+
+超过 capacity 的 token 不经过该 expert FFN，而通过 residual connection 进入下一层。它使用：
+
+$$
+\mathcal{L}_{balance}=\alpha N\sum_{i=1}^{N}f_iP_i
+$$
+
+其中 $f_i$ 是实际发送到 expert $i$ 的 token 比例，$P_i$ 是 router 对 expert $i$ 分配的平均 probability mass。这个损失同时约束 hard assignment 与 soft routing probability，但不等价于严格的 device-level 或 network-level balance。
+
+Switch 的关键稳定性经验包括：router 内部使用 FP32、其余路径保留 BF16；将 initialization scale 从 1.0 降到 0.1；fine-tuning 时把 expert FFN dropout 提高到 0.4，而非 expert layers 保持 0.1。这些方法说明，router 数值稳定、expert capacity 和 downstream regularization 是一组相互关联的系统问题。
+
+在约束相同 FLOPs per token 的 T5/C4 实验中，增加 experts 从 2 到 256 能改善 pre-training sample efficiency；但 Switch 的论文结果基于 encoder-decoder 的 span-corruption objective、TPU 和 Mesh TensorFlow，不能把其速度倍率直接外推到 decoder-only NTP 或 GPU/NCCL 环境。
+
+## GShard：MoE 与 Automatic Sharding 的早期系统范式
+
+[[sources/papers/2020-gshard|GShard]] 展示了一个完整的 MoE 扩展路径：用 sparsely-gated MoE 扩大 total capacity，再用 XLA SPMD partitioner 将 expert weights 分片到不同设备。普通 Transformer layers 可以保持 replicated layout，MoE experts 则按 expert dimension shard；token 通过 router 选择 experts 后，在 group/token layout 与 expert layout 之间进行 dispatch 和 combine。
+
+GShard 的 top-2 gating 包含 expert capacity、local group dispatching、auxiliary load-balancing loss 和 second-expert random routing。超过 capacity 的 token 会跳过当前 expert computation，通过 residual connection 继续前向。这个设计说明，MoE 的 routing 不只是一个 top-k 函数，还同时决定 buffer shape、token overflow、负载均衡和通信模式。
+
+在系统层面，GShard 用 `replicate`、`split`、`shard` annotations 描述 tensor layout，再由 compiler 自动传播 sharding、插入 resharding 和生成 collective communication。MoE dispatch 的关键 layout 转换使用 `AllToAll`；contracting dimension 上的 partial result 使用 `AllReduce`；需要恢复完整 tensor 时使用 `AllGather`；halo exchange 和局部 device reorder 使用 `CollectivePermute`。
+
+这套设计与现代 expert parallel 的关系可以概括为：
+
+```text
+router top-k
+  -> capacity / local grouping
+  -> token dispatch
+  -> AllToAll to expert partitions
+  -> local expert FFN
+  -> AllToAll combine
+```
+
+GShard 在 100-language translation 上的实验中，将 expert 数从 128 扩展到 2048，并观察到高资源语言更受益于增加 experts，低资源语言则更依赖共享网络带来的 positive transfer。它因此提醒我们：expert 数、shared capacity、routing balance 和任务间 transfer 必须联合分析。
+
 ## MoE 的代价
 
 MoE 不是免费午餐。它把 dense model 的一部分计算问题，转化成了路由和系统问题。
@@ -204,9 +247,56 @@ MoE 通常不直接替代 [[architecture/attention/attention|Attention]]，而�
 
 Mixtral 是开源 MoE 路线中非常有代表性的模型之一。它让社区更直观地看到 sparse MoE 可以在开放权重生态中工作，并推动了 MoE serving、量化和微调工具的发展。
 
+### DeepSeek-V2：从 Expert Balance 到 Device Balance
+
+[[sources/papers/2024-deepseek-v2|DeepSeek-V2]] 将 DeepSeekMoE 扩展到 236B total / 21B activated parameters。除第一层外，每个 FFN 都由 2 个 shared experts 和 160 个 routed experts 组成，每个 token 激活 6 个 routed experts。Fine-grained expert segmentation 提高组合粒度，shared expert isolation 则让通用变换不必在多个 routed experts 中重复学习。
+
+Fine-grained experts 也会扩大 token 的设备访问范围。V2 的 device-limited routing 先选择包含高 affinity experts 的 $M$ 个 devices，再只在这些 devices 内进行 expert top-k；正式训练采用 $M=3$。论文观察到 $M\geq3$ 时，效果与 unrestricted routing 大致相当。这类 routing constraint 不减少激活 expert 数，而是把物理通信拓扑纳入选择空间。
+
+V2 进一步把 load balance 分为三个层次：
+
+- expert-level balance：避免 routing collapse，使 experts 获得训练信号；
+- device-level balance：均衡不同设备上的计算量，减少 straggler；
+- communication balance：均衡各设备接收的 tokens，避免网络热点。
+
+三者分别约束模型使用、device compute 和 network traffic，不能由单一 expert-count 指标替代。由于 auxiliary losses 不能保证严格均衡，V2 在 training 中以 capacity factor 1.0 丢弃每个 device 上 affinity 最低的溢出 assignments，同时保护约 10% 的 sequences 永不丢 token；evaluation 不进行 dropping。
+
+V2 与 V3 的差异应明确保留：V2 使用三类 auxiliary balance loss 和 training-time token dropping；V3 转向 auxiliary-loss-free batch-wise bias correction，只保留很小的 sequence-wise loss，并取消 training / inference token dropping。后者是后续系统演进，不应反向写成 V2 的原始做法。
+
 ### DeepSeekMoE / DeepSeek-V3
 
 DeepSeek-V3 使用 DeepSeekMoE，并结合 Multi-Head Latent Attention、auxiliary-loss-free load balancing 和 multi-token prediction。它的重要性在于把 MoE 放进一个高性价比训练和推理路线中，而不是只把 MoE 当成扩大参数量的技巧。
+
+DeepSeek-V3 的具体配置是 1 个 shared expert、256 个 routed experts，每个 token 激活 8 个 routed experts，并限制一个 token 最多被发送到 4 个节点。模型共有 671B total parameters，每个 token 激活约 37B parameters。这个数字组合同时体现了 MoE 的两个维度：total parameters 提供容量，active parameters 更接近每 token 的主要计算路径；但训练和部署仍需承担全部 experts 的存储、放置与通信成本。
+
+### Auxiliary-loss-free Routing
+
+DeepSeek-V3 没有把全局负载均衡主要交给 auxiliary loss，而是为每个 routed expert 维护一个 bias $b_i$。router 用 $s_{i,t}+b_i$ 决定 top-k expert，真正参与 expert output 加权的 gating value 仍来自原始 affinity score $s_{i,t}$：
+
+$$
+g'_{i,t}=
+\begin{cases}
+s_{i,t},&
+s_{i,t}+b_i\in\mathrm{TopK}(\{s_{j,t}+b_j\},K_r)\\
+0,&\text{otherwise}
+\end{cases}
+$$
+
+每个 training step 结束后，根据 batch-level expert load 更新 bias：overloaded expert 的 bias 减少一个更新步长，underloaded expert 的 bias 增加一个更新步长。bias 只用于 routing，不通过主 loss 反向传播，因此可以在保持负载平衡的同时减少对内容相关 routing score 的直接干扰。
+
+这并不表示模型完全不使用 balance loss。DeepSeek-V3 仍保留极小的 sequence-wise balance loss，主要用来避免单条 sequence 内出现极端失衡。这个分工很重要：
+
+- batch-wise bias update 负责全局设备和 expert load；
+- sequence-wise auxiliary loss 负责局部极端情况；
+- 原始 affinity score 负责内容相关的 expert specialization。
+
+作者的 ablation 还表明，batch-wise auxiliary loss 可以取得接近 auxiliary-loss-free 的 validation loss，而 sequence-wise balance 的约束更强，可能限制不同 domain 使用不同 experts 的自由度。
+
+### Node-Limited Routing 与 Token Dropping
+
+DeepSeek-V3 的 node-limited routing 先按照每个节点上候选 experts 的高分聚合结果选择目标节点，使每个 token 最多跨越 4 个节点。这样可以减少 InfiniBand traffic，并配合节点内 NVLink forwarding 实现更高的通信利用率。
+
+得益于负载均衡策略，DeepSeek-V3 在训练和推理中都不进行 token dropping。需要注意，这不是 MoE 的普遍性质，而是当前 routing、batch size、expert parallelism 和部署策略共同达到的结果。其他模型若仍有明显 expert overload，仍需要 capacity factor、备用 expert 或 token dropping 等机制。
 
 ### Llama 4 Scout / Maverick
 

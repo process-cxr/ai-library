@@ -2,7 +2,7 @@
 title: "Deep Reinforcement Learning from Human Preferences"
 created: 2026-05-29
 published: 2026-08-27
-modified: 2026-08-27
+modified: 2026-08-31
 type: source
 status: processed
 source_type: paper
@@ -433,7 +433,7 @@ human preference
 7. **基础实验与现代 LLM RLHF 有显著差异。** 论文使用低维/视觉控制环境、A2C/TRPO 和短 segment；LLM 还需要处理 token-level logprob、reference KL、长上下文、tool-use、批量 rollout 和大规模推理成本。
 8. **Preference accuracy 不是最终指标。** reward predictor 在 held-out comparisons 上准确，并不意味着 policy 优化后仍会产生符合人类偏好的行为；必须评估 policy rollout 和真实任务结果。
 
-## 我的理解
+## 分析与判断
 
 这篇论文真正奠定的是一种“把人类监督放在 reward model，而不是直接放在每个 action 上”的系统思路。人类只做自己擅长的判断：比较两个短行为片段；模型和 RL 系统负责把这个判断扩展到更大规模的交互数据中。
 

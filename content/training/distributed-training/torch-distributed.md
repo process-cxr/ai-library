@@ -532,6 +532,14 @@ training framework
 - process placement；
 - communication overlap。
 
+## GShard 与 Collective Communication
+
+[[sources/papers/2020-gshard|GShard]] 提供了一个理解自动分片的早期范例。它基于 XLA SPMD partitioner，根据 tensor 的 sharding annotations 自动把 full-size operator 转成 partition-sized operator，并插入 `AllReduce`、`AllGather`、`AllToAll` 和 `CollectivePermute` 等通信。
+
+GShard 中的通信语义与当前 `torch.distributed` 的 collective 抽象是相通的，但实现栈不同：GShard 主要面向 TPU/XLA，由 compiler 在 HLO 层生成通信；GPU 训练通常由 PyTorch 调用 NCCL backend 执行。阅读现代训练代码时，可以用同样的问题分析两者：通信前 tensor 按哪一维分片，通信后 layout 如何变化，为什么这里需要 reshard 而不是 local compute，以及设备拓扑是否支持这个通信模式。
+
+在 MoE 中，GShard 的 group-to-expert layout 转换使用 `AllToAll` 完成 token dispatch/combine；矩阵沿 contracting dimension 分片时使用 `AllReduce` 合并 partial results；需要把 sharded tensor 恢复为 replicated tensor 时使用 `AllGather`。这也是现代 expert parallel、tensor parallel 和 sequence/context layout 转换中反复出现的基本思路。
+
 ## 相关概念
 
 - [[training/distributed-training/data-parallel|Data Parallel]]

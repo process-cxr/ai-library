@@ -55,6 +55,24 @@ micro-batch 数越多，bubble 占比通常越低，但 activation buffering、�
 
 1F1B 是大模型训练中常见策略，因为它在显存和吞吐之间更平衡。
 
+## DualPipe 与 MoE 通信重叠
+
+DeepSeek-V3 在 16-way Pipeline Parallelism 和 64-way Expert Parallelism 上使用 DualPipe，目标是把 cross-node expert parallelism 的 all-to-all 通信隐藏在 forward / backward 计算中。
+
+一个 forward / backward chunk 会被拆成 attention、all-to-all dispatch、MLP、all-to-all combine，以及 backward for input、backward for weights 和 PP communication。DualPipe 重新安排一对 forward / backward chunks，并采用 bidirectional pipeline，同时从 pipeline 两端输入 micro-batches，使计算、expert dispatch / combine 和相邻 stage 通信尽量重叠。
+
+它的意义不只是减少 pipeline bubble。MoE 中 token 会被动态发送到远端 experts，如果 dispatch 与 MLP 串行执行，sparse computation 的收益会被网络延迟抵消。DualPipe 配合 node-limited routing、定制 all-to-all kernels、IB / NVLink 分层转发和独立 communication stream，可以把通信从显式等待变成计算期间的后台工作。
+
+相应的取舍是：
+
+- 比 1F1B 需要更多 activation buffering；
+- 需要保存两份 model parameters；
+- 调度与 debug 复杂度更高；
+- 需要根据 communication / computation ratio 手工配置资源；
+- 性能高度依赖网络拓扑和 kernel 实现。
+
+因此，DualPipe 适合超大规模、通信占比较高的 MoE 训练，不应被理解为所有 pipeline training 的默认替代方案。
+
 ## GPipe 的同步更新语义
 
 [[sources/papers/2018-gpipe|GPipe]] 的关键设计是：把一个 mini-batch 切成多个 micro-batches，先让它们流水通过所有 stages，再累积所有 micro-batch 的梯度，最后统一执行一次 optimizer update。

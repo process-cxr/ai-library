@@ -122,6 +122,12 @@ Agentic CPT 是把 agent 行为分布前移到 continued pretraining 阶段的�
 
 另一类 agentic mid-training 关注 internal world model。它不是只训练模型预测下一步 action，而是在轨迹中插入对未来路径的压缩摘要、当前信息缺口和成功概率估计，使模型在行动前形成 look-ahead planning 先验。后续 SFT 再把这种潜在能力结构化外显，RL 则用真实执行结果校准预测和 confidence。相关案例见 [[sources/papers/2026-internalizing-the-future-world-model-agentic-training|Internalizing the Future]]。
 
+### DeepSeekMath：领域能力注入案例
+
+DeepSeekMath 提供了一个非 agent 领域的能力注入案例：模型从 DeepSeek-Coder-Base-v1.5 7B 初始化，继续训练 500B tokens，其中包含 56% DeepSeekMath Corpus、4% AlgebraicStack、10% arXiv、20% GitHub code 和 10% 中英文 Common Crawl natural language。数学训练后，模型不仅在数学 benchmark 上提升，MMLU 和 BBH 也得到改善；同时加入 code tokens 帮助保持 coding performance。
+
+这个案例支持两点较稳妥的认识。第一，NTP 形式的中间训练可以通过数据分布注入结构化能力先验，数据不一定要被包装成 SFT 对话格式。第二，能力迁移依赖初始化模型、数据质量、训练顺序和 mixture：code training 对 program-aided math reasoning 的迁移较明显，但 code/math 混合在小模型上会牺牲部分无工具数学 reasoning。因此，agentic mid-training 的数据设计也应通过跨域能力和 forgetting 的联合评测来确定，而不是预先假定某种固定配方。
+
 ## 与 Reinforcement Pretraining 的关系
 
 传统 CPT 通常仍使用 next-token prediction。[[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]] 则在 continued pretraining 阶段改变目标函数。

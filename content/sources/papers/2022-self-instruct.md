@@ -2,7 +2,7 @@
 title: "Self-Instruct"
 created: 2026-05-29
 published: 2026-08-27
-modified: 2026-08-27
+modified: 2026-08-31
 type: source
 status: processed
 source_type: paper
@@ -327,7 +327,7 @@ ROUGE-L、关键词、长度和重复检查能处理明显异常，但不能判�
 
 SUPERNI 采用 ROUGE-L，且训练和评测任务可能存在风格差异；252 条 user-oriented instructions 规模较小，人工评估也带有作者判断。论文证明的是在其数据和模型设置下的 instruction-following 改善，不足以推出 Self-Instruct 对所有领域、所有模型规模和所有任务都同样有效。
 
-## 我的理解
+## 分析与判断
 
 Self-Instruct 可以看成一种“任务分布自举”方法：它先用少量人工任务给模型一个任务空间的起点，再让模型扩展 instruction，并把新任务重新放回 task pool。真正的训练信号来自后续的 input-output instances，而不是 instruction 文本本身，因此 pipeline 的瓶颈最终落在实例和答案质量上。
 

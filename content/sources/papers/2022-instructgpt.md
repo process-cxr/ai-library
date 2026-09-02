@@ -2,7 +2,7 @@
 title: "Training language models to follow instructions with human feedback"
 created: 2026-05-31
 published: 2026-08-27
-modified: 2026-08-27
+modified: 2026-08-31
 type: source
 status: processed
 source_type: paper
@@ -498,7 +498,7 @@ InstructGPT 的评测设计可以迁移到 Agent：不要只看最终任务成�
 9. **Qualitative generalization 证据有限。** code、非英语和复杂约束结果主要是案例展示，缺乏完整的定量覆盖。
 10. **论文不是 Agent training 论文。** 其 bandit-style prompt-response environment 与多轮工具交互、环境反馈和 long-horizon credit assignment 仍有明显差距。
 
-## 我的理解
+## 分析与判断
 
 InstructGPT 的历史意义不只是证明“人类反馈有效”，而是把 assistant 训练拆成了可以独立分析的几个对象：示范数据塑造基本行为，偏好数据训练可优化的 proxy，policy optimization 放大偏好，pretraining mix 负责保留底层能力，多维评估负责检查收益和副作用。
 

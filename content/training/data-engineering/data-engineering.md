@@ -2,7 +2,7 @@
 title: Data Engineering
 created: 2026-03-14
 published: 2026-03-14
-modified: 2026-07-06
+modified: 2026-08-31
 type: topic
 status: mature
 area: training
@@ -74,6 +74,18 @@ $$
 - 数据统计报告。
 
 没有 provenance，就很难解释某个 checkpoint 的能力变化，也无法在发现污染或合规问题后定位受影响数据。
+
+[[sources/papers/2023-a-pretrainers-guide-to-training-data|A Pretrainer's Guide to Training Data]] 的一个重要方法论结论是：dataset curation policy 应像 learning rate、network dimension 和 batch size 一样被记录和比较。论文对数据时间、quality filter、toxicity filter 和 domain composition 分别做了模型级消融，说明这些选择会产生可测量的 downstream 差异，而且后续 fine-tuning 不能完全抹平。
+
+因此，数据版本不能只记录“最终有多少 token”，还应记录：
+
+- 文档采集和创建时间分布，以及时间估计方法；
+- quality / toxicity classifier 的版本、阈值和 inverse filter 规则；
+- source domain 的定义、采样比例和删除 / 保留的 ablation 版本；
+- 过滤前后各 domain 的 token、文档、PII、重复率和风险变化；
+- 与数据版本绑定的 validation set、contamination report 和训练 checkpoint。
+
+这类元数据是解释模型差异的必要条件。否则，数据量、数据质量、domain coverage 和过滤策略的作用会被混在同一个训练结果里。
 
 ## 数据评估指标
 

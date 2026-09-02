@@ -2,7 +2,7 @@
 title: "Distilling Step-by-Step"
 created: 2026-05-29
 published: 2026-08-27
-modified: 2026-08-27
+modified: 2026-08-31
 type: source
 status: processed
 source_type: paper
@@ -317,7 +317,7 @@ deployment:
 
 这些目标可以共享 backbone，但使用明确的 task prefix 或字段边界，避免让长 reasoning tokens 完全占据训练信号。具体是否有效，仍需要在 agent 数据上做 controlled ablation，而不能直接照搬论文中的 loss 权重。
 
-## 我的理解
+## 分析与判断
 
 这篇论文最核心的贡献，可以浓缩成一句话：**把大模型生成的 rationale 从“解释 label 的附属文本”变成 student 的辅助学习任务，并通过 multi-task training 让它在训练阶段帮助 label prediction、在推理阶段又可以被移除。**
 

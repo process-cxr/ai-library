@@ -429,6 +429,18 @@ GRPO 训练中要持续监控：
 
 **GRPO 简化了 value model，但没有消除 credit assignment 问题。** 它把 response-level 相对好坏广播到 tokens，中间推理步骤的归因仍然粗糙。
 
+## DeepSeekMath 的实证配方
+
+DeepSeekMath 在数学 reasoning 任务上给出了一组较完整的 GRPO 对照。它从 DeepSeekMath-Instruct 7B 开始，使用约 144K 条来自 GSM8K 和 MATH 的 CoT-format questions；每个 question 采样 64 条 outputs，policy learning rate 为 `1e-6`，reward model learning rate 为 `2e-5`，KL coefficient 为 `0.04`，max response length 为 `1024`，training batch size 为 `1024`，每个 exploration stage 后只进行一次 policy update。
+
+论文的对照并不只比较 PPO 和 GRPO，而是把训练方法拆成三个因素：data source、reward function 和 gradient coefficient。RFT 使用初始 SFT policy 的离线采样，Online RFT 使用实时 policy 的在线采样；GRPO 在在线采样之外，还利用 group-relative reward 对高质量和低质量 responses 分别进行强化与抑制。因此，GRPO 相对 Online RFT 的收益不能简单归因于“用了更多 rollout”。
+
+论文还比较了 outcome supervision 和 process supervision。Outcome supervision 将最终 normalized reward 广播到整条 response；process supervision 在每个 reasoning step 末尾提供 reward，并把后续 process rewards 累积为 token-level advantage。实验中 process-supervised GRPO 优于 outcome-supervised GRPO，说明在长 reasoning 中，step-aware credit assignment 具有实际价值，但前提是 process reward model 足够可靠。
+
+Iterative GRPO 会根据当前 policy 的新 samples 持续更新 reward model，并用 replay buffer 保留约 10% historical data；每轮把当前 policy 设为新的 reference model。论文的两轮实验显示第一轮迭代收益最明显，说明当 policy 分布变化后，固定的 reward model 和固定的 offline samples 可能逐渐失配。
+
+DeepSeekMath 对 RL 收益的解释也值得保留：RL 明显提高 `Maj@K`，但没有明显提高 `Pass@K`。因此，GRPO 在该实验中主要使已有正确 response 更容易被采样并通过 majority aggregation 选出，未必等价于大幅抬高 capability ceiling。评估 reasoning RL 时，应同时报告 single-sample success、`Pass@K`、`Maj@K`、response diversity 和 OOD performance。
+
 ## 在 Pretraining / Mid-training 中的迁移
 
 GRPO 的 group-relative 思想并不只属于后训练。只要能为同一输入构造多候选 action，并能给候选打分，就可以形成类似 group-relative policy update。

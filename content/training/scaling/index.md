@@ -21,7 +21,7 @@ Scaling 模块关注模型参数量、训练 token、计算量、loss 和训练�
 - [[training/scaling/training-budget|训练预算]]
 - [[training/scaling/compute-optimal|Compute Optimal]]
 
-## Related Source TODOs
+## Related Sources
 
 - [[sources/papers/2020-scaling-laws-for-neural-language-models|Scaling Laws for Neural Language Models]]
 - [[sources/papers/2022-training-compute-optimal-large-language-models|Training Compute-Optimal Large Language Models]]

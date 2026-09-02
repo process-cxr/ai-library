@@ -2,7 +2,7 @@
 title: Quality Filtering
 created: 2026-03-14
 published: 2026-03-14
-modified: 2026-05-31
+modified: 2026-08-31
 type: topic
 status: mature
 area: training
@@ -130,6 +130,24 @@ Model-based scoring 的优势是语义能力强，能处理规则和 PPL 难以�
 
 过滤强度过低会保留噪声；过高会造成数据单一、覆盖不足和偏差放大。很多情况下，质量分数更适合转成 sampling weight，而不是绝对保留/删除。
 
+## 经验依据：过滤器改变的是训练分布
+
+[[sources/papers/2023-a-pretrainers-guide-to-training-data|A Pretrainer's Guide to Training Data]] 在 C4 和 The Pile 上对 quality / toxicity filter 做了系统消融。论文使用的 quality classifier 以 Wikipedia、Books 等语料作为高质量参考，并输出一个从 0（更像高质量文本）到 1（更像低质量文本）的分数。实验发现，去掉被判为低质量的文档后，1.5B 模型在多数 QA domain 上提升约 1%-6%，toxicity identification 也有约 2% 的提升，即使训练数据减少了 10% 以上。
+
+但这个结果不能解释为“过滤越强越好”。QA 平均性能在较温和的质量阈值附近更好，Books QA 甚至可能因 quality filtering 下降；Academic 和 BioMed 文本虽然在通用 classifier 上分数偏低，相关任务却可能从过滤中获得较大收益。这说明 quality score 既反映质量，也反映文体和来源偏好，不能作为跨 domain 的 ground truth。
+
+论文还观察到，quality filtering 与 inverse quality filtering 都可能提高 toxic generation。由此需要把质量、风险和目标能力拆开评估，而不是用一个总分决定数据是否保留。
+
+## 质量过滤的落地原则
+
+对于大规模训练，质量过滤更适合被当作可版本化的训练变量：
+
+- 同时保存过滤前后的 token count、domain coverage、语言分布和风险统计；
+- 对不同 domain / language 使用独立阈值或采样权重，避免一个通用 classifier 支配所有数据；
+- 用多个过滤强度训练 small proxy models，比较 total loss、domain loss、目标 benchmark、diversity 与安全指标；
+- 对边界样本和高价值专业数据做人工抽样，确认 classifier 没有把专业性误判为低质量；
+- 把过滤版本、模型版本和阈值写入 provenance，保证不同训练 run 可解释。
+
 ## 常见失败模式
 
 - **把 PPL 低等同于高质量**：模板化和重复文本也可能 PPL 很低。
@@ -138,6 +156,14 @@ Model-based scoring 的优势是语义能力强，能处理规则和 PPL 难以�
 - **过度过滤 web data**：损失长尾知识、真实噪声和用户表达。
 - **忽略数据污染**：高质量题解如果泄漏 benchmark，仍然不适合训练。
 - **只看过滤后平均质量**：没有检查 domain coverage 和 diversity。
+
+## DataComp-LM 的对照证据
+
+[[sources/papers/2024-datacomp-lm|DataComp-LM]] 在固定 model、token budget、training recipe 和 evaluation suite 下比较了多种 model-based quality filters。1B-1x scale 的 CORE / EXTENDED 结果中，fastText classifier（以 OpenHermes-2.5 和高分 ELI5 内容作为 positive reference）为 `30.2 / 15.4`，高于 perplexity filtering 的 `29.0 / 15.0`、top-k average logits 的 `29.2 / 14.7` 和 AskLLM 的 `28.6 / 14.3`。
+
+这个结果不意味着 fastText 在所有场景都优于更大的 scorer，而是说明过滤器的 reference data、阈值和目标任务同样重要。DataComp-LM 中 AskLLM 与人工标签的 ROC-AUC 更高，但用 AskLLM 筛出的数据训练模型效果反而低于 fastText，说明“更符合人工质量判断”不等于“更适合 language model pre-training”。
+
+DataComp-Baseline 最终使用 fastText score 保留 top 10% documents。top 10% 在 CORE / MMLU 上优于 top 15% 和 top 20%，但 EXTENDED 并非严格随过滤强度单调提升。因此，quality threshold 应通过固定预算的 small proxy ablation 选择，并同时观察目标能力、长尾覆盖、diversity 和风险指标。
 
 ## 相关概念
 

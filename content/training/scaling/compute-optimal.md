@@ -50,7 +50,17 @@ $$
 
 ## Kaplan 与 Chinchilla 的差异
 
-早期 Kaplan-style scaling 给出的 compute-optimal 分配更偏向增大模型规模。其经验影响是：在给定 compute 下，训练非常大的模型，即使 token 数相对不多，也可能取得不错 loss。
+早期 Kaplan-style scaling 给出的 compute-optimal 分配更偏向增大模型规模。其经验拟合为：
+
+$$
+N_{opt}\propto C^{0.73},
+\qquad
+D_{opt}\propto C^{0.27}
+$$
+
+同时，batch size 约按 $C^{0.24}$ 增长，而 batch-adjusted serial steps 仅按 $C^{0.03}$ 增长。其经验影响是：在给定 compute 下，训练非常大的模型，即使 token 数相对不多，也可能取得不错 loss。
+
+这一结果建立在 Kaplan 论文对 WebText2、Transformer learning curve 和 critical batch size 的联合拟合上。它不能简单理解为“参数永远比数据重要”，而应理解为特定实验 regime 下的 compute-efficient frontier。论文还指出，这种分配会让数据增长速度逐渐落后于控制 overfitting 所需的数据增长速度，因此 scaling law 在更大规模上必须修正。
 
 Chinchilla-style scaling 重新评估了这一点，认为许多大模型是 data-undertrained。它给出的重要经验判断是：固定 compute 下，模型大小和训练 token 数应更均衡地增长。常见简化规则是：
 
@@ -64,6 +74,18 @@ $$
 | Chinchilla-style | 参数量与 token 数更均衡增长 | 需要更多高质量数据，数据重复和质量成为瓶颈 |
 
 这不是说 Kaplan “错误”而 Chinchilla “永远正确”。更准确地说，不同实验范围、数据质量、模型族和拟合方法会给出不同分配。Chinchilla 的长期影响在于提醒训练者：参数不是唯一规模，数据 token 也是同等重要的扩展轴。
+
+## Chinchilla 的实验依据
+
+Chinchilla 通过 400 多个不同规模和训练时长的 Transformer language model 估计 compute-optimal frontier。论文使用三种方法交叉验证参数量 $N$ 与训练 token 数 $D$ 随 compute $C$ 的增长关系：从训练曲线中取每个 compute 位置的最低 loss、构造 IsoFLOP profiles 寻找 loss valley，以及拟合
+
+$$
+L(N,D)=E+\frac{A}{N^\alpha}+\frac{B}{D^\beta}
+$$
+
+后三种方法得到的 exponents 都接近均衡扩展：$N_{opt}\propto C^{0.46\sim0.50}$，$D_{opt}\propto C^{0.50\sim0.54}$。在 Gopher 的训练预算附近，论文据此训练了 70B 参数、约 1.4T tokens 的 Chinchilla；它与 280B、约 300B tokens 的 Gopher 使用相近的 training FLOPs，但在 MMLU、BIG-bench、阅读理解、常识和问答等任务上整体更好。
+
+这个实验支持的是“固定 compute 下需要重新平衡模型与数据”，而不是一个脱离上下文的 20 tokens/parameter 定律。Chinchilla 与 Gopher 在 optimizer、tokenizer、precision 和 batch 等方面并非完全相同，且大规模直接对照数量有限，因此实际项目仍需要 pilot runs 和目标能力评测。
 
 ## Undertraining 与 Overtraining
 
@@ -95,6 +117,30 @@ Compute optimal 改变的是训练项目的默认问题。
 - 是否训练小而充分的模型，还是大而可继续扩展的模型；
 - 推理成本和 serving 架构；
 - 后训练阶段能否稳定提升。
+
+## Kaplan-style 的训练时间视角
+
+Kaplan 论文将 loss 拆成 model-size error 与 training-time error：
+
+$$
+L(N,S_{min})=
+\left(\frac{N_c}{N}\right)^{\alpha_N}
++\left(\frac{S_c}{S_{min}}\right)^{\alpha_S}
+$$
+
+其中 $\alpha_S\approx0.76$。结合 critical batch size 后，论文认为 compute-efficient training 不必把模型训练到非常接近 convergence：在其拟合中，约高于 converged loss 10% 的状态已经接近 compute-efficient frontier。与之相比，把差异压到约 2% 需要更多 serial updates 和更高 compute。
+
+这个结论更适合作为训练预算中的 trade-off 参考，而不是统一 stopping rule。模型是否应该继续训练，要同时考虑数据是否会重复、目标能力是否仍在增长、推理成本、后续适配和部署约束。
+
+## Critical Batch Size
+
+固定 compute 时，batch size 不能只按“越大越快”理解。Kaplan 论文沿用 gradient noise scale 的经验关系：在 $B$ 不超过 $B_{crit}$ 的区域，增大 batch 可以减少串行 steps，同时保持相近的 compute efficiency；当 $B\gg B_{crit}$ 时，继续增大 batch 的收益明显递减。
+
+$$
+B_{crit}(L)\approx\frac{B^*}{L^{1/\alpha_B}}
+$$
+
+其 WebText2 拟合约为 $B^*\approx2\times10^8$ tokens、$\alpha_B\approx0.21$。$B_{crit}$ 主要随当前 loss 变化，不能仅由 model size 预先决定。使用分布式 data parallel 时，global batch、gradient accumulation、每卡 micro-batch 和当前 loss 应一起记录；否则不同 run 的 update steps 不能直接比较。
 
 ## 实践决策流程
 
