@@ -93,6 +93,11 @@
   }
 }
 
+// Keep grouped explorers visually distinct without introducing another divider line.
+.explorer + .explorer {
+  margin-top: 1.25rem;
+}
+
 button.mobile-explorer,
 button.desktop-explorer {
   background-color: transparent;

@@ -2,7 +2,7 @@
 title: Negative Log-Likelihood
 created: 2025-12-27
 published: 2025-12-27
-modified: 2025-12-27
+modified: 2026-09-07
 type: topic
 status: growing
 area: fundamentals
@@ -17,7 +17,7 @@ aliases:
 
 ## 概念界定
 
-负对数似然是最大似然估计中的常见损失形式，表示模型给真实观测数据分配的概率有多低。概率越高，负对数似然越小；概率越低，负对数似然越大。
+Negative Log-Likelihood，NLL，是模型对已观测数据所赋 likelihood 的负对数。模型给观测数据的概率越高，NLL 越小；概率越低，NLL 越大。它是 [[fundamentals/probability/maximum-likelihood|Maximum Likelihood Estimation]] 的最小化形式，也是语言模型 token-level loss 的直接统计解释。
 
 ## 背景与问题
 
@@ -25,16 +25,37 @@ aliases:
 
 ## 定义与记号
 
-给定样本 `x`，模型概率为 `p_θ(x)`，负对数似然为：
+给定样本 $x$，模型概率为 $p_\theta(x)$，负对数似然为：
+
+$$
+\operatorname{NLL}(x)=-\log p_\theta(x)
+$$
+
+对于自回归 token 序列 $x_1,\ldots,x_T$：
+
+$$
+\operatorname{NLL}(x_{1:T})
+=-\sum_{t=1}^{T}\log p_\theta(x_t\mid x_{<t})
+$$
+
+这里的 sequence NLL 是各 token NLL 之和，因此会随序列长度自然增大。跨不同长度样本比较时，通常使用有效 token 上的平均 NLL。
+
+## 与 Cross Entropy 的边界
+
+Cross Entropy 是数据分布 $p$ 下对模型负对数概率的期望：
+
+$$
+H(p,q)=\mathbb{E}_{x\sim p}[-\log q(x)]
+$$
+
+NLL 则是在具体观测样本上计算 $-\log q(x)$。训练集平均 NLL 是 Cross Entropy 的 empirical estimate；对于 categorical output 和 one-hot target，单样本 Cross Entropy 与 target NLL 数值相同。
+
+因此，更准确的关系是：
 
 ```text
-NLL(x) = -log p_θ(x)
-```
-
-对于序列：
-
-```text
-NLL(x_1, ..., x_T) = -Σ_t log p_θ(x_t | x_<t)
+Maximum Likelihood：参数估计原则
+  -> minimize dataset NLL
+  -> empirical Cross Entropy objective
 ```
 
 ## 直观解释
@@ -43,44 +64,24 @@ NLL(x_1, ..., x_T) = -Σ_t log p_θ(x_t | x_<t)
 
 ## 基本性质
 
-- NLL 是自信息在模型分布下的形式。
-- 对 one-hot 分类任务，NLL 与交叉熵损失形式相同。
+- NLL 是观测结果在模型分布下的 self-information。
+- 对 one-hot categorical target，target NLL 与 Cross Entropy 数值相同。
 - 使用 log 可以把概率乘积变成求和，提升数值稳定性。
-- 序列越长，总 NLL 通常越大，因此常看平均 NLL。
+- 总 NLL、token-average NLL 和 sequence-average NLL 的聚合含义不同。
+- loss mask 会决定哪些 target tokens 被纳入 NLL。
 
 ## 示例
 
-如果模型给真实 token 的概率为：
-
-```text
-p_θ(y | x) = 0.8
-```
-
-则：
-
-```text
-NLL = -log 0.8
-```
-
-如果概率为：
-
-```text
-p_θ(y | x) = 0.01
-```
-
-则 NLL 明显更大。
+如果模型给真实 token 的概率为 $p_\theta(y\mid x)=0.8$，则 $\operatorname{NLL}=-\log0.8\approx0.223$。如果概率降至 $0.01$，NLL 增至约 $4.605$。
 
 ## 常见误解
 
-- 误解：NLL 和交叉熵完全无关。
-  - 正确理解：one-hot 标签下，交叉熵就是真实类别的 NLL。
-- 误解：总 NLL 可以直接比较不同长度文本。
-  - 正确理解：长度不同会影响总和，通常需要看平均 token NLL 或困惑度。
-- 误解：NLL 低表示模型所有能力都强。
-  - 正确理解：NLL 主要衡量概率预测质量，不直接覆盖指令跟随、工具使用或推理能力。
+- **NLL 和 Cross Entropy 完全相同。** 两者在 one-hot categorical target 下数值相同，但一个描述样本 loss，一个描述分布期望。
+- **总 NLL 可以直接比较不同长度文本。** 长度会影响总和，通常需要看平均 token NLL、bits per byte 或 Perplexity。
+- **NLL 低表示模型所有能力都强。** NLL 主要衡量目标数据上的概率预测，不直接覆盖 instruction following、tool use 或 reasoning。
 
 ## 相关概念
 
-- [[fundamentals/probability/maximum-likelihood|最大似然估计]] — NLL 是最大似然的最小化形式。
-- [[fundamentals/information-theory/cross-entropy|交叉熵]] — one-hot 标签下与 NLL 等价。
-- [[fundamentals/information-theory/perplexity|困惑度]] — 平均 NLL 的指数形式。
+- [[fundamentals/probability/maximum-likelihood|最大似然估计]]：NLL 是最大似然的最小化形式。
+- [[fundamentals/information-theory/cross-entropy|交叉熵]]：one-hot 标签下与 NLL 等价。
+- [[fundamentals/information-theory/perplexity|困惑度]]：平均 NLL 的指数形式。

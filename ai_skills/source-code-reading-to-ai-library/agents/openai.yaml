@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Code Reading to AI Library"
+  short_description: "Trace codebases into durable AI Library project notes"
+  default_prompt: "Use $source-code-reading-to-ai-library to trace this repository and organize the findings as an AI Library source-reading project."

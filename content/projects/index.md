@@ -2,7 +2,7 @@
 title: "Projects"
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-07-08
+modified: 2026-09-02
 ---
 
 个人实验、复现、Demo 和工程实践记录。
@@ -25,3 +25,4 @@ modified: 2026-07-08
 
 - [[projects/claude-code/|Claude Code]]
 - [[projects/megatron-lm-source-reading/|Megatron-LM Source Reading]]
+- [[projects/verl-source-reading/|verl Source Reading]]

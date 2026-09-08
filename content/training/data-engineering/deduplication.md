@@ -110,6 +110,17 @@ Benchmark contamination 是去重中最敏感的场景。训练数据如果包�
 
 因此，去重阈值应按数据源和目标能力区分。代码、网页、书籍、论文、多语言数据不应机械使用同一阈值。
 
+## Content uniqueness 与 training exposure
+
+原始数据中的重复和训练配方中的有意 repetition 需要分开记录。前者是 data cleaning 问题，通常包括重复抓取、镜像网页、fork、模板和 benchmark overlap；后者是 data-mix 问题，可能为了维持高价值 domain 的采样比例而主动重复一份已经清洗过的数据。
+
+因此，完成 deduplication 并不意味着训练中每个 token 只能出现一次。一个 domain 可以先做 source-level、cross-source 和 train-eval dedup，再在训练 sampler 中增加有限 exposure。关键是同时保存两组统计：
+
+- **Content uniqueness**：unique document、paragraph、token cluster 及其来源；
+- **Training exposure**：训练 token stream 中每类内容实际被呈现的次数。
+
+如果只报告去重后的 corpus size，无法知道小 domain 是否在训练中被重复了多次，也无法判断某个能力收益来自更大 unique coverage 还是更高 exposure。[[sources/papers/2026-scaling-domain-data-repetition|Scaling Domain Data Repetition in LLM Pretraining]] 的结果表明，repetition tolerance 依赖 domain、model size、TPP 和 learning-rate schedule；它不是一个可以由 dedup rate 单独决定的全局常数。
+
 ## 常见实践建议
 
 - 保留去重前后的 token count、document count 和来源分布。
@@ -128,6 +139,7 @@ Benchmark contamination 是去重中最敏感的场景。训练数据如果包�
 - **忽略 benchmark 变体**：题目改写和答案解析仍可能污染训练集。
 - **没有保留 cluster 信息**：无法解释哪些数据被删除以及为什么。
 - **把去重等同于质量过滤**：去重解决重复，不直接判断语义质量。
+- **把清洗重复和训练重复混为一谈**：前者控制无信息复制与 contamination，后者是需要单独 sweep 和评估的 sampling policy。
 
 ## DataComp-LM 的工程对照
 
@@ -143,3 +155,4 @@ Benchmark contamination 是去重中最敏感的场景。训练数据如果包�
 - [[training/pretraining/data-mix|Data Mix]]
 - [[application/evaluation/evaluation|Evaluation]]
 - [[sources/papers/2021-deduplicating-training-data-makes-language-models-better|Deduplicating Training Data Makes Language Models Better]]
+- [[sources/papers/2026-scaling-domain-data-repetition|Scaling Domain Data Repetition in LLM Pretraining]]

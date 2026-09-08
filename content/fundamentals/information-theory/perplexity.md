@@ -2,7 +2,7 @@
 title: Perplexity
 created: 2025-12-28
 published: 2025-12-28
-modified: 2025-12-28
+modified: 2026-09-07
 type: topic
 status: growing
 area: fundamentals
@@ -25,23 +25,23 @@ aliases:
 
 ## 定义与记号
 
-如果平均交叉熵为：
+如果有效 token 上的平均 NLL 为：
 
-```text
-H = - (1/T) Σ_t log p_θ(x_t | x_<t)
-```
+$$
+H=-\frac{\sum_t m_t\log p_\theta(x_t\mid x_{<t})}{\sum_t m_t}
+$$
 
-使用自然对数时，困惑度定义为：
+其中 $m_t$ 是 loss mask。使用自然对数时：
 
-```text
-PPL = exp(H)
-```
+$$
+\operatorname{PPL}=e^H
+$$
 
 如果使用以 2 为底的对数：
 
-```text
-PPL = 2^H
-```
+$$
+\operatorname{PPL}=2^H
+$$
 
 ## 直观解释
 
@@ -53,6 +53,7 @@ PPL = 2^H
 
 - 困惑度越低，通常表示语言建模能力越好。
 - 困惑度依赖数据集、tokenizer、预处理和上下文长度。
+- loss mask 与 reduction 会改变平均 NLL，进而改变 PPL。
 - 不同 tokenizer 或不同评测集上的困惑度不能随意横向比较。
 - 困惑度主要衡量 next-token prediction，不直接衡量指令跟随、事实性或推理能力。
 
@@ -98,6 +99,19 @@ BPB = total negative log2 likelihood / number of bytes
 
 这样可以减弱不同 tokenizer 粒度带来的不可比问题。
 
+## Mask 与 Reduction
+
+PPL 只有在 $H$ 是 token-average NLL 时才具有通常的解释。若先对每条 sequence 求平均，再对 sequences 等权平均，短序列和长序列获得相同权重，结果一般不同于对全体有效 tokens 直接求平均。
+
+SFT 还可能只评估 assistant tokens，而 pre-training evaluation 通常覆盖绝大多数文本 tokens。即使使用同一模型和同一数据，mask 不同也会得到不同 PPL。记录结果时至少需要说明：
+
+- tokenizer 与 vocabulary；
+- evaluation corpus 和 context construction；
+- BOS、EOS、padding 等 token 的处理；
+- loss mask；
+- token mean 或 sequence mean；
+- sliding-window evaluation 是否重复计算部分 tokens。
+
 ## 示例
 
 如果一个模型在测试集上的平均 NLL 是：
@@ -127,7 +141,7 @@ PPL = exp(2.0) ≈ 7.39
 
 ## 相关概念
 
-- [[fundamentals/information-theory/cross-entropy|交叉熵]] — 困惑度来自平均交叉熵。
-- [[fundamentals/information-theory/negative-log-likelihood|负对数似然]] — PPL 是平均 NLL 的指数形式。
-- [[application/evaluation/evaluation|评测与 Benchmark]] — 困惑度只是评测指标之一。
-- [[training/pretraining/pretraining|预训练]] — 预训练模型常用语言建模指标评估。
+- [[fundamentals/information-theory/cross-entropy|交叉熵]]：困惑度来自平均交叉熵。
+- [[fundamentals/information-theory/negative-log-likelihood|负对数似然]]：PPL 是平均 NLL 的指数形式。
+- [[application/evaluation/evaluation|评测与 Benchmark]]：困惑度只是评测指标之一。
+- [[training/pretraining/pretraining|预训练]]：预训练模型常用语言建模指标评估。
