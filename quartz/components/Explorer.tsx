@@ -16,7 +16,9 @@ export interface Options {
   folderDefaultState: "collapsed" | "open"
   folderClickBehavior: "collapse" | "link"
   useSavedState: boolean
+  stateKey: string
   homeDefaultOpenPaths: string[]
+  flattenPaths: string[]
   sortFn: (a: FileTrieNode, b: FileTrieNode) => number
   filterFn: (node: FileTrieNode) => boolean
   mapFn: (node: FileTrieNode) => void
@@ -27,7 +29,9 @@ const defaultOptions: Options = {
   folderDefaultState: "collapsed",
   folderClickBehavior: "link",
   useSavedState: true,
+  stateKey: "fileTree",
   homeDefaultOpenPaths: [],
+  flattenPaths: [],
   mapFn: (node) => {
     return node
   },
@@ -71,7 +75,9 @@ export default ((userOpts?: Partial<Options>) => {
         data-behavior={opts.folderClickBehavior}
         data-collapsed={opts.folderDefaultState}
         data-savestate={opts.useSavedState}
+        data-state-key={opts.stateKey}
         data-home-open-paths={JSON.stringify(opts.homeDefaultOpenPaths)}
+        data-flatten-paths={JSON.stringify(opts.flattenPaths)}
         data-data-fns={JSON.stringify({
           order: opts.order,
           sortFn: opts.sortFn.toString(),

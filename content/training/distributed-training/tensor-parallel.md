@@ -2,7 +2,7 @@
 title: Tensor Parallel
 created: 2026-03-22
 published: 2026-03-22
-modified: 2026-07-06
+modified: 2026-09-07
 type: topic
 status: mature
 area: training
@@ -107,6 +107,24 @@ Self-Attention:
 论文还使用两个 autograd-aware operator 表达 forward/backward 的通信位置：`g` 在 forward 执行 AllReduce、backward 保持 identity；`f` 在 forward 保持 identity、backward 执行 AllReduce。这个设计说明通信语义可以嵌入计算图，而不必由训练循环手工拼接。
 
 Vocabulary Parallel 处理 input embedding 和 output projection。input embedding 沿 vocabulary dimension 分片；output projection 则将 vocabulary-sized projection 与 cross-entropy 融合，避免为了计算标量 loss 而 AllGather 完整 logits。
+
+### Vocabulary-Parallel Cross Entropy
+
+当 LM Head 沿 vocabulary dimension 切分时，每个 TP rank 只持有形状约为 $[B,T,V/TP]$ 的 local logits。Cross Entropy 只需要 global max、global sum-exp 和真实 target 对应的 logit，因此可以用少量 collective 直接得到 loss：
+
+```text
+local logits
+  -> AllReduce(MAX): global max
+  -> local exp sum
+  -> AllReduce(SUM): global sum-exp
+  -> target owner 提供 target logit
+  -> AllReduce(SUM): global target logit
+  -> cross entropy
+```
+
+Backward 在每个 vocabulary shard 上计算 local $q-p$，不需要恢复完整 vocabulary gradient。这样避免了对 $[B,T,V]$ logits 的 AllGather，尤其适合大 vocabulary 和长 sequence。Megatron-Core 的实现入口是 [`tensor_parallel/cross_entropy.py`](https://github.com/process-cxr/Megatron-LM-study/blob/465264b7dd8fe51d2437b5ea3a238760b4bf1c6c/megatron/core/tensor_parallel/cross_entropy.py#L13)；fused variant 还会合并部分计算和 collective，减少中间结果与 kernel launch。
+
+这里仍需注意 loss normalization 属于另一维语义：Vocabulary Parallel 解决 $V$ 维分片，DP/CP/packing 则可能改变有效 token 如何跨 ranks 聚合。得到每个 token 的正确 CE，不代表 batch-level reduction 已经自动正确。
 
 读这部分源码或实现时，应该始终同时追踪三件事：当前 tensor 沿哪个维度分片、当前通信属于哪个 TP process group、通信完成后输出是 replicated 还是仍然 sharded。
 

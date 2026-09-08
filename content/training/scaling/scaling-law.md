@@ -188,6 +188,17 @@ $$
 
 Scaling law 最适合回答“在相似条件下继续扩大会怎样”。当训练数据、模型结构、目标函数或 tokenizer 发生大变化时，原来的曲线只能作为参考，不能当作保证。
 
+## TPP scaling 与 domain repetition
+
+数据受限的 domain 训练还需要区分两种跨规模设置：
+
+- **固定总数据量 $D$**：模型规模增加，但 observation count 不增加。模型容量扩大后，重复样本中的 noise-fitting 可能更早占主导，最优 repetition count 可能下降；
+- **固定 tokens-per-parameter $TPP=D/N$**：模型变大时，训练 token budget 同步增长。新增数据可以继续提供 knowledge-acquisition signal，最优 repetition count 可能轻微上升。
+
+[[sources/papers/2026-scaling-domain-data-repetition|Scaling Domain Data Repetition in LLM Pretraining]] 在 code、math、Wikipedia 和 medical domain 上做了对照。固定 TPP 时，最优 repetition 与 model size 呈温和正相关；但 domain validation loss 的影响更强，与最优 repetition 的 Pearson correlation 约为 `-0.944`，而 unique data fraction 在测试范围内的 correlation 约为 `0.018`。这不是说 unique data 不重要，而是说 unique fraction 主要改变 loss 的绝对水平，未明显改变曲线最低点所在的 repetition 区间。
+
+这组结果给出一个适合数据受限训练的 proxy 原则：repetition sweep 应在与目标 run 相同的 TPP 和相近优化 recipe 下进行，不能只保持训练步数、domain token 数或 batch size 相同。每个 domain 都应单独记录 unique tokens、repetition count、最终 exposure、IID loss 和 OOD loss。论文中的理论解释把收益与代价分为 knowledge acquisition 和 noise fitting 两项，适合作为机制判断，但不应把 one-hot linear regression 的量级公式直接当成真实 Transformer 的定量 scaling law。
+
 ## 常见误解
 
 - **误解：scaling law 能预测所有能力。**
@@ -213,3 +224,4 @@ Scaling law 最适合回答“在相似条件下继续扩大会怎样”。当�
 - [[fundamentals/information-theory/perplexity|Perplexity]]
 - [[sources/papers/2020-scaling-laws-for-neural-language-models|Scaling Laws for Neural Language Models]]
 - [[sources/papers/2022-training-compute-optimal-large-language-models|Training Compute-Optimal Large Language Models]]
+- [[sources/papers/2026-scaling-domain-data-repetition|Scaling Domain Data Repetition in LLM Pretraining]]

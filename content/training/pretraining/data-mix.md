@@ -48,6 +48,22 @@ $$
 
 例如，代码数据在原始 corpus 中可能只占少数，但训练时可以被上采样，以增强程序能力。低资源语言也常被上采样，否则它们会被英语网页数据淹没。上采样的代价是重复 epoch 增加，过拟合和模式重复风险上升。
 
+### Domain repetition：用 exposure 补偿数据稀缺
+
+当高质量 domain data 的 unique corpus 扩展速度低于总训练预算时，直接维持原始比例会让该 domain 在更大训练中逐渐被稀释。此时可以有意增加它的 training exposure，但必须把 unique data fraction 和 repetition count 分开记录：
+
+$$
+\text{domain presentations}
+=
+\text{unique domain tokens}
+\times
+\text{repetition count}
+$$
+
+重复更多 unique data 不等于获得同量的新信息。它可能提高目标 domain 的学习充分度，也可能让模型更早记忆样本特定模式。[[sources/papers/2026-scaling-domain-data-repetition|Scaling Domain Data Repetition in LLM Pretraining]] 在固定 TPP 的实验中发现，最优 repetition 强烈依赖 domain 的 validation loss：较易学习、最终 loss 较低的 domain 通常更能承受重复；在论文测试范围内，Math 的 repetition tolerance 高于 Code、Wikipedia 和 Medical。
+
+因此，domain repetition 不应使用一个全局 epoch 数解决。更合理的流程是：在与目标模型保持相同 TPP 的 proxy model 上按 domain sweep repetition count，同时观察 IID loss、OOD loss、下游能力和 memorization-sensitive 指标。论文还显示，固定总 domain fraction 时，用 repeated token 替换 unique token 的代价具有明显 domain 差异；repetition 是数据不足时的折中，不是 unique data 的等价替代。
+
 ## Quality 比 Quantity 更关键
 
 Data mix 需要和 [[training/data-engineering/quality-filtering|Quality Filtering]]、[[training/data-engineering/deduplication|Deduplication]] 联动。低质量 token 会消耗 compute，却不一定提供有效信息。
@@ -155,6 +171,8 @@ Data mix 需要用分域评测闭环，而不是只看总 validation loss。
 - 各 domain 的 quality、toxicity、PII 和时间分布；
 - general、domain-specific、long-context 和目标能力 validation loss；
 - 每个 ablation 版本的训练预算、tokenizer、优化 recipe 和 downstream 结果。
+- 每个 domain 的 unique token 数、repetition count、最终 token presentations 和 exposure 分布；
+- repetition 所处的 learning-rate schedule，以及 domain IID / OOD validation loss 的曲线。
 
 这样才能区分“数据更多带来的收益”“来源异构性带来的收益”和“过滤策略改变分布带来的收益”。
 
@@ -172,7 +190,7 @@ DeepSeek-V3 的 tokenizer 也与 data mix 强耦合：它使用 128K byte-level 
 ## 常见失败模式
 
 - **把更多数据等同于更好数据**：名义 token 增加不一定带来有效 token 增加。
-- **忽略重复 epoch**：小而高质量的数据被过度上采样后可能造成过拟合。
+- **忽略重复 epoch**：小而高质量的数据被过度上采样后可能造成过拟合；重复容忍度应按 domain 和 TPP 测量。
 - **只用总 validation loss 决策**：会掩盖关键领域能力退化。
 - **混入过多低质合成数据**：模型会学习模板化、错误或过窄分布。
 - **过滤策略过强**：可能丢失长尾知识、真实噪声和低资源语言。
@@ -208,5 +226,6 @@ DataComp-LM 的另一个重要做法是使用 small proxy models 先比较数据
 - [[training/scaling/model-data-compute|Model Data and Compute]]
 - [[sources/papers/2021-the-pile|The Pile]]
 - [[sources/papers/2023-a-pretrainers-guide-to-training-data|A Pretrainer's Guide to Training Data]]
+- [[sources/papers/2026-scaling-domain-data-repetition|Scaling Domain Data Repetition in LLM Pretraining]]
 - [[sources/papers/2023-refinedweb|RefinedWeb]]
 - [[sources/papers/2024-datacomp-lm|DataComp-LM]]

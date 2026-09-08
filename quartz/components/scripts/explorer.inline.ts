@@ -8,7 +8,9 @@ interface ParsedOptions {
   folderClickBehavior: "collapse" | "link"
   folderDefaultState: "collapsed" | "open"
   useSavedState: boolean
+  stateKey: string
   homeDefaultOpenPaths: string[]
+  flattenPaths: string[]
   sortFn: (a: FileTrieNode, b: FileTrieNode) => number
   filterFn: (node: FileTrieNode) => boolean
   mapFn: (node: FileTrieNode) => void
@@ -20,7 +22,7 @@ type FolderState = {
   collapsed: boolean
 }
 
-let currentExplorerState: Array<FolderState>
+const explorerStates = new WeakMap<HTMLElement, Array<FolderState>>()
 function toggleExplorer(this: HTMLElement) {
   const nearestExplorer = this.closest(".explorer") as HTMLElement
   if (!nearestExplorer) return
@@ -58,6 +60,9 @@ function toggleFolder(evt: MouseEvent) {
   const childFolderContainer = folderContainer.nextElementSibling as MaybeHTMLElement
   if (!childFolderContainer) return
 
+  const currentExplorerState = explorerStates.get(folderContainer.closest(".explorer") as HTMLElement)
+  if (!currentExplorerState) return
+
   childFolderContainer.classList.toggle("open")
 
   // Collapse folder container
@@ -77,7 +82,8 @@ function toggleFolder(evt: MouseEvent) {
   }
 
   const stringifiedFileTree = JSON.stringify(currentExplorerState)
-  localStorage.setItem("fileTree", stringifiedFileTree)
+  const explorer = folderContainer.closest(".explorer") as HTMLElement
+  localStorage.setItem(explorer.dataset.stateKey || "fileTree", stringifiedFileTree)
 }
 
 function createFileNode(currentSlug: FullSlug, node: FileTrieNode): HTMLLIElement {
@@ -100,6 +106,7 @@ function createFolderNode(
   currentSlug: FullSlug,
   node: FileTrieNode,
   opts: ParsedOptions,
+  currentExplorerState: Array<FolderState>,
 ): HTMLLIElement {
   const template = document.getElementById("template-folder") as HTMLTemplateElement
   const clone = template.content.cloneNode(true) as DocumentFragment
@@ -148,7 +155,7 @@ function createFolderNode(
 
   for (const child of node.children) {
     const childNode = child.isFolder
-      ? createFolderNode(currentSlug, child, opts)
+      ? createFolderNode(currentSlug, child, opts, currentExplorerState)
       : createFileNode(currentSlug, child)
     ul.appendChild(childNode)
   }
@@ -165,7 +172,9 @@ async function setupExplorer(currentSlug: FullSlug) {
       folderClickBehavior: (explorer.dataset.behavior || "collapse") as "collapse" | "link",
       folderDefaultState: (explorer.dataset.collapsed || "collapsed") as "collapsed" | "open",
       useSavedState: explorer.dataset.savestate === "true",
+      stateKey: explorer.dataset.stateKey || "fileTree",
       homeDefaultOpenPaths: JSON.parse(explorer.dataset.homeOpenPaths || "[]"),
+      flattenPaths: JSON.parse(explorer.dataset.flattenPaths || "[]"),
       order: dataFns.order || ["filter", "map", "sort"],
       sortFn: new Function("return " + (dataFns.sortFn || "undefined"))(),
       filterFn: new Function("return " + (dataFns.filterFn || "undefined"))(),
@@ -173,7 +182,7 @@ async function setupExplorer(currentSlug: FullSlug) {
     }
 
     // Get folder state from local storage
-    const storageTree = localStorage.getItem("fileTree")
+    const storageTree = localStorage.getItem(opts.stateKey)
     const serializedExplorerState = storageTree && opts.useSavedState ? JSON.parse(storageTree) : []
     const oldIndex = new Map<string, boolean>(
       serializedExplorerState.map((entry: FolderState) => [entry.path, entry.collapsed]),
@@ -205,7 +214,10 @@ async function setupExplorer(currentSlug: FullSlug) {
       currentSlug === "index" ||
       currentSlug === "" ||
       currentSlug === "/"
-    const homeDefaultsKey = "homeExplorerDefaultsV3"
+    // Bump this key when the homepage's initial folder selection changes so
+    // existing visitors receive the new default once without clearing their
+    // broader explorer preferences manually.
+    const homeDefaultsKey = `homeExplorerDefaultsV5:${opts.stateKey}`
     const shouldApplyHomeDefaults =
       isHome && localStorage.getItem(homeDefaultsKey) !== "true"
 
@@ -219,7 +231,7 @@ async function setupExplorer(currentSlug: FullSlug) {
       localStorage.setItem(homeDefaultsKey, "true")
     }
 
-    currentExplorerState = folderPaths.map((path) => {
+    const currentExplorerState = folderPaths.map((path) => {
       const previousState = oldIndex.get(path)
       const simplePath = path.endsWith("/index") ? path.slice(0, -"/index".length) : path
       const homeDefaultOpen = isHome && opts.homeDefaultOpenPaths.includes(simplePath)
@@ -233,15 +245,21 @@ async function setupExplorer(currentSlug: FullSlug) {
             : previousState,
       }
     })
+    explorerStates.set(explorer, currentExplorerState)
 
     const explorerUl = explorer.querySelector(".explorer-ul")
     if (!explorerUl) continue
 
     // Create and insert new content
     const fragment = document.createDocumentFragment()
-    for (const child of trie.children) {
+    const flattenPaths = new Set(opts.flattenPaths)
+    const rootNodes = trie.children.flatMap((child) => {
+      const childPath = child.slug.endsWith("/index") ? child.slug.slice(0, -"/index".length) : child.slug
+      return flattenPaths.has(childPath) ? child.children : [child]
+    })
+    for (const child of rootNodes) {
       const node = child.isFolder
-        ? createFolderNode(currentSlug, child, opts)
+        ? createFolderNode(currentSlug, child, opts, currentExplorerState)
         : createFileNode(currentSlug, child)
 
       fragment.appendChild(node)
