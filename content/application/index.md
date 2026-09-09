@@ -14,3 +14,6 @@ modified: 2026-04-26
 - [[application/tool-use/|Tool Use]] — Function Calling、Tool Calling、MCP 和结构化 API。
 - [[application/agents/|Agents]] — Agent、planning、memory、reflection、多 Agent 和 workflow agent。
 - [[application/evaluation/|Evaluation]] — Benchmark、LLM-as-a-Judge、人评、线上评测和幻觉评测。
+- [[application/multimodal/|Multimodal Applications]] — VQA、OCR、grounding、document understanding 和 video understanding。
+- [[application/embodied-agents/|Embodied Agents]] — 视觉感知、状态估计、动作执行和环境反馈。
+- [[application/world-models/|World Model Applications]] — simulation、planning、environment modeling 和 long-horizon control。

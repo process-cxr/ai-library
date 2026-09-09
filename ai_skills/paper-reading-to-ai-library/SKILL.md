@@ -38,6 +38,7 @@ Use this skill to convert an external AI source into maintainable notes for the 
    - Use Markdown, wikilinks, callouts, tables, LaTeX, and code fences as appropriate.
    - Keep the source's research question, method, evidence, and limitations as the main narrative. Do not force a separate "knowledge sedimentation" essay at the end when the report itself already explains the paper.
    - Put knowledge-base links where they naturally support the discussion. If a closing link section is useful, keep it lightweight, e.g. `## 相关知识链接`, and list only related topic notes without re-explaining each concept.
+   - Explain abbreviations on first use in the report body. Write the English full name, then give the Chinese meaning or the role in the paper when useful, e.g. `in-distribution (IID，分布内)` or `tokens per parameter (TPP，每个参数对应的训练 token 数)`. Apply this to paper-specific abbreviations as well as standard names for objectives, algorithms, datasets, metrics, and evaluation settings. If an abbreviation appears in the title or metadata, still expand it at its first substantive use in the body; do not leave readers to infer it from a glossary.
    - Avoid chat transcript language, temporary TODOs, and progress-log phrasing.
 
 5. Backfill stable knowledge.
@@ -52,6 +53,7 @@ Use this skill to convert an external AI source into maintainable notes for the 
    - `paper_order` is an arXiv submission sequence, not a date. Keep it as a quoted string and use it only to order papers within the same `paper_date` month.
    - Frontmatter should preserve existing fields unless there is a clear reason to change them.
    - Wikilinks should point to stable conceptual locations.
+   - Perform an abbreviation audit before finishing: every abbreviation used in the report should be expanded at its first body occurrence and used consistently afterward. Check abbreviations in equations, tables, figure descriptions, experiment settings, and evaluation metrics, not only in the opening paragraph.
    - The note should be useful for future review without requiring the original conversation.
 
 ## Source Note Shape

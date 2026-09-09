@@ -26,3 +26,19 @@ modified: 2026-05-31
 - [[architecture/model-families/|Model Families]] — GPT、LLaMA、Qwen、DeepSeek、Mistral、Gemma 等模型家族。
 - [[architecture/sparse-and-efficient/|Sparse and Efficient Architectures]] — MoE、Mamba、SSM、Linear Attention 等高效路线。
 - [[architecture/multimodal/|Multimodal]] — VLM、CLIP、LLaVA、Qwen-VL 和多模态 projector。
+- [[architecture/world-models/|World Models]] — observation、latent state、dynamics、reward 和未来状态预测。
+
+## From Text LM to World Model
+
+现有 Transformer、Attention、Position 和 Model Families 页面构成 Text LM Core。Multimodal 不是替换这条主线，而是在已有 sequence modeling 基础上增加视觉、音频和视频的 representation、alignment 与 fusion；World Model 则进一步引入 state、action、transition 和 planning。
+
+```text
+Text token prediction
+  -> multimodal representation and alignment
+  -> observation understanding
+  -> state and dynamics modeling
+  -> action-conditioned prediction
+  -> planning in an environment
+```
+
+建议沿着 `architecture/multimodal/` 学习 encoder、projector 和 fusion，再沿着 `architecture/world-models/` 学习 latent state、dynamics 和 model-based planning。

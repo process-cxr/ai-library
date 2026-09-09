@@ -20,3 +20,5 @@ modified: 2026-05-31
 - [[training/optimization/|训练优化工程]] — 显存估算、混合精度、checkpointing、optimizer state、checkpoint sharding 和稳定性。
 - [[training/distributed-training/|分布式训练]] — DP、TP、PP、SP、CP、ZeRO、FSDP、Megatron。
 - [[training/scaling/|Scaling]] — scaling law、模型/数据/算力配比和训练预算。
+- [[training/multimodal/|Multimodal Training]] — 多模态数据、alignment、fusion 和 multimodal instruction training。
+- [[training/world-models/|World Model Training]] — dynamics、reward、video prediction 和 model-based learning。

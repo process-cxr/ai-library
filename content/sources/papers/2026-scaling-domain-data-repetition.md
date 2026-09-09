@@ -35,29 +35,77 @@ paper_order: "14071"
 
 这篇论文研究一个在大模型训练中非常实际、但容易被简单化的问题：**当某个高质量领域的数据不够多时，应该重复使用已有数据多少次？**
 
-如果只看“重复会导致 overfitting”，结论会过于粗糙。高质量代码、数学、百科或医学数据往往比普通网页数据更难扩展；当模型规模和训练 token budget 同时增长时，固定规模的高质量数据会在 mixture 中被逐渐稀释。适度重复可以维持目标 domain 的训练占比，过度重复则会增加 memorization 和 noise fitting。论文试图刻画这两种效应如何随 domain、model size、unique data fraction、总训练预算和 learning-rate schedule 变化。
+如果只看“重复会导致 overfitting”，结论会过于粗糙。高质量代码、数学、百科或医学数据往往比普通网页数据更难扩展；当模型规模和训练 token budget 同时增长时，固定规模的高质量数据会在 mixture 中被逐渐稀释。理解这篇论文，首先需要把 `unique domain data`、总 `token presentations` 和 `repetition count` 分开：前者决定内容覆盖，后两者决定模型对已有内容的训练深度与重复程度。论文围绕这几个变量，分析 domain、model size、unique-domain allocation fraction、总训练预算和 learning-rate schedule 如何共同改变 repetition 的收益与代价。
 
 论文最重要的价值不是给出一个可以直接复制的 repetition 倍数，而是把 repetition 从一个数据清洗副作用，提升为一个需要单独调参、单独评估的 data-mix 变量。
 
 ## 研究问题
 
-### 在高质量 domain data 稀缺时，重复是否仍然值得
+### 同一个模型里，数据不足和重复训练分别意味着什么
 
-设训练总 token budget 随模型规模增长，而某个目标 domain 的 unique data 规模增长较慢。如果不重复该 domain，它在训练 mixture 中的占比会下降，模型可能无法充分学习其中的知识和结构。重复可以提高该 domain 的 token presentations，但这些 presentations 并不等价于同量的新数据。
+先固定模型规模 $N$，把一个 domain 的训练过程拆成三个量。这里的 `unique domain data` 有一个特定含义：它是本次 run 在 repetition 之前，从目标 domain 中选出的、彼此不重复的 high-quality token subset。它不是原始 domain corpus 经过清洗或 dedup 后的保留比例，也不是 repetition 之后该 domain 在训练流中的最终比例。
 
-论文关注的不是“重复数据后训练 token 是否增加”，而是：在固定总训练 token budget 下，用重复的 domain token 替代 web token 或 unique token，最终 validation loss 和泛化能力会怎样变化。
+数据进入这组实验后的关系可以写成：
 
-### 传统的跨规模结论是否适用于固定 TPP
+```text
+raw domain corpus
+  -> cleaning / deduplication
+  -> select a fixed unique subset U
+  -> repeat the subset e times
+  -> domain presentations H = eU
+```
 
-已有不少工作在不同模型规模之间固定训练数据量 $D$，然后观察重复数据造成的 overfitting。这个设置下，模型变大而数据不变，重复样本很快成为相对不足的监督信号，因此更大的模型可能更早出现过拟合。
+论文进一步用 `unique-domain allocation fraction` $\alpha$ 表示这批 unique subset 相对于本次训练总 token budget 的比例：
 
-本文采用另一种更贴近实际 LLM scaling 的设置：
+$$
+U=\text{unique domain token budget selected before repetition}
+$$
+
+$$
+\alpha=\frac{U}{D}
+$$
+
+$$
+E=\text{同一内容的平均 exposure / repetition}
+$$
+
+$$
+D_{\text{seen}}=U\times E=\text{模型实际看到的 domain token presentations}
+$$
+
+如果重复次数为 $e$，则论文设置中的 $E=e$，最终 domain presentations 为 $H=eU$，占总训练预算的比例为：
+
+$$
+\rho=\frac{H}{D}=e\alpha
+$$
+
+因此需要区分三个比例：
+
+- `dedup retention rate`：清洗 / 去重后保留的数据量，占原始 domain corpus 的比例；
+- `unique-domain allocation fraction` $\alpha$：本次训练选取的 unique domain tokens，占总训练 token budget 的比例；
+- `final domain fraction` $\rho$：这些 tokens 经过 repetition 后，占最终训练 token stream 的比例。
+
+论文研究的是 $\alpha$ 和 $e$ 的训练配方关系，不把 raw corpus 到 deduplicated corpus 的保留率作为实验变量。
+
+这三个量对应不同的问题：
+
+- **Unique data 不足**：$U$ 太小，模型能够接触到的知识、表达和长尾模式有限。重复这些内容不能创造新的 coverage；
+- **总 exposure 不足**：$U$ 可能足够大，但 $D_{\text{seen}}$ 太小，模型还没有把已有数据中的 signal 学充分；
+- **Repetition 过高**：$U$ 固定而 $E$ 持续增加，前期可以降低 signal acquisition error，后期则可能开始拟合样本特定模式、模板和噪声，产生 memorization 或 validation degradation。
+
+因此，训练数据不足和重复过拟合不是同一种现象。前者主要限制模型**学到多大范围**，后者主要决定模型**对已经见过的内容拟合多深**。同一个模型即使处于 data-limited 状态，也仍然可能因为反复训练有限数据而过拟合：它对整个 domain 的覆盖仍然不足，但对已经出现的样本已经拟合过度。
+
+在固定总 domain token budget 的情况下，增加 repetition 通常意味着减少 unique data；此时观察到的结果是 coverage 与 exposure 的折中，而不是 repetition 的单独效应。要把二者分开，需要分别做两类比较：固定 $U$、增加 $E$，观察重复容忍度；固定 $D_{\text{seen}}$、改变 $U$ 与 $E$，比较更多 unique data 和更多 repeated exposure 哪个更有价值。
+
+### 跨模型规模时，训练预算如何改变 repetition 的最优值
+
+论文进一步考察不同模型规模下的 repetition。关键不在于模型规模单独变大，而在于模型变大时训练数据预算如何变化。已有不少工作在不同模型规模之间固定训练数据量 $D$，然后观察重复数据造成的 overfitting；本文则将其与固定 `TPP` 的设置进行对照：
 
 $$
 D_N = TPP \cdot N
 $$
 
-其中 $N$ 是模型规模，$D_N$ 是总训练 token 数，`TPP` 是固定的 tokens-per-parameter。此时模型变大，训练 token budget 也同步增加。论文要回答：在这一设置下，最优 repetition count 是否仍然随模型变大而下降。
+其中 $N$ 是模型规模，$D_N$ 是总训练 token 数，`TPP` 是固定的 tokens-per-parameter。此时模型变大，训练 token budget 也同步增加。论文要回答的是：在固定总数据量和固定 `TPP` 两种 scaling path 下，最优 repetition count 是否会呈现不同趋势。
 
 ### 最优 repetition 由什么决定
 
@@ -71,7 +119,7 @@ $$
 - 是否用 unique token 替换 repeated token；
 - in-domain 与 out-of-domain validation loss。
 
-这组变量的区分很重要。`unique data fraction` 描述有多少不同的 domain 内容，`repetition count` 描述同一批内容被重新看到多少次，而最终 domain token presentations 还取决于两者的乘积。把这几个量混在一起，无法判断收益来自更多 domain exposure，还是来自更多内容多样性。
+这组变量的区分很重要。论文中的 `unique-domain allocation fraction` $\alpha$ 描述本次 run 选取了多少不同的 domain 内容，`repetition count` $e$ 描述这批固定内容被重新看到多少次，而最终 domain token presentations 由 $e\alpha D$ 决定。把这几个量混在一起，无法判断收益来自更多 domain exposure，还是来自更多内容多样性。
 
 ## 核心主张
 
@@ -86,33 +134,56 @@ $$
 
 这些数字只属于论文的训练规模、数据构造、优化 recipe 和 validation set，不能被当成通用配方。可迁移的结论是：**不同 domain 应拥有独立的 repetition sweep，而不是共享一个全局 epoch 数。**
 
-### 2. 在固定 TPP 下，模型变大时最优 repetition 轻微增加
+### 2. Fixed `TPP` 时，跨模型规模的最优 repetition 轻微增加
 
-这一结论与“固定数据量时大模型更容易过拟合”并不矛盾。固定总数据量 $D$ 时，增加模型规模不会增加样本观察次数，因此模型更容易拟合重复样本中的噪声；固定 TPP 时，$D$ 随 $N$ 增加，模型获得更多 token exposure，knowledge acquisition 的收益可以持续更久。
+这是一个**跨模型规模的曲线比较**，不是在同一个模型上单独增加 repetition。作者固定 domain、unique-domain allocation fraction $\alpha$、`TPP` 和训练 recipe，然后改变模型规模 $N$。由于：
 
-论文用理论分析解释了这两个 regime 的差异：
+$$
+D_N=TPP\cdot N,\qquad U_{N,\alpha}=\alpha D_N
+$$
 
-- 固定 $D$：模型容量增加，但 observations 不增加，noise-fitting 更早占主导；
-- 固定 $D/N$：model size 与 data budget 一起增长，信号学习收益可以抵消一部分更大的拟合能力，因此最优 repetition count 反而轻微上升。
+模型规模从 $N$ 增加到 $kN$ 时，总训练 token budget $D_N$ 和 unique domain data $U_{N,\alpha}$ 都扩大到原来的 $k$ 倍。作者再为每个模型规模分别扫描 $e\in\{1,\ldots,7\}$，比较各自的 final validation loss-repetition 曲线。实验发现，随着 $N$ 增加，曲线最低点对应的最优 repetition count 会向右轻微移动。
 
-这意味着在目标模型上直接沿用小模型的 repetition count 通常是保守的，但必须保持 proxy 与 target 的 TPP、数据定义和训练 recipe 可比。
+因此，论文在 fixed-TPP 主实验中得到的准确结论是：
 
-### 3. 最优 repetition 与 domain final validation loss 强负相关
+> 当模型规模、总训练数据和 unique domain data 按上述关系一起扩大时，更大模型对应的最优 repetition count 略高。
 
-作者对每个配置中 repetition count 与最终 validation loss 的关系拟合二次曲线，并从曲线中估计连续的最优 repetition count。结果显示，最优 repetition 与该 domain 的最低 validation loss 之间的 Pearson correlation 约为 `-0.944`。
+它并没有证明“对同一份固定的 unique dataset，大模型天然可以重复更多次”。论文用 fixed $D$ 的对照说明这一点：如果增加 $N$，但 $D$ 和 unique observations 都不增加，那么 `TPP = D/N` 会下降；在论文的实验与理论条件下，loss-repetition 曲线的最低点反而会向较小 repetition 移动，最优值趋近于 1。
 
-直观上，validation loss 较低的 domain 更容易被模型稳定吸收，重复 exposure 带来的 knowledge acquisition 收益可以持续更久；validation loss 较高的 domain 更早进入对样本特定模式和噪声的拟合阶段。这里的 final validation loss 更像一个 domain learnability / noise level 的可观测 proxy，而不是只表示该 domain 的数据量。
+所以，两个 scaling regime 比较的是不同的数据扩展方式：
 
-相比之下：
+- **Fixed $D$**：只扩大模型，数据预算与 unique coverage 不变，最优 repetition 随规模增大而下降；
+- **Fixed `TPP`**：模型、总数据和实验中的 unique domain data 同时扩大，最优 repetition 随规模增大而轻微上升。
 
-- 最优 repetition 与 model size 的 correlation 约为 `0.400`，是较弱的正相关；
-- 与 unique data fraction 的 correlation 约为 `0.018`，在论文测试范围内几乎没有明显关系。
+这也是论文提出 proxy transfer 的依据：在相同 `TPP` 下，小模型上尚未造成过拟合的 repetition count，可以作为更大模型的保守起点。这个结论依赖 $U_{N,\alpha}=\alpha D_N$ 的实验设置；如果现实中的 unique domain corpus 已经封顶、无法随目标模型扩展，就不能直接套用。
 
-因此，一个实用的 proxy model 方案是：先在与目标模型保持相同 TPP 的小模型上，为每个 domain 做 repetition sweep，再用各 domain 的 validation loss 和曲线形状决定目标模型的候选 repetition 区间。
+### 3. 跨 repetition sweep，最优 repetition 与可达到的最低 validation loss 强负相关
+
+这里的一个统计点不是单次训练 run，也不是笼统的一个 domain，而是一组固定 $(d,N,\alpha)$ 的 repetition sweep。对每一组 sweep，作者执行以下步骤：
+
+1. 固定 domain $d$、model size $N$ 和 unique-domain allocation fraction $\alpha$；
+2. 分别使用 $e\in\{1,2,\ldots,7\}$ 训练多个模型；
+3. 记录每个 run 在完整 token budget 结束时的 final validation loss，得到 $L_{d,N,\alpha}(e)$；
+4. 用二次曲线拟合这些离散结果，从中得到最优 repetition $\widehat e^*_{d,N,\alpha}$，以及该拟合曲线可达到的最低 loss $\widehat L^*_{d,N,\alpha}$。
+
+完成所有 domain、model size 和 unique-domain allocation fraction 的 sweep 后，作者把每组得到的 $(\widehat e^*,\widehat L^*)$ 作为一个点，计算这些点之间的 Pearson correlation，结果约为 `-0.944`。它表示：
+
+> 在论文比较的多组 $(domain, model size, unique-domain allocation fraction)$ 设置中，可达到的最低 validation loss 越低，该组 loss-repetition 曲线的最低点通常出现在更大的 repetition count。
+
+这不是说同一组实验里 repetition 越大，validation loss 就越低。同一组 sweep 的曲线通常先下降、到达 $\widehat e^*$，随后因继续重复而上升。`-0.944` 描述的是多组曲线之间“最低点位置”和“最低点高度”的关联，而不是一条曲线内部的单调关系。
+
+由于不同 domain 的 validation-loss 水平差异明显，论文将每组 sweep 的最低 loss 作为 domain-specific characteristics 的连续 proxy，并用理论模型中的 noise level 解释这种关联：更容易学习、有效噪声更低的 domain，可能允许 knowledge acquisition 持续更久，因而能承受更多 repetition。但 empirical minimum loss 并不是噪声方差的直接测量，这一相关性也不能单独证明因果关系。
+
+作者用同样的 sweep-level 数据比较其他因素：
+
+- $\widehat e^*$ 与 model size 的 Pearson correlation 约为 `0.400`，表现为较弱的正相关；
+- $\widehat e^*$ 与 unique-domain allocation fraction 的 Pearson correlation 约为 `0.018`，在论文测试范围内接近零。
+
+因此，proxy model 的用途不是根据一次 validation loss 直接推算 repetition，而是为每个 domain 完整扫描 loss-repetition 曲线。在与目标模型保持相同 `TPP` 的条件下，先得到小模型的 $\widehat e^*$ 和曲线形状，再把它们作为目标模型 repetition 区间的保守参考。
 
 ### 4. Unique data 比 repeated data 更有价值，但差异取决于 domain
 
-前面的实验固定 unique data fraction，增加 repetition count。论文还做了互补实验：固定训练中目标 domain 的总 token fraction，用更多 repetition 替换更多 unique data，直接比较“少量 unique data 重复多次”和“更多 unique data 各看一次”。
+前面的实验固定 unique-domain allocation fraction，增加 repetition count。论文还做了互补实验：固定训练中目标 domain 的总 token fraction，用更多 repetition 替换更多 unique data，直接比较“少量 unique data 重复多次”和“更多 unique data 各看一次”。
 
 结果显示：
 
@@ -159,7 +230,7 @@ $$
 
 每个模型规模的总训练 token budget 固定，但不同模型规模的总预算按比例增长。`TPP` 在实验中设为大于 100 的常数。
 
-对每个目标 domain $d$，作者从固定的 unique subset 中构造训练 mixture。unique high-quality token fraction 记为 $\alpha$，取值为：
+对每个目标 domain $d$，作者先从 domain 中固定选取一批 unique high-quality tokens，再用它们构造训练 mixture。论文将这批 unique tokens 占总训练 token budget 的比例记为 $\alpha$，也就是 unique-domain allocation fraction，取值为：
 
 $$
 \alpha \in \left\{\frac{1}{40},\frac{1}{20},\frac{1}{10}\right\}
@@ -177,15 +248,29 @@ $$
 W_{N,\alpha,e}=(1-e\alpha)D_N
 $$
 
-因此，$e\alpha$ 决定最终训练流中该高质量 domain 的 token fraction，而 $\alpha$ 与 $e$ 分别控制 unique content 数量和每个内容的重复次数。每个实验只重复一个 high-quality domain，不同时重复多个 domain。
+因此，$e\alpha$ 决定最终训练流中该高质量 domain 的 token fraction，而 $\alpha$ 与 $e$ 分别控制 unique content 数量和每个内容的重复次数。这里的 $\alpha$ 是训练预算中的 unique subset allocation，不是 dedup retention rate；每个实验只重复一个 high-quality domain，不同时重复多个 domain。
+
+这里有两组容易混淆、但回答不同问题的实验：
+
+- **固定 $\alpha$、改变 $e$**：unique domain data 的比例保持不变，增加 $e$ 会增加该 domain 的 token presentations，同时挤出一部分 web data。这个实验主要观察在固定 unique coverage 下，更多 exposure 何时从继续学习 signal 转为 noise-fitting，但它并不是只改变 repetition 而完全不改变 mixture；
+- **固定 $\rho=e\alpha$、改变 $e$**：总 high-quality domain token fraction 保持不变，增加 $e$ 时减少 $\alpha$。这个实验保持 domain 与 web 的总比例不变，直接比较“更多 unique content 各看一次”和“更少 unique content 重复多次”之间的取舍。
+
+因此，第一组实验回答“同一批 unique data 还能从更多 exposure 中获得多少收益”，第二组实验回答“在固定 domain token budget 下，repetition 能否替代 unique coverage”。只有把这两组结果分开，才能同时理解 repetition tolerance 和 unique data 的不可替代性。
 
 ### 评测指标
 
 作者对每个 run 同时评估：
 
-- target domain 的 held-out validation loss，即 in-distribution / IID loss；
-- 通用 pretraining validation corpus 上的 OOD loss；
+- target domain 的 held-out validation loss，即 `IID` loss；
+- 通用 pretraining validation corpus 上的 `OOD` loss；
 - 在固定 domain fraction 的补充实验中，使用 ArXiv 和 News 作为 OOD validation。
+
+这里的两个缩写需要区分：
+
+- **IID** 是 `independently and identically distributed` 的缩写，通常译为“独立同分布”。在本文中，`IID loss` 更具体地指目标 domain 的 **in-distribution held-out validation loss**：验证数据与被重复训练的 domain 来自相同或相近的数据分布，但与训练样本保持独立、没有直接重叠。它主要用来判断目标 domain 是否还在被有效学习，以及 repetition 是否已经导致 domain 内过拟合；
+- **OOD** 是 `out-of-distribution` 的缩写，指分布外评测。在本文中，OOD validation 使用通用 pretraining corpus，补充实验中还使用 ArXiv 和 News。它主要用来观察 repetition 是否影响目标 domain 之外的泛化能力，以及是否因调整 domain 配比而挤压了通用数据。
+
+严格来说，语言模型中的 token 和文档并不满足字面意义上的完全独立同分布；这里的 `IID` 是相对于目标 domain 的常规评测称呼，核心含义是“同分布的独立留出集”，而不是对 token 生成过程的额外假设。
 
 论文将最终 validation loss 对 repetition count 做二次拟合：
 
@@ -199,7 +284,7 @@ $$
 \widehat{e}^{*}_{d,N,\alpha}=-\frac{b_{d,N,\alpha}}{2a_{d,N,\alpha}}
 $$
 
-估计连续的最优 repetition count。这样做的目的不是声称真实曲线必然是二次函数，而是减少只在 `1-7` 离散点上取最小值带来的粗糙性，便于比较 domain、model size 和 unique data fraction 的相关关系。
+估计连续的最优 repetition count。这样做的目的不是声称真实曲线必然是二次函数，而是减少只在 `1-7` 离散点上取最小值带来的粗糙性，便于比较 domain、model size 和 unique-domain allocation fraction 的相关关系。
 
 ## 方法与理论解释
 
@@ -220,9 +305,11 @@ $$
 
 三个项分别表示：
 
-1. 模型容量之外、训练中无法表示的 knowledge；
-2. 已经能表示但还没有被充分学到的 signal；
+1. 模型容量之外、当前模型无法表示的 knowledge；
+2. 已经能够表示、但在当前有限 exposure 和优化步数下还没有学充分的 signal；
 3. 模型对有限样本噪声和 sample-specific pattern 的拟合。
+
+这三个项不能机械地分别等同于“数据不足”“训练不够”和“重复过多”。其中第一项是模型容量造成的 unrepresented knowledge；unique data 太少会减少可观察的 knowledge coverage，并通过有限样本分布影响后两项；repetition 或优化步数增加，通常会降低第二项，但可能提高第三项。
 
 增加 repetition 或优化步数会继续降低 knowledge-acquisition error，但也会提高 noise-fitting error。最优 repetition 出现在 signal 的边际收益开始低于 noise-fitting 的边际代价时。
 
@@ -234,21 +321,21 @@ $$
 
 ### 固定数据预算与固定 TPP 的差异
 
-在固定 $D$ 的条件下，增加 $N$ 会把更多更稀有的 knowledge unit 纳入模型容量，但不会增加它们的 observation count。理论上，当模型规模超过由 $D$ 和噪声水平决定的 crossover scale 后，新增容量更容易进入 noise-fitting，最优 stopping time 会不增反降。
+在固定 $D$ 的条件下，增加 $N$ 会把更多、更稀有的 knowledge unit 纳入模型容量，但不会增加它们的 observation count，`TPP` 也随之下降。此时模型一方面缺少覆盖整个知识空间的数据，另一方面在继续优化有限样本时更容易进入 noise-fitting。理论上，当模型规模超过由 $D$ 和噪声水平决定的 crossover scale 后，新增容量更容易让 noise-fitting 占主导，最优 stopping time 会不增反降。
 
-在固定 $D/N$ 的条件下，$D$ 与 $N$ 同步增长。论文的 Theorem 4.4 给出一个渐近结果：在源分布和信号条件满足假设时，最优 stopping time 的量级随 $D^{\alpha/\beta}$ 增长。它不直接给出真实 LLM 的 repetition count，但说明为什么“固定数据量下的跨规模结论”不能直接套用到 compute-optimal 或 TPP-scaled 的训练。
+在固定 $D/N$ 的条件下，$D$ 与 $N$ 同步增长。论文的 Theorem 4.4 给出一个渐近结果：在源分布和信号条件满足假设时，最优 stopping time 的量级随 $D^{\alpha/\beta}$ 增长。它不直接给出真实 LLM 的 repetition count，但说明为什么固定数据量下的跨规模结论不能直接套用到 fixed-TPP 的训练。
 
 ## 实验结果的理解
 
 ### Repetition count 与 domain loss 的关系
 
-论文把四个 domain 和多个模型规模、unique data fraction 的实验点放在一起比较。最优 repetition 的主要变化来源依次可以概括为：
+论文把四个 domain 和多个模型规模、unique-domain allocation fraction 的实验点放在一起比较。最优 repetition 的主要变化来源依次可以概括为：
 
 1. domain 本身的可学习性和噪声水平；
 2. model size 在固定 TPP 下带来的温和变化；
-3. unique data fraction 在测试范围内的较小影响。
+3. unique-domain allocation fraction 在测试范围内的较小影响。
 
-这里的“unique data fraction 影响较小”不能解读为 unique data 不重要。它只表示：当 $\alpha$ 在 `1/40` 到 `1/10` 的范围内变化时，达到最优 repetition 的位置相对稳定；绝对 validation loss 仍然会随 unique data fraction 改变。换言之，更多 unique data 可以整体降低 loss，但不一定改变曲线最低点所在的 repetition 区间。
+这里的“unique-domain allocation fraction 影响较小”不能解读为 unique data 不重要。它只表示：当 $\alpha$ 在 `1/40` 到 `1/10` 的范围内变化时，达到最优 repetition 的位置相对稳定；绝对 validation loss 仍然会随 unique data budget 改变。换言之，更多 unique data 可以整体降低 loss，但不一定改变曲线最低点所在的 repetition 区间。
 
 ### 重复与新数据的不可替代性
 
@@ -301,7 +388,7 @@ $$
 
 ```text
 固定 tokenizer、模型族、TPP 和优化 recipe
-  -> 为每个 domain 选择代表性的 unique data fraction
+  -> 为每个 domain 选择代表性的 unique-domain allocation fraction
   -> 在 proxy model 上 sweep repetition count
   -> 记录 IID loss、OOD loss 和下游能力
   -> 拟合 loss-repetition 曲线并确定候选区间
@@ -322,6 +409,8 @@ $$
 - 文档 exposure count 与 memorization / contamination 指标。
 
 如果 domain loss 继续下降但 OOD 和任务能力开始退化，说明 repetition 可能已经超过有效区间。如果总 loss 下降但目标 domain loss 不动，则更可能是该 domain 的采样比例或数据质量不足，而不是训练预算不足。
+
+对固定模型规模的实验，建议先使用一个小型 factorial design 分开这几种情况：固定 $U$ 扫描 $E$，观察重复曲线；固定 $D_{\text{seen}}$ 同时改变 $U$ 与 $E$，观察 unique coverage 与 repeated exposure 的替代关系；再在固定 $E$ 下增加 $U$，观察更多 unique data 是否继续带来收益。这样得到的结论才不会把“数据覆盖不足”和“重复暴露过多”误判成同一个问题。
 
 ### Repetition 与 learning-rate schedule 要一起调
 
