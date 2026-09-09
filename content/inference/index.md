@@ -19,3 +19,5 @@ modified: 2026-03-29
 - [[inference/serving-systems/|Serving Systems]] — vLLM、continuous batching、请求调度和 PD 分离。
 - [[inference/compression/|Compression]] — 模型压缩、剪枝、蒸馏和低秩压缩。
 - [[inference/performance/|Performance]] — 延迟、吞吐、TTFT、TPOT 和 benchmark。
+- [[inference/multimodal/|Multimodal Inference]] — visual token、multimodal context、video streaming 和多模态 serving。
+- [[inference/world-models/|World Model Inference]] — rollout、simulation、imagination 和 planning-time inference。
