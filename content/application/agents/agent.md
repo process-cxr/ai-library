@@ -20,6 +20,14 @@ observe state → reason/plan → act with tools → receive observation → rev
 
 在 LLM 应用中，agent 不一定是单个模型。它通常由模型、prompt/scaffold、工具接口、记忆、检索、执行环境、评测器和安全约束共同组成。模型负责决策和语言生成，scaffold 负责组织可见上下文、工具格式和执行循环。
 
+## Trajectory 与 Environment
+
+Agent trajectory 是某个 policy 在具体 task 和 environment 中的一次 action-observation 记录；environment 则定义 workspace state、工具、依赖、反馈和 verifier。两者的训练价值不同：trajectory 提供固定 demonstration，environment 可以被 reset、重新 query、重新 rollout，并产生新的执行反馈。
+
+[[sources/papers/2026-terminal-universe-turning-agent-trajectories-into-scalable-terminal-environments|Terminal-Universe]] 展示了一种 trajectory-to-environment inversion：根据历史 file operations 恢复 agent 修改前的 partial workspace，再补齐 task 所需 context，生成新的单 workspace、跨 workspace 和多轮任务。该工作说明 agent data coverage 不能只用 trajectory 条数或 token 数衡量，还应记录 unique environments、queries per environment 和 solutions per query。
+
+可执行环境也不是自动可靠的训练资源。需要检查 initial state、reset semantics、task solvability、verifier coverage、dependency isolation、network policy 和 contamination；从轨迹恢复的环境还必须保留 replay evidence 与 completion provenance，避免把 synthetic reconstruction 当成原环境的精确副本。
+
 ## 核心能力
 
 | 能力 | 说明 |
