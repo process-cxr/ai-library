@@ -18,3 +18,7 @@ Agents 模块负责整理 Agent 的规划、记忆、反思、工作流、多智
 - [[application/agents/workflow-agent|Workflow Agent]]
 - [[application/embodied-agents/|Embodied Agents]] — 将 observation、state、action 和 environment feedback 连接到真实任务。
 - [[application/world-models/|World Model Applications]] — 使用环境预测辅助 planning 和 long-horizon execution。
+
+## Environment and Data
+
+- [[sources/papers/2026-terminal-universe-turning-agent-trajectories-into-scalable-terminal-environments|Terminal-Universe]] — 从历史 trajectory 恢复可执行 workspace，并重新生成单 workspace、跨 workspace 和多轮训练任务。

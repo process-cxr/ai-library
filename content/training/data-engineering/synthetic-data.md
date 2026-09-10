@@ -82,6 +82,14 @@ Agent 场景中的 synthetic data 不只包括最终问答，也可以包括 act
 
 在 code agent 场景中，轨迹数据还可以按信息来源区分为两类：从历史 PR 重构出的 contextually-native trajectories，以及在可执行环境中采集的 environmentally-native trajectories。前者规模大、覆盖广，但可能包含后验重构和 LLM 摘要偏差；后者包含真实工具输出、测试失败和修正反馈，但构造成本更高、覆盖更窄。相关案例见 [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev: Agent-native Mid-training for Software Engineering]]。
 
+### 从 Trajectory 反向恢复 Environment
+
+已有 agent trajectory 还可以作为 executable environment 的恢复证据。[[sources/papers/2026-terminal-universe-turning-agent-trajectories-into-scalable-terminal-environments|Terminal-Universe]] 将 file read / write / edit history 回放为 agent 修改前的 partial workspace，再用 completion agent 补齐缺失 context，通过 task-conditioned sufficiency judge 筛选可用环境，最后在恢复后的 workspace 中重新生成 task、solution 和 verifier。
+
+这条路线与直接扩展 trajectory 不同：trajectory 是一次冻结 demonstration，environment 可以被重新 query、重新 rollout 和执行验证。同一环境还可以生成单 workspace task、跨 workspace dependency task 和带 failure recovery 的 multi-round session。论文的 matched-budget ablation 显示，增加 unique environments 比在同一 environment 上增加 query 或在同一 query 上增加 solution 更有效，因此 agent data mixture 应分别记录 unique environments、queries per environment 和 solutions per query。
+
+Environment reconstruction 的质量取决于 trajectory 暴露的文件和依赖证据。Agentic completion 不能无条件还原未观察到的 project-specific state，也可能引入 solution leakage 或 synthetic artifact。数据发布与训练记录应保留 source provenance、replay evidence、completion diff、sufficiency label、verifier coverage 和 execution outcome。
+
 ## Rejection Sampling 与 Best-of-N
 
 Rejection sampling 常用于从多个候选中选出高质量样本：
@@ -144,6 +152,7 @@ Synthetic data 很容易产生隐蔽污染：
 - **隐蔽 benchmark leakage**：生成数据来源或 teacher 记忆导致污染。
 - **合成比例过高**：自然语言和真实用户分布被稀释。
 - **缺少版本记录**：无法追踪数据由哪个 teacher、prompt 和筛选器生成。
+- **把 reconstructed environment 当成原环境副本**：轨迹没有暴露的文件和依赖只能由 completion 推断，必须单独记录 fidelity 与 provenance。
 
 ## 相关概念
 
@@ -155,3 +164,4 @@ Synthetic data 很容易产生隐蔽污染：
 - [[training/post-training/rejection-sampling|Rejection Sampling]]
 - [[training/post-training/knowledge-distillation|Knowledge Distillation]]
 - [[sources/papers/2022-self-instruct|Self-Instruct]]
+- [[sources/papers/2026-terminal-universe-turning-agent-trajectories-into-scalable-terminal-environments|Terminal-Universe]]
