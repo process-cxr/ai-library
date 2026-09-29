@@ -32,17 +32,15 @@ paper_order: "12125"
 
 ## 基本信息
 
-- 来源：arXiv:2602.12125v2
-- 标题：Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation
-- 作者/机构：Wenkai Yang, Weijie Liu, Ruobing Xie, Kai Yang, Saiyong Yang, Yankai Lin / Renmin University of China, Tencent
-- 日期：2026-02-27
+- 标题：[Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation](https://arxiv.org/abs/2602.12125)
+- 作者：Wenkai Yang, Weijie Liu, Ruobing Xie, Kai Yang, Saiyong Yang, Yankai Lin
+- 发表：arXiv:2602.12125
+- 日期：2026-02
+- 代码/数据：https://github.com/RUCBM/G-OPD
+- 相关主题：[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/grpo|GRPO]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2602.12125
-- 代码：https://github.com/RUCBM/G-OPD
-- 相关 topic：[[training/post-training/on-policy-kd|On-policy KD]]，[[training/post-training/knowledge-distillation|Knowledge Distillation]]，[[training/post-training/grpo|GRPO]]
-
-这篇论文是 OPD 线上的一个重要分支。它不再只把 on-policy distillation 看成“student-generated trajectory 上的 teacher logits supervision”，而是把 OPD 进一步改写成一个 dense KL-constrained RL 目标，并显式引入两个可调旋钮：reference model 和 reward scaling factor `λ`。
-
-论文的核心结论很直接：**标准 OPD 只是 G-OPD 的特例；当 `λ>1` 时，reward extrapolation 往往能超过标准 OPD，甚至在 multi-teacher distillation 中把多个 domain teacher 的能力统一回一个 student；在强到弱蒸馏里，若能拿到 teacher 的 pre-RL 版本，reward correction 还能进一步提升效果。**
 
 ## 研究问题
 

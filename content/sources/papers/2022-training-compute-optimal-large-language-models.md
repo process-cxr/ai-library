@@ -24,17 +24,13 @@ paper_order: "15556"
 ## 基本信息
 
 - 标题：[Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
-- 版本：arXiv:2203.15556v1，2022-03-29
 - 作者：Jordan Hoffmann, Sebastian Borgeaud, Arthur Mensch, Elena Buchatskaya, Trevor Cai, Eliza Rutherford 等
-- 机构：DeepMind
+- 发表：arXiv:2203.15556
+- 日期：2022-03
+- 相关主题：[[training/scaling/compute-optimal|Compute Optimal]]、[[training/scaling/scaling-law|Scaling Law]]、[[training/pretraining/compute-optimal|Pretraining Compute Optimal]]、[[training/pretraining/data-mix|Data Mix]]、[[training/scaling/training-budget|Training Budget]]
+## 研究对象与实验范围
+
 - 研究对象：dense autoregressive Transformer language model
-- 相关 topic：[[training/scaling/compute-optimal|Compute Optimal]]，[[training/scaling/scaling-law|Scaling Law]]，[[training/pretraining/compute-optimal|Pretraining Compute Optimal]]，[[training/pretraining/data-mix|Data Mix]]，[[training/scaling/training-budget|Training Budget]]
-
-这篇论文研究一个非常具体但影响深远的训练决策问题：当训练计算预算已经确定时，应该把预算分配给更大的模型，还是分配给更多的训练 token？论文的重点不是提出新的 Transformer 结构，而是重新估计 model size 与 training data 之间的 compute-optimal frontier。
-
-论文通过 400 多个不同规模和不同训练时长的语言模型实验，发现此前许多大语言模型确实存在 data undertraining：模型参数量增长很快，但训练 token 数长期停留在约 300B 的量级。论文据此训练了 70B 参数的 Chinchilla，在与 280B Gopher 大致相同的训练 compute 下使用约 1.4T tokens，并在多类下游任务上显著超过 Gopher 以及若干更大的模型。
-
-如果只保留一个核心认识：**在固定训练 compute 下，增加参数量和增加训练 token 的收益需要重新平衡；一个规模更小但训练更充分的模型，可能优于一个规模更大但训练不足的模型，而且推理和后续适配成本更低。**
 
 ## 研究问题
 

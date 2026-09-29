@@ -27,27 +27,14 @@ paper_order: "14165"
 
 - 标题：[Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
 - 作者：Tom B. Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah 等
-- 机构：OpenAI
-- 版本：arXiv:2005.14165v4，2020-07-22
+- 发表：arXiv:2005.14165
+- 日期：2020-05
+- 相关主题：[[architecture/model-families/gpt|GPT]]、[[architecture/transformer/decoder-only-transformer|Decoder-only Transformer]]、[[application/prompting/few-shot|Few-shot Prompting]]、[[training/scaling/scaling-law|Scaling Law]]、[[training/pretraining/data-mix|Data Mix]]
+## 研究对象与实验范围
+
 - 模型：GPT-3，175B-parameter autoregressive language model
 - 训练硬件：Microsoft 提供的 high-bandwidth cluster，V100 GPUs
 - 上下文窗口：2,048 tokens
-- 相关主题：[[architecture/model-families/gpt|GPT]]，[[architecture/transformer/decoder-only-transformer|Decoder-only Transformer]]，[[application/prompting/few-shot|Few-shot Prompting]]，[[training/scaling/scaling-law|Scaling Law]]，[[training/pretraining/data-mix|Data Mix]]
-
-这篇论文的核心问题不是“怎样为一个任务训练一个更好的模型”，而是：**一个只做 language-model pre-training、没有针对测试任务进行 gradient update 的模型，能否通过自然语言指令和少量示例，在 inference time 适应新任务？**
-
-GPT-3 以 175B parameters 回答了这个问题。它没有使用 task-specific fine-tuning，而是把任务说明、demonstrations 和待解决输入组织成一段文本，让模型继续生成答案。论文将这种方式称为 `in-context learning`：模型不更新参数，适应过程发生在当前 forward pass 的 activations 与上下文条件中。
-
-论文的历史意义不只在于发布了一个更大的 GPT。它把三个此前相对分离的问题连接起来：
-
-```text
-larger autoregressive LM
-  -> smoother language-modeling scaling
-  -> stronger use of contextual demonstrations
-  -> one model / many task formats at inference time
-```
-
-但论文并没有声称规模可以解决所有问题。GPT-3 在 NLI、部分 reading comprehension、common-sense physics、长文本连贯性和事实可靠性方面仍存在明显缺陷；训练语料来自互联网，也带来 benchmark contamination、bias 和 misuse 风险。论文自身对这些边界的记录，是理解它的另一半。
 
 ## 研究问题
 

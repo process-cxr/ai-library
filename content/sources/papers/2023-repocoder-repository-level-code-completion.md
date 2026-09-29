@@ -32,16 +32,12 @@ RepoCoder 这篇论文的核心想法是：**repository-level code completion �
 
 ## 基本信息
 
-| 字段 | 内容 |
-| --- | --- |
-| 来源 | arXiv:2303.12570v3 |
-| 标题 | RepoCoder: Repository-Level Code Completion Through Iterative Retrieval and Generation |
-| 作者/机构 | Fengji Zhang, Bei Chen, Yue Zhang, Jacky Keung, Jin Liu, Daoguang Zan, Yi Mao, Jian-Guang Lou, Weizhu Chen / City University of Hong Kong, Microsoft, Wuhan University |
-| 会议 | EMNLP 2023 main |
-| 日期 | 2023-10-20 |
-| 链接 | https://arxiv.org/abs/2303.12570 |
-| 代码/Benchmark | https://github.com/microsoft/CodeT/tree/main/RepoCoder |
-| 相关 topic | [[application/rag/context-compression|Context Compression]] |
+- 标题：[RepoCoder: Repository-Level Code Completion Through Iterative Retrieval and Generation](https://arxiv.org/abs/2303.12570)
+- 作者：Fengji Zhang, Bei Chen, Yue Zhang, Jacky Keung, Jin Liu, Daoguang Zan, Yi Mao, Jian-Guang Lou, Weizhu Chen
+- 发表：arXiv:2303.12570；EMNLP 2023 main
+- 日期：2023-03
+- 代码/数据：https://github.com/microsoft/CodeT/tree/main/RepoCoder
+- 相关主题：[[application/rag/context-compression|Context Compression]]
 
 ## 研究问题
 

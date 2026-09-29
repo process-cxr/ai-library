@@ -31,13 +31,12 @@ Squeez 这篇论文讨论的是 coding agent 中一个很具体的压缩问题�
 
 ## 基本信息
 
-| 字段 | 内容 |
-| --- | --- |
-| 来源 | arXiv:2604.04979v1 |
-| 作者/机构 | Adam Kovacs, KR Labs |
-| 日期 | 2026-04-04 |
-| 链接/代码 | https://arxiv.org/abs/2604.04979, https://github.com/KRLabsOrg/squeez |
-| 相关 topic | [[application/rag/context-compression|Context Compression]] |
+- 标题：[Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents](https://arxiv.org/abs/2604.04979)
+- 作者：Adam Kovacs, KR Labs
+- 发表：arXiv:2604.04979
+- 日期：2026-04
+- 代码/数据：https://arxiv.org/abs/2604.04979, https://github.com/KRLabsOrg/squeez
+- 相关主题：[[application/rag/context-compression|Context Compression]]
 
 ## 任务定义
 

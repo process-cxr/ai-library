@@ -22,17 +22,12 @@ paper_order: "02301"
 
 ## 基本信息
 
-- 论文：[Distilling Step-by-Step! Outperforming Larger Language Models with Less Training Data and Smaller Model Sizes](https://arxiv.org/abs/2305.02301)
+- 标题：[Distilling Step-by-Step](https://arxiv.org/abs/2305.02301)
 - 作者：Cheng-Yu Hsieh, Chun-Liang Li, Chih-Kuan Yeh, Hootan Nakhost, Yasuhisa Fujii, Alexander Ratner, Ranjay Krishna, Chen-Yu Lee, Tomas Pfister
-- 机构：University of Washington、Google Cloud AI Research、Google Research
-- 首次公开：2023-05，本文阅读版本为 arXiv v2（2023-07-05）
-- 代码：[google-research/distilling-step-by-step](https://github.com/google-research/distilling-step-by-step)
-- 相关知识：[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]、[[training/post-training/offline-kd|Offline KD]]、[[training/post-training/instruction-tuning|Instruction Tuning]]
-
-这篇论文研究的是一个很实际的模型压缩问题：如果只把大模型生成的最终 label 当作 pseudo-label，student 需要从输入和标签之间自己推断任务规律，往往需要大量数据。论文提出从大模型中额外提取自然语言 rationale，把 rationale 作为 student 的辅助监督，让小模型在训练时同时学习“答案是什么”和“为什么得到这个答案”。
-
-论文的关键设计不是让 rationale 成为推理时必须提供的额外输入，而是把它变成一个 auxiliary generation task。Student 训练阶段同时学习 `label` 和 `rationale`；部署时只执行 `label` 预测，因此不需要在推理前再次调用 teacher 或先生成 rationale。这种训练时增加监督、推理时保持单任务预测的设计，是全文最值得记住的部分。
-
+- 发表：arXiv:2305.02301
+- 日期：2023-05
+- 代码/数据：[google-research/distilling-step-by-step](https://github.com/google-research/distilling-step-by-step)
+- 相关主题：[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]、[[training/post-training/offline-kd|Offline KD]]、[[training/post-training/instruction-tuning|Instruction Tuning]]
 ## 研究问题
 
 ### 大模型能力与部署成本之间的矛盾

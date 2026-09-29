@@ -19,10 +19,10 @@ paper_order: "07947"
 
 ## 基本信息
 
-- Title: [Sequence-Level Knowledge Distillation](https://arxiv.org/abs/1606.07947)
-- Source type: paper
-- Related topic notes: [[training/post-training/knowledge-distillation|Knowledge Distillation]], [[training/post-training/sequence-level-distillation|Sequence-level Distillation]], [[training/post-training/offline-kd|Offline KD]]
-
+- 标题：[Sequence-Level Knowledge Distillation](https://arxiv.org/abs/1606.07947)
+- 发表：arXiv:1606.07947
+- 日期：2016-06
+- 相关主题：[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]、[[training/post-training/offline-kd|Offline KD]]
 ## TODO
 
 - 阅读论文原文，整理 sequence-level distillation 与 word-level / logits distillation 的差异。

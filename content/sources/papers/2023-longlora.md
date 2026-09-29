@@ -20,10 +20,10 @@ paper_order: "12307"
 
 ## 基本信息
 
-- Title: [LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models](https://arxiv.org/abs/2309.12307)
-- Source type: paper
-- Related topic notes: [[training/mid-training/long-context-training|Long Context Training]], [[training/post-training/sft|SFT]], [[sources/papers/2021-lora|LoRA]]
-
+- 标题：[LongLoRA](https://arxiv.org/abs/2309.12307)
+- 发表：arXiv:2309.12307
+- 日期：2023-09
+- 相关主题：[[training/mid-training/long-context-training|Long Context Training]]、[[training/post-training/sft|SFT]]、[[sources/papers/2021-lora|LoRA]]
 ## TODO
 
 - 阅读论文原文，整理 LongLoRA 如何用参数高效微调扩展上下文长度。

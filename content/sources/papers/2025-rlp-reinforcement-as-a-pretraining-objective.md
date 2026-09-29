@@ -25,16 +25,15 @@ publisher: NVIDIA
 
 ## 基本信息
 
-- Title: [RLP: Reinforcement as a Pretraining Objective](https://arxiv.org/pdf/2510.01265)
-- Authors: Ali Hatamizadeh, Syeda Nahida Akter, Shrimai Prabhumoye, Jan Kautz, Mostofa Patwary, Mohammad Shoeybi, Bryan Catanzaro, Yejin Choi
-- Institutions: NVIDIA, Carnegie Mellon University, Boston University, Stanford University
-- Date: 2025-09-26
-- Code: `https://github.com/NVlabs/RLP`
-- Related topic notes: [[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]], [[training/pretraining/objective|Training Objective]], [[training/pretraining/pretraining|Pretraining]], [[training/mid-training/continued-pretraining|Continued Pretraining]], [[training/post-training/grpo|GRPO]]
+- 标题：[RLP: Reinforcement as a Pretraining Objective](https://arxiv.org/abs/2510.01265)
+- 作者：Ali Hatamizadeh, Syeda Nahida Akter, Shrimai Prabhumoye, Jan Kautz, Mostofa Patwary, Mohammad Shoeybi, Bryan Catanzaro, Yejin Choi
+- 发表：arXiv:2510.01265
+- 日期：2025-10
+- 代码/数据：`https://github.com/NVlabs/RLP`
+- 相关主题：[[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]]、[[training/pretraining/objective|Training Objective]]、[[training/pretraining/pretraining|Pretraining]]、[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/post-training/grpo|GRPO]]
+## 研究对象与实验范围
 
-这篇论文提出 Reinforcement Learning Pre-training，简称 RLP。它的核心问题是：大模型的推理能力是否一定要等到 SFT / RLHF / RLVR 等后训练阶段才显式优化？论文的回答是否定的。RLP 试图把 RL 中“探索”的精神前移到预训练末期，让模型在预测下一 token 之前先生成一段内部 Chain-of-Thought，并根据这段思考对下一 token 预测概率的提升获得奖励。
-
-这不是传统意义上的“用 verifier 做数学题 RL”。RLP 的奖励来自普通文本上的 teacher-forced next-token prediction：如果模型在看到 context 和 sampled thought 后，对真实下一个 token 的 log-likelihood 高于不思考的 EMA baseline，这段 thought 就得到正奖励。因此它是一种 verifier-free、dense、position-wise 的 reinforcement pretraining objective。
+- Institutions：NVIDIA, Carnegie Mellon University, Boston University, Stanford University
 
 ## 研究问题
 

@@ -27,18 +27,14 @@ paper_order: "07508"
 
 ## 基本信息
 
-- 来源：arXiv:2607.07508v1
-- 标题：Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning
-- 作者/机构：Zhenyu Hou, Yujiang Li, Jie Tang, Yuxiao Dong / Tsinghua University；部分工作在 Z.AI 实习期间完成
-- 日期：2026-07-08
+- 标题：[Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning](https://arxiv.org/abs/2607.07508)
+- 作者：Zhenyu Hou, Yujiang Li, Jie Tang, Yuxiao Dong
+- 发表：arXiv:2607.07508
+- 日期：2026-07
+- 相关主题：[[training/post-training/grpo|GRPO]]、[[training/post-training/reinforcement-learning|Reinforcement Learning]]、[[application/agents/agent|Agent]]、[[application/evaluation/benchmark|Benchmark]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2607.07508
-- 相关 topic：[[training/post-training/grpo|GRPO]]，[[training/post-training/reinforcement-learning|Reinforcement Learning]]，[[application/agents/agent|Agent]]，[[application/evaluation/benchmark|Benchmark]]
-
-这篇论文讨论的是 agentic RL 的训练系统问题：当任务变成长 horizon、多轮工具调用、代码修改或 reasoning-with-tool 时，rollout 长度高度不均匀，传统同步 RL 管线会被最慢 trajectory 卡住；异步 RL 可以提高系统利用率，但会引入 policy lag 和 off-policy drift。SAO 的目标就是在异步 rollout / training 解耦的情况下，把 agentic RL 训练做稳。
-
-论文的核心不是“又提出一个 GRPO 变体”，而是指出 **GRPO 的 group-wise sampling 与异步 agentic training 存在结构性冲突**。GRPO 需要同一个 prompt 下的一组 responses 都完成后才能计算 group-relative advantage；但 agent trajectory 的长度分布很长尾，慢样本会拖住整组数据，先完成的样本又会在等待中变得更 off-policy。SAO 选择反过来做：每个 prompt 只采一个 rollout，轨迹完成后立刻进入训练队列，再用 value model 和 token-level clipping 稳住方差与 off-policy。
-
-如果只保留一个核心观点：**面向长程 agent 的异步 RL，不应把 GRPO 的 group-wise baseline 当成默认假设；single-rollout + value model + token-level off-policy control 更贴近真实在线环境与长轨迹训练系统。**
 
 ## 研究问题
 

@@ -23,19 +23,15 @@ paper_order: "11794"
 
 ## 基本信息
 
-- 论文：[DataComp-LM: In search of the next generation of training sets for language models](https://arxiv.org/abs/2406.11794)
+- 标题：[DataComp-LM](https://arxiv.org/abs/2406.11794)
 - 作者：Jeffrey Li、Alex Fang、Georgios Smyrnis 等
-- 发布信息：arXiv:2406.11794，v4 发布于 2025-04-21
-- 项目主页：[DataComp for Language Models](https://datacomp.ai/dclm)
-- 开源仓库：[mlfoundations/dclm](https://github.com/mlfoundations/dclm)
-- 研究对象：web-scale language model pre-training dataset curation
+- 发表：arXiv:2406.11794
+- 日期：2024-06
+- 代码/数据：[DataComp for Language Models](https://datacomp.ai/dclm)；[mlfoundations/dclm](https://github.com/mlfoundations/dclm)
 - 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/quality-filtering|Quality Filtering]]、[[training/data-engineering/deduplication|Deduplication]]、[[training/data-engineering/data-engineering|Data Engineering]]、[[training/pretraining/compute-optimal|Compute Optimal]]
+## 研究对象与实验范围
 
-DataComp-LM 的核心贡献不是发布一个“更大的网页数据集”，而是建立一个可以控制变量的数据研究平台：参与者从统一的 Common Crawl pool 中进行 filtering 或 mixing，使用固定的模型架构、训练 token 数、超参数和评测套件训练模型，再比较数据处理策略带来的性能差异。
-
-这种设计回应了预训练数据研究中最常见的归因问题：两个数据集的结果不同，究竟是数据本身更好，还是训练时使用了不同的模型、learning rate、token budget、训练代码或评测协议。如果这些变量没有被固定，单次模型结果很难说明哪一种数据处理方法真正有效。
-
-论文最终给出 DCLM-Baseline，并在 7B 模型上进行 2.6T-token 级别的扩展实验。结果表明，合适的 text extraction、deduplication 和 model-based filtering 能够显著改善训练数据的有效性；但论文同时也说明，DCLM-Baseline 主要优化通用语言理解，代码和数学能力仍需要专门的数据补充。
+- 研究对象：web-scale language model pre-training dataset curation
 
 ## 研究问题
 

@@ -20,10 +20,10 @@ paper_order: "06226"
 
 ## 基本信息
 
-- Title: [SentencePiece: A simple and language independent subword tokenizer and detokenizer for Neural Text Processing](https://arxiv.org/abs/1808.06226)
-- Source type: paper
-- Related topic notes: [[training/pretraining/tokenizer|Tokenizer]], [[training/pretraining/data-mix|Data Mix]]
-
+- 标题：[SentencePiece](https://arxiv.org/abs/1808.06226)
+- 发表：arXiv:1808.06226
+- 日期：2018-08
+- 相关主题：[[training/pretraining/tokenizer|Tokenizer]]、[[training/pretraining/data-mix|Data Mix]]
 ## TODO
 
 - 阅读论文原文，整理 SentencePiece 的 language-independent tokenization 设计。

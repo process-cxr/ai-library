@@ -27,17 +27,14 @@ paper_order: "08543"
 
 ## 基本信息
 
-- 来源：arXiv:2306.08543v6，ICLR 2024
-- 标题：MiniLLM: Knowledge Distillation of Large Language Models
-- 作者/机构：Yuxian Gu, Li Dong, Furu Wei, Minlie Huang / Microsoft Research Asia
-- 日期：2023-06-14（arXiv 初版）
+- 标题：[MiniLLM: Knowledge Distillation of Large Language Models](https://arxiv.org/abs/2306.08543)
+- 作者：Yuxian Gu, Li Dong, Furu Wei, Minlie Huang
+- 发表：arXiv:2306.08543
+- 日期：2023-06
+- 相关主题：[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]、[[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2306.08543
-- 相关 topic：[[training/post-training/knowledge-distillation|Knowledge Distillation]]，[[training/post-training/on-policy-kd|On-policy KD]]，[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]
-- 相关 source：[[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]
-
-这篇论文把生成式 LLM 的知识蒸馏问题，重新写成一个更适合 on-policy 学习的优化问题。它的关键判断是：标准 KD 常用的 forward KL 更偏向覆盖 teacher 的所有模式，但对生成任务来说，student 往往容量有限，强行覆盖 teacher 的低概率区域会把概率质量分配到很多不该重点学习的区域，最后影响输出质量。
-
-MiniLLM 的处理方式是改用 reverse KL，并把蒸馏过程写成基于 student 自身采样轨迹的优化。换句话说，它不是只拿 teacher 的固定答案序列训练 student，而是让 student 在自己的生成分布上接受 teacher 反馈，再把这个反馈转化成可优化的训练信号。
 
 ## 研究问题
 

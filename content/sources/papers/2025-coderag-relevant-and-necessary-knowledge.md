@@ -42,15 +42,12 @@ CodeRAG 这篇论文的 motivation 很直观：repository-level code completion 
 
 ## 基本信息
 
-| 字段 | 内容 |
-| --- | --- |
-| 来源 | arXiv:2509.16112v1 |
-| 标题 | CodeRAG: Finding Relevant and Necessary Knowledge for Retrieval-Augmented Repository-Level Code Completion |
-| 作者/机构 | Sheng Zhang, Yifan Ding, Shuquan Lian, Shun Song, Hui Li / Xiamen University, Ant Group |
-| 日期 | 2025-09-19 |
-| 链接 | https://arxiv.org/abs/2509.16112 |
-| 代码 | https://github.com/KDEGroup/CodeRAG |
-| 相关 topic | [[application/rag/context-compression|Context Compression]], [[sources/papers/2023-repocoder-repository-level-code-completion|RepoCoder]] |
+- 标题：[CodeRAG: Finding Relevant and Necessary Knowledge for Retrieval-Augmented Repository-Level Code Completion](https://arxiv.org/abs/2509.16112)
+- 作者：Sheng Zhang, Yifan Ding, Shuquan Lian, Shun Song, Hui Li
+- 发表：arXiv:2509.16112
+- 日期：2025-09
+- 代码/数据：https://github.com/KDEGroup/CodeRAG
+- 相关主题：[[application/rag/context-compression|Context Compression]]、[[sources/papers/2023-repocoder-repository-level-code-completion|RepoCoder]]
 
 ## 研究问题
 

@@ -23,18 +23,15 @@ paper_order: "08361"
 ## 基本信息
 
 - 标题：[Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
-- 版本：arXiv:2001.08361v1，2020-01-23
 - 作者：Jared Kaplan, Sam McCandlish, Tom Henighan, Tom B. Brown, Benjamin Chess, Rewon Child, Scott Gray, Alec Radford, Jeffrey Wu, Dario Amodei
+- 发表：arXiv:2001.08361
+- 日期：2020-01
+- 代码/数据：WebText2
+- 相关主题：[[training/scaling/scaling-law|Scaling Law]]、[[training/scaling/model-data-compute|Model Data and Compute]]、[[training/scaling/compute-optimal|Compute Optimal]]
+## 研究对象与实验范围
+
 - 研究对象：decoder-only Transformer language model
-- 训练数据：WebText2
 - 核心指标：token-level cross-entropy loss
-- 相关 topic：[[training/scaling/scaling-law|Scaling Law]]，[[training/scaling/model-data-compute|Model Data and Compute]]，[[training/scaling/compute-optimal|Compute Optimal]]
-
-这篇论文研究的不是某一个模型结构或训练技巧，而是一个更基础的训练规划问题：**当模型参数量、训练数据和训练计算量不断增加时，language modeling loss 会按照什么规律变化？在固定 compute 下，模型和数据应该如何分配？**
-
-论文通过大量不同规模的 Transformer 实验，发现 validation / test loss 在很宽的范围内近似服从 power law。模型规模、数据规模和 compute 都是主要的 scaling 轴；在合理范围内，depth、width 和 attention heads 等 model shape 对 loss 的影响相对小。论文还把这些经验规律延伸到 overfitting、training time、batch size、跨数据分布 transfer 和 compute-efficient allocation，试图把 scaling law 从“画出一条趋势线”推进为可用于训练决策的预测框架。
-
-这篇论文最重要的历史作用，是确立了早期大模型 scaling 研究的基本语言：**先用小规模实验拟合 loss 随 $N$、$D$ 和 $C$ 的变化，再据此外推更大训练的收益与预算分配。**它也是理解后来 Chinchilla 重新估计 model-data allocation 的必要基线。
 
 ## 研究问题
 

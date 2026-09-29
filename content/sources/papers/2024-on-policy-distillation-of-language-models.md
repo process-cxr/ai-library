@@ -29,18 +29,14 @@ paper_order: "13649"
 
 ## 基本信息
 
-- 来源：arXiv:2306.13649v3，ICLR 2024
-- 标题：On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes
-- 作者/机构：Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos, Matthieu Geist, Olivier Bachem / Google DeepMind, Mila, University of Toronto
-- 日期：2024-01-17
+- 标题：[On-Policy Distillation of Language Models](https://arxiv.org/abs/2306.13649)
+- 作者：Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos, Matthieu Geist, Olivier Bachem
+- 发表：arXiv:2306.13649
+- 日期：2023-06
+- 相关主题：[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/logits-distillation|Logits Distillation]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2306.13649
-- 相关 topic：[[training/post-training/on-policy-kd|On-policy KD]]，[[training/post-training/knowledge-distillation|Knowledge Distillation]]，[[training/post-training/logits-distillation|Logits Distillation]]，[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]
-
-这篇论文提出 Generalized Knowledge Distillation（GKD），是后续讨论 On-Policy Distillation（OPD）时需要回到的源头工作之一。它关注的问题不是现代 reasoning model 中的 token reward shaping，而是 autoregressive language model 蒸馏里的 train-inference distribution mismatch：训练时 student 学的是固定数据或 teacher-generated sequences，推理时却必须在自己生成的 prefixes 上继续生成。
-
-GKD 的核心处理方式是：让 student 用当前 policy 自己生成 output sequence，再让 teacher 在这些 student-generated prefixes 上提供 token-level probability supervision。这样，student 学到的不是 teacher 在离线参考序列上的分布，而是在 student 自己实际会访问到的状态上的 teacher 分布。
-
-如果只保留一个核心观点：**autoregressive KD 不应只看固定答案序列，还应把 student self-generated trajectories 纳入训练分布；teacher 的作用是在这些 on-policy states 上提供 token-level expert signal。**
 
 ## 研究问题
 

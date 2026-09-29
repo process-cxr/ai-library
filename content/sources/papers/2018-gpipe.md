@@ -24,19 +24,12 @@ paper_order: "06965"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:1811.06965v5，2019-07-25 |
-| 标题 | [GPipe: Easy Scaling with Micro-Batch Pipeline Parallelism](https://arxiv.org/abs/1811.06965) |
-| 作者 | Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Mia Xu Chen, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, Yonghui Wu, Zhifeng Chen |
-| 机构 | Google |
-| 首次公开 | 2018-11，arXiv v1 |
-| 代码/框架 | [Lingvo](https://github.com/tensorflow/lingvo) |
-| 相关 topic | [[training/distributed-training/pipeline-parallel|Pipeline Parallel]]，[[training/distributed-training/megatron|Megatron 与 3D 并行]]，[[training/distributed-training/tensor-parallel|Tensor Parallel]]，[[training/optimization/gradient-checkpointing|Gradient Checkpointing]] |
-
-GPipe 是一个面向大型神经网络的 Pipeline Parallelism library。它把可以表示为 layer sequence 的网络切分成多个连续的 cell，每个 cell 放在一个 accelerator 上，再把一个 mini-batch 拆成多个 micro-batches，使不同 accelerator 可以同时处理不同 micro-batch。
-
-论文的核心设计是：**流水线执行可以提高设备利用率，但参数更新仍然在整个 mini-batch 的所有 micro-batch 完成后同步进行。** 这使 GPipe 在减少 pipeline bubble 的同时保持了 synchronous gradient descent 的语义，不需要为异步更新维护多份 stale weights。
+- 标题：[GPipe](https://arxiv.org/abs/1811.06965)
+- 作者：Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Mia Xu Chen, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, Yonghui Wu, Zhifeng Chen
+- 发表：arXiv:1811.06965
+- 日期：2018-11
+- 代码/数据：[Lingvo](https://github.com/tensorflow/lingvo)
+- 相关主题：[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]、[[training/distributed-training/megatron|Megatron 与 3D 并行]]、[[training/distributed-training/tensor-parallel|Tensor Parallel]]、[[training/optimization/gradient-checkpointing|Gradient Checkpointing]]
 
 ## 研究问题
 

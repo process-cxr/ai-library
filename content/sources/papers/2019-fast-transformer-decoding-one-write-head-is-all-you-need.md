@@ -20,10 +20,10 @@ paper_order: "02150"
 
 ## 基本信息
 
-- Title: [Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/abs/1911.02150)
-- Source type: paper
-- Related topic notes: [[architecture/attention/multi-query-attention|Multi-Query Attention]], [[inference/kv-cache-and-memory/kv-cache|KV Cache]]
-
+- 标题：[Fast Transformer Decoding](https://arxiv.org/abs/1911.02150)
+- 发表：arXiv:1911.02150
+- 日期：2019-11
+- 相关主题：[[architecture/attention/multi-query-attention|Multi-Query Attention]]、[[inference/kv-cache-and-memory/kv-cache|KV Cache]]
 ## TODO
 
 - 阅读论文原文，整理 Multi-Query Attention 如何减少 autoregressive decoding 中的 K/V cache 写入和读取成本。

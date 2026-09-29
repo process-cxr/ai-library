@@ -20,10 +20,10 @@ paper_order: "00159"
 
 ## 基本信息
 
-- Title: [Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research](https://arxiv.org/abs/2402.00159)
-- Source type: paper
-- Related topic notes: [[training/data-engineering/data-engineering|Data Engineering]], [[training/pretraining/data-mix|Data Mix]], [[training/data-engineering/quality-filtering|Quality Filtering]]
-
+- 标题：[Dolma](https://arxiv.org/abs/2402.00159)
+- 发表：arXiv:2402.00159
+- 日期：2024-02
+- 相关主题：[[training/data-engineering/data-engineering|Data Engineering]]、[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/quality-filtering|Quality Filtering]]
 ## TODO
 
 - 阅读论文原文，整理 Dolma 的数据组成、清洗过滤、去重、开放语料设计和数据报告。

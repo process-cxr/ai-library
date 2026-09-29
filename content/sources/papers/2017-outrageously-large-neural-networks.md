@@ -19,10 +19,10 @@ paper_order: "06538"
 
 ## 基本信息
 
-- Title: [Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer](https://arxiv.org/abs/1701.06538)
-- Source type: paper
-- Related topic notes: [[architecture/sparse-and-efficient/moe|Mixture of Experts]]
-
+- 标题：[Outrageously Large Neural Networks](https://arxiv.org/abs/1701.06538)
+- 发表：arXiv:1701.06538
+- 日期：2017-01
+- 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]
 ## TODO
 
 - 阅读论文原文，整理 sparsely-gated MoE layer 的 routing、top-k experts 和 load balancing。

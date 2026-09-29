@@ -20,10 +20,10 @@ paper_order: "17557"
 
 ## 基本信息
 
-- Title: [The FineWeb Datasets: Decanting the Web for the Finest Text Data at Scale](https://arxiv.org/abs/2406.17557)
-- Source type: paper
-- Related topic notes: [[training/data-engineering/data-cleaning|Data Cleaning]], [[training/data-engineering/quality-filtering|Quality Filtering]], [[training/pretraining/data-mix|Data Mix]]
-
+- 标题：[FineWeb](https://arxiv.org/abs/2406.17557)
+- 发表：arXiv:2406.17557
+- 日期：2024-06
+- 相关主题：[[training/data-engineering/data-cleaning|Data Cleaning]]、[[training/data-engineering/quality-filtering|Quality Filtering]]、[[training/pretraining/data-mix|Data Mix]]
 ## TODO
 
 - 阅读论文原文，整理 FineWeb 的 web data filtering、deduplication、quality ablation 和数据版本设计。

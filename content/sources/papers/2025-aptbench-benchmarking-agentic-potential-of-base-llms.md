@@ -26,21 +26,12 @@ code_url: https://github.com/TencentYoutuResearch/APTBench
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:2510.24397v1 |
-| 标题 | APTBench: Benchmarking Agentic Potential of Base LLMs During Pre-Training |
-| 作者/机构 | Jiarui Qin, Yunjia Xi, Junjie Huang, Renting Rui, Di Yin, Weiwen Liu, Yong Yu, Weinan Zhang, Xing Sun / Tencent Youtu Lab, Shanghai Jiao Tong University |
-| 日期 | 2025-10-28 |
-| 链接 | https://arxiv.org/abs/2510.24397 |
-| 代码 | https://github.com/TencentYoutuResearch/APTBench |
-| 相关 topic | [[application/evaluation/benchmark|Benchmark]], [[application/evaluation/evaluation|Evaluation and Benchmark]], [[application/agents/agent|Agent]], [[application/tool-use/tool-calling|Tool Calling]], [[training/mid-training/continued-pretraining|Continued Pretraining]], [[training/data-engineering/synthetic-data|Synthetic Data]] |
-
-APTBench 讨论的是一个在 agent 训练链路中越来越重要、但此前缺少直接度量的问题：**base model 在进入 SFT、RL 或完整 agent scaffold 之前，是否已经具备可被后续训练释放出来的 agentic potential**。传统预训练评测通常关注 MMLU、GSM8K、EvalPlus 等静态任务；真实 agent 任务则要求模型在多轮交互中规划、选择工具、处理外部反馈并持续推进任务。两者之间存在明显断层。
-
-论文提出的解决方案不是让 base model 直接跑完整 agent benchmark，而是把真实 agent 任务和成功轨迹转换成适合 base model 的 multiple-choice question 与 text completion question。这样可以绕开 base model 指令跟随和多轮执行能力不足的问题，同时保留 agent 任务中的 planning、action 和场景相关 atomic ability 信号。
-
-如果只保留一个核心观点：**APTBench 把动态 agent trajectory 转译为静态但轨迹条件化的 base-model evaluation，从而为 agent-oriented pretraining 提供比通用静态 benchmark 更贴近下游 agent 能力的早期反馈。**
+- 标题：[APTBench: Benchmarking Agentic Potential of Base LLMs During Pre-Training](https://arxiv.org/abs/2510.24397)
+- 作者：Jiarui Qin, Yunjia Xi, Junjie Huang, Renting Rui, Di Yin, Weiwen Liu, Yong Yu, Weinan Zhang, Xing Sun
+- 发表：arXiv:2510.24397
+- 日期：2025-10
+- 代码/数据：https://github.com/TencentYoutuResearch/APTBench
+- 相关主题：[[application/evaluation/benchmark|Benchmark]]、[[application/evaluation/evaluation|Evaluation and Benchmark]]、[[application/agents/agent|Agent]]、[[application/tool-use/tool-calling|Tool Calling]]、[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/data-engineering/synthetic-data|Synthetic Data]]
 
 ## 研究问题
 

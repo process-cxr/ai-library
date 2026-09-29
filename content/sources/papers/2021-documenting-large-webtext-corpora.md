@@ -20,10 +20,10 @@ paper_order: "08758"
 
 ## 基本信息
 
-- Title: [Documenting Large Webtext Corpora: A Case Study on the Colossal Clean Crawled Corpus](https://arxiv.org/abs/2104.08758)
-- Source type: paper
-- Related topic notes: [[training/data-engineering/data-cleaning|Data Cleaning]], [[training/data-engineering/quality-filtering|Quality Filtering]], [[training/data-engineering/data-engineering|Data Engineering]]
-
+- 标题：[Documenting Large Webtext Corpora](https://arxiv.org/abs/2104.08758)
+- 发表：arXiv:2104.08758
+- 日期：2021-04
+- 相关主题：[[training/data-engineering/data-cleaning|Data Cleaning]]、[[training/data-engineering/quality-filtering|Quality Filtering]]、[[training/data-engineering/data-engineering|Data Engineering]]
 ## TODO
 
 - 阅读论文原文，整理 C4 的数据来源、清洗规则、过滤副作用和数据文档化问题。

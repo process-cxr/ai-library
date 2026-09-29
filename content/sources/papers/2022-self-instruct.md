@@ -21,18 +21,12 @@ paper_order: "10560"
 
 ## 基本信息
 
-- 论文：[Self-Instruct: Aligning Language Models with Self-Generated Instructions](https://arxiv.org/abs/2212.10560)
+- 标题：[Self-Instruct](https://arxiv.org/abs/2212.10560)
 - 作者：Yizhong Wang, Yeganeh Kordi, Swaroop Mishra, Alisa Liu, Noah A. Smith, Daniel Khashabi, Hannaneh Hajishirzi
-- 机构：University of Washington、Tehran Polytechnic、Arizona State University、Johns Hopkins University、Allen Institute for AI
-- 发表：ACL 2023
-- 首次公开：2022-12，arXiv:2212.10560v1；本文阅读版本为 v2
-- 代码与数据：[yizhongw/self-instruct](https://github.com/yizhongw/self-instruct)
-- 相关知识：[[training/post-training/instruction-tuning|Instruction Tuning]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]
-
-这篇论文讨论的是一个很具体、但后来影响很大的数据问题：Instruction Tuning 需要大量任务定义和示范回答，而人工编写这些内容既昂贵，又容易集中在少数熟悉的 NLP 任务上。论文提出让语言模型从少量人工 seed tasks 出发，自己扩展 instructions、inputs 和 outputs，再用生成数据训练原来的模型。
-
-论文的价值不只在于“让模型生成更多 instruction”。真正构成方法的是一条闭环：用 seed task pool 约束任务扩展，用不同策略生成 task instances，用启发式规则过滤重复和明显无效样本，把通过筛选的任务重新加入 task pool，并最终将生成数据用于 instruction tuning。这个闭环使一个小规模人工任务集合能够扩展成规模更大的 instruction dataset。
-
+- 发表：arXiv:2212.10560；ACL 2023
+- 日期：2022-12
+- 代码/数据：[yizhongw/self-instruct](https://github.com/yizhongw/self-instruct)
+- 相关主题：[[training/post-training/instruction-tuning|Instruction Tuning]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]
 ## 研究问题
 
 ### 人工 instruction data 的瓶颈

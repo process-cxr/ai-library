@@ -27,19 +27,11 @@ code_url: https://github.com/Alibaba-NLP/DeepResearch
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:2509.13310v1 |
-| 标题 | Scaling Agents via Continual Pre-training |
-| 作者/机构 | Liangcai Su, Zhen Zhang, Guangyu Li, Zhuo Chen, Chenxi Wang 等 / Tongyi Lab, Alibaba Group |
-| 日期 | 2025-09-17 |
-| 链接 | https://arxiv.org/abs/2509.13310 |
-| 项目 | https://github.com/Alibaba-NLP/DeepResearch |
-| 相关 topic | [[training/mid-training/continued-pretraining|Continued Pretraining]], [[training/data-engineering/synthetic-data|Synthetic Data]], [[training/post-training/sft|SFT]], [[application/agents/agent|Agent]], [[application/tool-use/tool-calling|Tool Calling]] |
-
-这篇论文提出 **Agentic Continual Pre-training, Agentic CPT**，核心观点是：deep research agent 的能力不能只靠在通用 base model 上做 SFT / RL 后训练来获得。对于长程工具使用、多步搜索、环境反馈和复杂决策来说，通用 base model 缺少足够的 agentic inductive bias，导致 post-training 需要同时学习“agent 能力”和“专家轨迹对齐”，形成优化张力。论文因此把 agent 能力训练前移到 [[training/mid-training/continued-pretraining|Continued Pretraining]] 阶段，并基于该路线训练出 AgentFounder。
-
-如果只记一句话：**AgentFounder 试图把 agent behavior 从后训练阶段的示范模仿，变成持续预训练阶段就已经具备的基础能力。**
+- 标题：[Scaling Agents via Continual Pre-training](https://arxiv.org/abs/2509.13310)
+- 作者：Liangcai Su, Zhen Zhang, Guangyu Li, Zhuo Chen, Chenxi Wang 等
+- 发表：arXiv:2509.13310
+- 日期：2025-09
+- 相关主题：[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[training/post-training/sft|SFT]]、[[application/agents/agent|Agent]]、[[application/tool-use/tool-calling|Tool Calling]]
 
 ## 研究问题
 

@@ -19,10 +19,10 @@ paper_order: "05150"
 
 ## 基本信息
 
-- Title: [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150)
-- Source type: paper
-- Related topic notes: [[architecture/attention/sliding-window-attention|Sliding Window Attention]], [[training/mid-training/long-context-training|Long-context Training]]
-
+- 标题：[Longformer](https://arxiv.org/abs/2004.05150)
+- 发表：arXiv:2004.05150
+- 日期：2020-04
+- 相关主题：[[architecture/attention/sliding-window-attention|Sliding Window Attention]]、[[training/mid-training/long-context-training|Long-context Training]]
 ## TODO
 
 - 阅读论文原文，整理 sliding window attention 与 global attention 的组合方式。

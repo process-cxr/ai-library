@@ -20,10 +20,10 @@ paper_order: "05202"
 
 ## 基本信息
 
-- Title: [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202)
-- Source type: paper
-- Related topic notes: [[architecture/transformer/feed-forward|Feed Forward Network]], [[fundamentals/neural-network-basics/activation-functions|Activation Functions]]
-
+- 标题：[GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202)
+- 发表：arXiv:2002.05202
+- 日期：2020-02
+- 相关主题：[[architecture/transformer/feed-forward|Feed Forward Network]]、[[fundamentals/neural-network-basics/activation-functions|Activation Functions]]
 ## TODO
 
 - 阅读论文原文，整理 GLU family、GeGLU、SwiGLU 等 gated FFN 变体。

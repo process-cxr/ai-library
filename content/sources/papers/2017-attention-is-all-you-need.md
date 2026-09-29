@@ -22,19 +22,12 @@ paper_order: "03762"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:1706.03762v7，NIPS 2017 |
-| 标题 | [Attention Is All You Need](https://arxiv.org/abs/1706.03762) |
-| 作者 | Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin |
-| 机构 | Google Brain, Google Research, University of Toronto |
-| 首次公开 | 2017-06，arXiv v1 |
-| 论文代码 | [tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor) |
-| 相关 topic | [[architecture/transformer/transformer|Transformer]]，[[architecture/attention/attention|Attention]]，[[architecture/attention/multi-head-attention|Multi-Head Attention]]，[[architecture/positional-encoding/sinusoidal-position|Sinusoidal Position Encoding]] |
-
-这篇论文提出 Transformer。它没有把 recurrent layer 或 convolutional layer 作为序列建模的主干，而是使用 self-attention 建立序列中不同位置之间的信息交互。论文首先在机器翻译中验证这一架构，之后 Transformer 成为 encoder-only、decoder-only 和 encoder-decoder 大模型的共同基础。
-
-如果只保留一个核心认识：**Transformer 的关键不是单独引入了 attention，而是把 token 间的信息交互、逐位置的非线性变换和自回归约束，组织成了一个适合大规模并行训练的模块化架构。**
+- 标题：[Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- 作者：Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin
+- 发表：arXiv:1706.03762
+- 日期：2017-06
+- 代码/数据：[tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor)
+- 相关主题：[[architecture/transformer/transformer|Transformer]]、[[architecture/attention/attention|Attention]]、[[architecture/attention/multi-head-attention|Multi-Head Attention]]、[[architecture/positional-encoding/sinusoidal-position|Sinusoidal Position Encoding]]
 
 ## 研究问题
 

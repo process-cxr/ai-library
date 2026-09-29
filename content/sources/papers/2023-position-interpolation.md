@@ -20,10 +20,10 @@ paper_order: "15595"
 
 ## 基本信息
 
-- Title: [Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/abs/2306.15595)
-- Source type: paper
-- Related topic notes: [[training/mid-training/long-context-training|Long Context Training]], [[architecture/positional-encoding/rope|RoPE]]
-
+- 标题：[Position Interpolation](https://arxiv.org/abs/2306.15595)
+- 发表：arXiv:2306.15595
+- 日期：2023-06
+- 相关主题：[[training/mid-training/long-context-training|Long Context Training]]、[[architecture/positional-encoding/rope|RoPE]]
 ## TODO
 
 - 阅读论文原文，整理 Position Interpolation 的动机、方法和长度外推设定。

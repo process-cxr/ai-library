@@ -27,24 +27,15 @@ paper_order: "15161"
 
 ## 基本信息
 
-- 来源：arXiv:2607.15161v1
-- 标题：On-Policy Delta Distillation
-- 作者/机构：Byeongho Heo, Jaehui Hwang, Sangdoo Yun, Dongyoon Han / NAVER AI Lab
-- 日期：2026-07-16
+- 标题：[On-Policy Delta Distillation](https://arxiv.org/abs/2607.15161)
+- 作者：Byeongho Heo, Jaehui Hwang, Sangdoo Yun, Dongyoon Han
+- 发表：arXiv:2607.15161
+- 日期：2026-07
+- 代码/数据：https://github.com/naver-ai/opd2
+- 相关主题：[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/grpo|GRPO]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2607.15161
-- 代码：https://github.com/naver-ai/opd2
-- 相关 topic：[[training/post-training/on-policy-kd|On-policy KD]]，[[training/post-training/knowledge-distillation|Knowledge Distillation]]，[[training/post-training/grpo|GRPO]]
-
-这篇论文讨论的是 reasoning model 后训练中的 on-policy distillation。OPD（On-Policy Distillation）的基本做法是：student 先根据当前 policy 生成 rollout，再由 teacher 对 student 已经采样出的 token 提供 token-level reward。这样可以避免完全依赖 reward model / verifier，也比普通 SFT 更贴近 student 自己会访问到的状态分布。
-
-论文提出的问题是：传统 OPD 直接用 teacher 与 student 的 log probability 差作为 reward，但这个信号混合了两类东西：
-
-- teacher 在 pre-training / base 阶段已经具备的自然语言偏好、常见表达和普通 next-token prior；
-- teacher 经过 reasoning tuning 后新增或强化的推理能力。
-
-OPD2 的核心想法是把第二类信号单独抽出来。它不用 `teacher - student` 作为主要 reward，而是使用 `teacher - teacher_base` 的 delta signal。这个 delta 被作者解释为 teacher 从 base model 到 reasoning-tuned model 的“学习轨迹”，更直接对应 reasoning capability 的增量部分。
-
-如果只保留一个核心观点：**蒸馏 reasoning 能力时，不一定要模仿 teacher 的完整输出分布；更有针对性的信号可能是 teacher 相对自身 base model 发生了哪些概率偏移。**
 
 ## 研究问题
 

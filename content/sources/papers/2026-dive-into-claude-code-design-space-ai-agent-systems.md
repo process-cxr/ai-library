@@ -26,16 +26,15 @@ paper_order: "14228"
 
 ## 基本信息
 
-- Title: [Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems](https://arxiv.org/pdf/2604.14228)
-- Authors: Jiacheng Liu, Xiaohan Zhao, Xinyi Shang, Zhiqiang Shen
-- Institutions: VILA Lab, Mohamed bin Zayed University of Artificial Intelligence; University College London
-- Date: arXiv v1, 2026-04-14
-- Code / project: `https://github.com/VILA-Lab/Dive-into-Claude-Code`
-- Related topic notes: [[application/agents/agent|Agent]], [[application/agents/workflow-agent|Workflow Agent]], [[application/agents/planning|Planning]], [[application/agents/memory|Memory]], [[application/agents/multi-agent|Multi-Agent]], [[application/tool-use/tool-calling|Tool Calling]], [[application/tool-use/mcp|MCP]], [[application/rag/context-compression|Context Compression]], [[application/evaluation/benchmark|Benchmark]], [[application/evaluation/llm-as-judge|LLM-as-a-Judge]]
+- 标题：[Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems](https://arxiv.org/abs/2604.14228)
+- 作者：Jiacheng Liu, Xiaohan Zhao, Xinyi Shang, Zhiqiang Shen
+- 发表：arXiv:2604.14228
+- 日期：2026-04
+- 代码/数据：`https://github.com/VILA-Lab/Dive-into-Claude-Code`
+- 相关主题：[[application/agents/agent|Agent]]、[[application/agents/workflow-agent|Workflow Agent]]、[[application/agents/planning|Planning]]、[[application/agents/memory|Memory]]、[[application/agents/multi-agent|Multi-Agent]]、[[application/tool-use/tool-calling|Tool Calling]]、[[application/tool-use/mcp|MCP]]、[[application/rag/context-compression|Context Compression]]、[[application/evaluation/benchmark|Benchmark]]、[[application/evaluation/llm-as-judge|LLM-as-a-Judge]]
+## 研究对象与实验范围
 
-这篇文章不是传统意义上的算法论文，而是一篇面向生产级 coding agent 的 source-grounded architecture survey。作者通过分析公开可获得的 Claude Code TypeScript 源码，并与 OpenClaw 这个独立开源 agent gateway 做对照，试图回答一个更系统的问题：当 coding assistant 从 autocomplete、chat-in-IDE 走向可以运行 shell、编辑文件、调用外部服务、委托子代理并持久化会话的 agentic system 时，架构设计空间到底由哪些问题构成？
-
-论文的核心观察是：Claude Code 的 agent loop 本身非常简单，本质上是一个反复调用模型、解析工具请求、执行工具并把结果喂回上下文的 while-loop。真正复杂的部分在 loop 外围：权限系统、上下文管理、扩展机制、subagent orchestration、session persistence、shell sandbox 和各类恢复机制。作者因此把 Claude Code 解读为一种“model judgment within a deterministic harness”的架构：模型负责局部判断，harness 负责执行边界、上下文预算、安全控制和可恢复性。
+- Institutions：VILA Lab, Mohamed bin Zayed University of Artificial Intelligence; University College London
 
 ## 研究问题
 

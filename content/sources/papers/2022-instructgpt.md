@@ -24,21 +24,11 @@ paper_order: "02155"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 论文 | [Training language models to follow instructions with human feedback](https://arxiv.org/abs/2203.02155) |
-| 版本 | arXiv:2203.02155v1，2022-03-04 |
-| 作者 | Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton, Fraser Kelton, Luke Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul Christiano, Jan Leike, Ryan Lowe |
-| 机构 | OpenAI |
-| 首次公开 | 2022-03，arXiv v1 |
-| 模型 | GPT-3 架构，1.3B / 6B / 175B |
-| 相关 topic | [[training/post-training/rlhf|RLHF]]，[[training/post-training/sft|SFT]]，[[training/post-training/reward-model|Reward Model]]，[[training/post-training/ppo|PPO]]，[[training/post-training/instruction-tuning|Instruction Tuning]] |
-
-这篇论文系统展示了如何把一个只接受 next-token pretraining 的 GPT-3 语言模型，训练成更符合用户意图的 instruction-following model。论文将目标拆成三个层次：模型需要更好地完成用户指令，也要减少 hallucination 和 toxic output，同时尽量不要损害原有语言建模和公共 NLP 能力。
-
-论文提出的 InstructGPT pipeline 由三步组成：先收集 labeler demonstrations 训练 SFT policy，再收集多个模型回答的排序训练 reward model，最后用 PPO 在 reward model 上优化 policy。论文还提出 `PPO-ptx`，在 PPO 中混入 pretraining distribution 的 language-modeling gradient，以缓解 RLHF 带来的 public NLP regression。
-
-如果只保留一个核心认识：**InstructGPT 的贡献不是单独使用 PPO，而是将 instruction 数据、preference data、reward model、online policy optimization 和能力保持机制组合成了一条可运行的 post-training pipeline。** 论文同时用 human preference、truthfulness、toxicity、bias、公共任务和定性案例说明：alignment 结果不能只用一个 reward 或一个 benchmark 衡量。
+- 标题：[Training language models to follow instructions with human feedback](https://arxiv.org/abs/2203.02155)
+- 作者：Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton, Fraser Kelton, Luke Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul Christiano, Jan Leike, Ryan Lowe
+- 发表：arXiv:2203.02155
+- 日期：2022-03
+- 相关主题：[[training/post-training/rlhf|RLHF]]、[[training/post-training/sft|SFT]]、[[training/post-training/reward-model|Reward Model]]、[[training/post-training/ppo|PPO]]、[[training/post-training/instruction-tuning|Instruction Tuning]]
 
 ## 研究问题
 

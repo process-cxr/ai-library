@@ -29,16 +29,14 @@ paper_order: "10150"
 
 ## 基本信息
 
-- 来源：arXiv:2510.10150v4
-- 标题：Rethinking Entropy Interventions in RLVR: An Entropy Change Perspective
-- 作者/机构：Zhezheng Hao, Hong Wang, Haoyang Liu, Jian Luo, Jiarui Yu, Hande Dong, Qiang Lin, Can Wang, Jiawei Chen / Zhejiang University, Tencent, Independent Researcher, Hangzhou High-Tech Zone (Binjiang) Institute of Blockchain and Data Security
-- 日期：2026-04-29
+- 标题：[Rethinking Entropy Interventions in RLVR: An Entropy Change Perspective](https://arxiv.org/abs/2510.10150)
+- 作者：Zhezheng Hao, Hong Wang, Haoyang Liu, Jian Luo, Jiarui Yu, Hande Dong, Qiang Lin, Can Wang, Jiawei Chen
+- 发表：arXiv:2510.10150
+- 日期：2025-10
+- 相关主题：[[training/post-training/grpo|GRPO]]、[[training/post-training/ppo|PPO]]、[[training/post-training/rlhf|RLHF]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2510.10150
-- 相关 topic：[[training/post-training/grpo|GRPO]]，[[training/post-training/ppo|PPO]]，[[training/post-training/rlhf|RLHF]]
-
-这篇论文讨论的是 RLVR 训练中的 entropy collapse 问题。作者的判断很直接：很多 post-training 方法已经意识到 policy entropy 会在训练中快速下降，但现有 entropy intervention 多数只是经验性地调一两个开关，缺少统一的机制解释。STEER 的价值不在于“又加了一个 trick”，而在于它把 token-level entropy change 拆开分析，并据此把干预策略从粗粒度的全局修补，推进到基于理论估计的 token reweighting。
-
-如果只保留一个核心观点：**RLVR 里的 entropy control 不能只盯着整体 entropy 曲线，而要看每个 token 在更新一步之后到底是怎么变的。**
 
 ## 研究问题
 

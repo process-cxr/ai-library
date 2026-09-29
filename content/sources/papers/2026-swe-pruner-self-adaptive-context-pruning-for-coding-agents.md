@@ -23,16 +23,15 @@ code_url: https://github.com/Ayanami1314/swe-pruner
 
 ## 基本信息
 
-- Title: [SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents](https://arxiv.org/abs/2601.16746)
-- Authors: Yuhang Wang, Yuling Shi, Mo Yang, Rongrui Zhang, Shilin He, Heng Lian, Yuting Chen, Siyu Ye, Kai Cai, Xiaodong Gu
-- Institutions: Shanghai Jiao Tong University, Sun Yat-sen University, Douyin Group
-- Date: 2026-05-07
-- Code: `https://github.com/Ayanami1314/swe-pruner`
-- Related topic notes: [[application/rag/context-compression|Context Compression]], [[application/agents/agent|Agent]], [[application/rag/reranking|Reranking]]
+- 标题：[SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents](https://arxiv.org/abs/2601.16746)
+- 作者：Yuhang Wang, Yuling Shi, Mo Yang, Rongrui Zhang, Shilin He, Heng Lian, Yuting Chen, Siyu Ye, Kai Cai, Xiaodong Gu
+- 发表：arXiv:2601.16746
+- 日期：2026-01
+- 代码/数据：`https://github.com/Ayanami1314/swe-pruner`
+- 相关主题：[[application/rag/context-compression|Context Compression]]、[[application/agents/agent|Agent]]、[[application/rag/reranking|Reranking]]
+## 研究对象与实验范围
 
-这篇论文提出 SWE-Pruner，一个面向 coding agent 的 self-adaptive context pruning 框架。它把上下文压缩放在 agent 与环境之间：当 agent 通过 `cat`、`grep`、读文件等工具拿到大量代码输出时，SWE-Pruner 根据 agent 当前的自然语言目标问题过滤输出，只把任务相关的代码行返回给 agent。
-
-它的核心不是简单减少 token，而是让 agent 在每次观察环境时显式说明“我现在想从这段输出里找什么”。论文把这个目标称为 Goal Hint，也可以实现成工具参数 `context_focus_question`。随后一个轻量 neural skimmer 依据该问题对代码行打分和保留，从而减少长轨迹中的无关代码、历史噪声和 API 成本。
+- Institutions：Shanghai Jiao Tong University, Sun Yat-sen University, Douyin Group
 
 ## 研究问题
 

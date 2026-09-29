@@ -19,10 +19,10 @@ paper_order: "03385"
 
 ## 基本信息
 
-- Title: [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
-- Source type: paper
-- Related topic notes: [[architecture/transformer/residual|Residual in Transformer]], [[fundamentals/neural-network-basics/residual-connection|Residual Connection]]
-
+- 标题：[Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
+- 发表：arXiv:1512.03385
+- 日期：2015-12
+- 相关主题：[[architecture/transformer/residual|Residual in Transformer]]、[[fundamentals/neural-network-basics/residual-connection|Residual Connection]]
 ## TODO
 
 - 阅读论文原文，整理 residual connection 如何缓解深层网络优化困难。

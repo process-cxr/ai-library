@@ -26,21 +26,12 @@ paper_order: "23045"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:2509.23045v3 |
-| 标题 | Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents |
-| 作者/机构 | Zonghan Yang, Shengjie Wang, Kelin Fu, Wenyang He, Weimin Xiong, Yibo Liu, Yibo Miao, Bofei Gao, Yejie Wang, Yingwei Ma, Yanhao Li, Yue Liu, Zhenxing Hu, Kaitai Zhang, Shuyi Wang, Huarong Chen, Flood Sung, Yang Liu, Yang Gao, Zhilin Yang, Tianyu Liu / Moonshot AI, THU, PKU, UCAS, BUPT, NUS |
-| 日期 | 2025-12-08 |
-| 链接 | https://arxiv.org/abs/2509.23045 |
-| 代码与模型 | https://github.com/MoonshotAI/Kimi-Dev；https://huggingface.co/moonshotai/Kimi-Dev-72B |
-| 相关 topic | [[application/agents/agent|Agent]], [[application/agents/workflow-agent|Workflow Agent]], [[training/mid-training/capability-injection|Capability Injection]], [[training/mid-training/continued-pretraining|Continued Pretraining]], [[training/data-engineering/synthetic-data|Synthetic Data]], [[training/post-training/grpo|GRPO]], [[application/evaluation/benchmark|Benchmark]] |
-
-Kimi-Dev 讨论的是 software engineering agent 训练中的一个关键关系：固定流程的 Agentless 方法和多轮交互的 SWE-Agent 方法并不是互斥路线。论文的中心观点是，Agentless workflow 虽然在推理时缺少多轮自由探索能力，但它可以作为训练阶段的结构化能力注入方式，为后续 SWE-Agent 适配提供 localization、code edit、test writing、self-reflection 等 skill priors。
-
-论文发布了一个基于 Qwen2.5-72B-Base 训练的开源 SWE LLM。Kimi-Dev 在 Agentless-like workflow 下达到 SWE-bench Verified 60.4%，并在使用 5,016 条公开 SWE-Agent trajectories 做轻量 SFT 后，在 SWE-Agent 框架下达到 48.6% pass@1，接近论文引用的 Claude 3.5 Sonnet 20241022 版本在同一类 SWE-Agent 设置下的 49.0%。
-
-如果只保留一个核心观点：**Agentless training 不必被看作最终部署形态，而可以被看作面向 SWE-Agent 的 skill-prior induction；固定流程训练出的定位、编辑、测试和反思能力，可以降低后续长程 agent 训练的初始化难度。**
+- 标题：[Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents](https://arxiv.org/abs/2509.23045)
+- 作者：Zonghan Yang, Shengjie Wang, Kelin Fu, Wenyang He, Weimin Xiong, Yibo Liu, Yibo Miao, Bofei Gao, Yejie Wang, Yingwei Ma, Yanhao Li, Yue Liu, Zhenxing Hu, Kaitai Zhang, Shuyi Wang, Huarong Chen, Flood Sung, Yang Liu, Yang Gao, Zhilin Yang, Tianyu Liu
+- 发表：arXiv:2509.23045
+- 日期：2025-09
+- 代码/数据：https://github.com/MoonshotAI/Kimi-Dev；https://huggingface.co/moonshotai/Kimi-Dev-72B
+- 相关主题：[[application/agents/agent|Agent]]、[[application/agents/workflow-agent|Workflow Agent]]、[[training/mid-training/capability-injection|Capability Injection]]、[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[training/post-training/grpo|GRPO]]、[[application/evaluation/benchmark|Benchmark]]
 
 ## 研究问题
 

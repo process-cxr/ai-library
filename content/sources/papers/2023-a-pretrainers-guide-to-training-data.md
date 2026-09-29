@@ -24,18 +24,14 @@ paper_order: "13169"
 
 ## 基本信息
 
-- 标题：[A Pretrainer's Guide to Training Data: Measuring the Effects of Data Age, Domain Coverage, Quality, & Toxicity](https://arxiv.org/abs/2305.13169)
-- 版本：arXiv:2305.13169v2，2023-11-13
+- 标题：[A Pretrainer's Guide to Training Data](https://arxiv.org/abs/2305.13169)
 - 作者：Shayne Longpre, Gregory Yauney, Emily Reif, Katherine Lee, Adam Roberts, Barret Zoph, Denny Zhou, Jason Wei, Kevin Robinson, David Mimno, Daphne Ippolito
-- 机构：MIT、Cornell University、Google Research、OpenAI
+- 发表：arXiv:2305.13169
+- 日期：2023-05
+- 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/quality-filtering|Quality Filtering]]、[[training/data-engineering/data-engineering|Data Engineering]]、[[training/data-engineering/deduplication|Deduplication]]、[[training/scaling/compute-optimal|Compute Optimal]]
+## 研究对象与实验范围
+
 - 研究对象：decoder-only Transformer language model 的 pretraining data curation
-- 相关 topic：[[training/pretraining/data-mix|Data Mix]]，[[training/data-engineering/quality-filtering|Quality Filtering]]，[[training/data-engineering/data-engineering|Data Engineering]]，[[training/data-engineering/deduplication|Deduplication]]，[[training/scaling/compute-optimal|Compute Optimal]]
-
-这篇论文讨论的不是“什么数据看起来更好”，而是一个更需要实验回答的问题：**预训练数据的时间、来源、质量过滤和 toxicity 过滤，究竟会怎样改变模型的能力与风险？**
-
-论文认为，预训练数据设计长期存在明显的 documentation debt。模型开发者往往会说明使用了哪些数据和过滤方法，却很少说明为什么这样设计，以及这些选择对最终模型产生了什么影响。于是，数据规模、质量和多样性经常被当成看似正确的经验，而不是像 learning rate、模型尺寸那样被系统地做成可比较的训练变量。
-
-作者训练并比较了 28 个约 1.5B 参数的 decoder-only language model，围绕四类数据策划决策展开 controlled ablation：dataset age、quality filtering、toxicity filtering 和 domain composition。论文的意义不在于给出一个可以直接复制的过滤阈值，而在于证明：**数据策划策略会形成可测量、彼此冲突、且不能完全由后续 fine-tuning 消除的模型行为差异。**
 
 ## 研究问题
 
