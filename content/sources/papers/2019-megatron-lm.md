@@ -26,19 +26,12 @@ paper_order: "08053"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:1909.08053v4，2020-03-13 |
-| 标题 | [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053) |
-| 作者 | Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, Bryan Catanzaro |
-| 机构 | NVIDIA |
-| 首次公开 | 2019-09，arXiv v1 |
-| 代码 | [NVIDIA/Megatron-LM](https://github.com/NVIDIA/Megatron-LM) |
-| 相关 topic | [[training/distributed-training/megatron|Megatron 与 3D 并行]]，[[training/distributed-training/tensor-parallel|Tensor Parallel]]，[[training/distributed-training/torch-distributed|torch.distributed]]，[[training/optimization/training-memory-estimation|Training Memory Estimation]] |
-
-这篇论文提出了一种面向 Transformer 的 intra-layer model parallelism，并以 PyTorch 中少量通信原语的插入实现大规模训练。论文的核心问题不是如何把完整模型复制到更多 GPU，而是：**当单个 Transformer layer 的矩阵、attention heads 和 optimizer state 已经无法放在一张 GPU 上时，如何在不重写编译器和训练框架的前提下，把单层计算切到多张 GPU，并把通信控制在可接受范围内。**
-
-如果只保留一个核心认识：**Megatron-LM 的 Tensor Parallel 不是把每个中间张量都 AllGather 成完整副本，而是让 Column Parallel 和 Row Parallel 线性层成对出现，使大部分中间结果保持分片，只在确实需要合并 partial result 的位置进行 AllReduce。**
+- 标题：[Megatron-LM](https://arxiv.org/abs/1909.08053)
+- 作者：Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, Bryan Catanzaro
+- 发表：arXiv:1909.08053
+- 日期：2019-09
+- 代码/数据：[NVIDIA/Megatron-LM](https://github.com/NVIDIA/Megatron-LM)
+- 相关主题：[[training/distributed-training/megatron|Megatron 与 3D 并行]]、[[training/distributed-training/tensor-parallel|Tensor Parallel]]、[[training/distributed-training/torch-distributed|torch.distributed]]、[[training/optimization/training-memory-estimation|Training Memory Estimation]]
 
 ## 研究问题
 

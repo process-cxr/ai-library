@@ -28,17 +28,15 @@ paper_order: "13016"
 
 ## 基本信息
 
-- 来源：arXiv:2604.13016v2
-- 标题：Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe
-- 作者/机构：Yaxuan Li, Yuxin Zuo, Bingxiang He, Jinqian Zhang, Chaojun Xiao, Cheng Qian, Tianyu Yu, Huan-ang Gao, Wenkai Yang, Zhiyuan Liu, Ning Ding / Tsinghua University, ShanghaiTech University, UIUC, Renmin University of China
-- 日期：2026-04-15
+- 标题：[Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe](https://arxiv.org/abs/2604.13016)
+- 作者：Yaxuan Li, Yuxin Zuo, Bingxiang He, Jinqian Zhang, Chaojun Xiao, Cheng Qian, Tianyu Yu, Huan-ang Gao, Wenkai Yang, Zhiyuan Liu, Ning Ding
+- 发表：arXiv:2604.13016
+- 日期：2026-04
+- 代码/数据：https://github.com/thunlp/OPD
+- 相关主题：[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/grpo|GRPO]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2604.13016
-- 代码：https://github.com/thunlp/OPD
-- 相关 topic：[[training/post-training/on-policy-kd|On-policy KD]]，[[training/post-training/knowledge-distillation|Knowledge Distillation]]，[[training/post-training/grpo|GRPO]]
-
-这篇论文不是在提出一个新的 OPD 公式，而是在系统回答三个更基础的问题：OPD 什么时候会成功或失败，为什么 token-level reward 会起作用，以及当 OPD 失败时该怎么修。
-
-它的价值在于把 OPD 从“有效的经验技巧”推进到“可解释的训练现象”。论文给出的结论很适合放在 OPD 机制链条里：**OPD 是否有效，首先取决于 teacher 和 student 的 thinking pattern 是否兼容；其次还取决于 teacher 是否真的带来了 student 之前没见过的新能力；而真正起作用的梯度主要集中在 student 与 teacher 的高概率 overlap tokens 上。**
 
 ## 研究问题
 

@@ -27,16 +27,14 @@ paper_order: "30406"
 
 ## 基本信息
 
-- 来源：arXiv:2606.30406v1
-- 标题：MOPD: Multi-Teacher On-Policy Distillation for Capability Integration in LLM Post-Training
-- 作者/机构：Wenhan Ma, Jianyu Wei, Liang Zhao, Hailin Zhang, Bangjun Xiao, Lei Li, Qibin Yang, Bofei Gao, Yudong Wang, Rang Li, Jinhao Dong, Zhifang Sui, Fuli Luo / Peking University, Xiaomi, HKU, RUC
-- 日期：2026-06-29
+- 标题：[MOPD: Multi-Teacher On-Policy Distillation for Capability Integration in LLM Post-Training](https://arxiv.org/abs/2606.30406)
+- 作者：Wenhan Ma, Jianyu Wei, Liang Zhao, Hailin Zhang, Bangjun Xiao, Lei Li, Qibin Yang, Bofei Gao, Yudong Wang, Rang Li, Jinhao Dong, Zhifang Sui, Fuli Luo
+- 发表：arXiv:2606.30406
+- 日期：2026-06
+- 相关主题：[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/grpo|GRPO]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2606.30406
-- 相关 topic：[[training/post-training/on-policy-kd|On-policy KD]]，[[training/post-training/grpo|GRPO]]，[[training/post-training/knowledge-distillation|Knowledge Distillation]]
-
-这篇论文讨论的是 post-training 里一个很实际的问题：当 math、instruction following、software engineering、search、tool use 等不同能力各自已经通过专门 RL 训练出来后，如何把这些能力整合进同一个模型，而不是让它们在联合训练里互相打架。
-
-MOPD 的答案是把“能力生产”和“能力整合”拆开。Stage 2 先在各自域上独立训练 domain teachers；Stage 3 再让 student 在自己的 rollouts 上，接受被路由到对应 domain teacher 的 token-level distillation。这样既保留了 on-policy 的分布对齐，又避免了多域联合 RL 的干扰。
 
 ## 研究问题
 

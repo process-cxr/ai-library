@@ -23,20 +23,11 @@ paper_order: "03741"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 论文 | [Deep Reinforcement Learning from Human Preferences](https://arxiv.org/abs/1706.03741) |
-| 版本 | arXiv:1706.03741v4，2023-02-17 |
-| 作者 | Paul F. Christiano, Jan Leike, Tom B. Brown, Miljan Martic, Shane Legg, Dario Amodei |
-| 机构 | OpenAI, DeepMind |
-| 首次公开 | 2017-06，arXiv v1 |
-| 相关 topic | [[training/post-training/rlhf|RLHF]]，[[training/post-training/reward-model|Reward Model]]，[[training/post-training/ppo|PPO]]，[[fundamentals/information-theory/kl-divergence|KL Divergence]] |
-
-这篇论文讨论一个直到今天仍然重要的问题：当任务目标复杂、主观，或者很难写成程序化 reward 时，能不能让人类只比较 agent 的行为片段，由此学习一个 reward function，再用强化学习优化这个 reward？
-
-论文提出的不是一套只适用于某个环境的标注技巧，而是一条完整 pipeline：agent 产生轨迹片段，人类比较两个片段，reward predictor 从比较结果中学习，policy 再最大化 predictor 给出的 reward。论文在 MuJoCo 机器人和 Atari 游戏中验证了这条路线，并展示了通过少量人类反馈学习新行为的结果。
-
-如果只保留一个核心认识：**人类不必为每一步行为提供绝对分数，也不必亲自示范复杂动作；只要能够比较两个短 trajectory segment，系统就可以把比较偏好转化为可供 RL 优化的 learned reward。** 后来的 LLM RLHF 将“trajectory segment”换成 prompt-response，将视频比较换成文本回答比较，但基本分工仍然来自这里。
+- 标题：[Deep Reinforcement Learning from Human Preferences](https://arxiv.org/abs/1706.03741)
+- 作者：Paul F. Christiano, Jan Leike, Tom B. Brown, Miljan Martic, Shane Legg, Dario Amodei
+- 发表：arXiv:1706.03741
+- 日期：2017-06
+- 相关主题：[[training/post-training/rlhf|RLHF]]、[[training/post-training/reward-model|Reward Model]]、[[training/post-training/ppo|PPO]]、[[fundamentals/information-theory/kl-divergence|KL Divergence]]
 
 ## 研究问题
 

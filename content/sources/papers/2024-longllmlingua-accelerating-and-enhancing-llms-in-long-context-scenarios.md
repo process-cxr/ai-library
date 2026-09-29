@@ -31,15 +31,12 @@ LongLLMLingua 的 motivation 是：**长上下文不只是贵，还会因为噪�
 
 ## 基本信息
 
-| 字段 | 内容 |
-| --- | --- |
-| 来源 | arXiv:2310.06839v2 |
-| 标题 | LongLLMLingua: Accelerating and Enhancing LLMs in Long Context Scenarios via Prompt Compression |
-| 作者/机构 | Huiqiang Jiang, Qianhui Wu, Xufang Luo, Dongsheng Li, Chin-Yew Lin, Yuqing Yang, Lili Qiu / Microsoft |
-| 日期 | 2024-08-12 |
-| 链接 | https://arxiv.org/abs/2310.06839 |
-| Code | https://aka.ms/LongLLMLingua |
-| 相关 topic | [[application/rag/context-compression|Context Compression]], [[application/rag/retrieval|Retrieval]], [[fundamentals/information-theory/perplexity|Perplexity]] |
+- 标题：[LongLLMLingua: Accelerating and Enhancing LLMs in Long Context Scenarios via Prompt Compression](https://arxiv.org/abs/2310.06839)
+- 作者：Huiqiang Jiang, Qianhui Wu, Xufang Luo, Dongsheng Li, Chin-Yew Lin, Yuqing Yang, Lili Qiu
+- 发表：arXiv:2310.06839
+- 日期：2023-10
+- 代码/数据：https://aka.ms/LongLLMLingua
+- 相关主题：[[application/rag/context-compression|Context Compression]]、[[application/rag/retrieval|Retrieval]]、[[fundamentals/information-theory/perplexity|Perplexity]]
 
 ## 研究问题
 

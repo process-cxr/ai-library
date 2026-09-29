@@ -28,28 +28,11 @@ paper_order: "27483"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:2606.27483v1 |
-| 标题 | Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning |
-| 作者/机构 | Xuan Zhang, Zhijian Zhou, Lingfeng Qiao, Yulei Qin, Ke Li, Xing Sun, Xiaoyu Tan, Chao Qu, Yuan Qi / Fudan University, Shanghai Innovation Institute, Tencent Youtu Lab |
-| 日期 | 2026-06-25 |
-| 链接 | https://arxiv.org/abs/2606.27483 |
-| 相关 topic | [[application/agents/planning|Planning]], [[application/agents/agent|Agent]], [[training/mid-training/continued-pretraining|Continued Pretraining]], [[training/mid-training/capability-injection|Capability Injection]], [[training/post-training/grpo|GRPO]], [[training/post-training/reward-model|Reward Model]], [[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]] |
-
-这篇论文讨论的是 LLM agent 在长程任务中的一个基础限制：多数 agent 仍然是 reactive policy，只根据当前历史决定下一步行动，而缺少类似人类 “what-if” 的内部未来模拟能力。论文不试图引入外部 simulator 或显式 value head，而是训练同一个 autoregressive policy 在行动前生成两类文本化信号：一段 compact prospective rollout，以及一个 plan-conditioned success estimate。后者可以理解为 Q-value 的文本化近似，而不是严格的数值 value function。
-
-论文的核心判断是：只在 post-training 阶段给模型加入 look-ahead 格式是不够的。模型可能学会 `<imaginary>...</imaginary>`、`<confidence>...</confidence>` 之类表面结构，却没有真正预测未来状态和校准成功概率的能力。作者将这一失败模式称为 **format-capability gap**。
-
-为解决这一问题，论文提出三阶段训练范式：
-
-```text
-World Model Agentic Mid-Training (WM-AMT)
-  → Format-Eliciting SFT (FE-SFT)
-  → Foresight-Conditioned RL (FC-RL)
-```
-
-如果只保留一个核心观点：**agent 的 look-ahead planning 不能只靠格式监督诱导，必须先在 mid-training 阶段注入预测未来的能力，再用 SFT 结构化表达，最后用 RL 依据真实执行结果校准。**
+- 标题：[Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning](https://arxiv.org/abs/2606.27483)
+- 作者：Xuan Zhang, Zhijian Zhou, Lingfeng Qiao, Yulei Qin, Ke Li, Xing Sun, Xiaoyu Tan, Chao Qu, Yuan Qi
+- 发表：arXiv:2606.27483
+- 日期：2026-06
+- 相关主题：[[application/agents/planning|Planning]]、[[application/agents/agent|Agent]]、[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/mid-training/capability-injection|Capability Injection]]、[[training/post-training/grpo|GRPO]]、[[training/post-training/reward-model|Reward Model]]、[[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]]
 
 ## 研究问题
 

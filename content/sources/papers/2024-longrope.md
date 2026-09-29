@@ -20,10 +20,10 @@ paper_order: "13753"
 
 ## 基本信息
 
-- Title: [LongRoPE: Extending LLM Context Window Beyond 2 Million Tokens](https://arxiv.org/abs/2402.13753)
-- Source type: paper
-- Related topic notes: [[training/mid-training/long-context-training|Long Context Training]], [[architecture/positional-encoding/rope|RoPE]]
-
+- 标题：[LongRoPE](https://arxiv.org/abs/2402.13753)
+- 发表：arXiv:2402.13753
+- 日期：2024-02
+- 相关主题：[[training/mid-training/long-context-training|Long Context Training]]、[[architecture/positional-encoding/rope|RoPE]]
 ## TODO
 
 - 阅读论文原文，整理 LongRoPE 的非均匀位置插值、progressive extension 和 short-context readjustment。

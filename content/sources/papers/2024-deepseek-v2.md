@@ -25,33 +25,17 @@ paper_order: "04434"
 
 ## 基本信息
 
-- 标题：[DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model](https://arxiv.org/abs/2405.04434)
-- 版本：arXiv:2405.04434v5，2024-06-19
+- 标题：[DeepSeek-V2](https://arxiv.org/abs/2405.04434)
 - 作者：DeepSeek-AI
-- 项目与模型：[deepseek-ai/DeepSeek-V2](https://github.com/deepseek-ai/DeepSeek-V2)
+- 发表：arXiv:2405.04434
+- 日期：2024-05
+- 代码/数据：[deepseek-ai/DeepSeek-V2](https://github.com/deepseek-ai/DeepSeek-V2)
+- 相关主题：[[architecture/attention/multi-head-latent-attention|Multi-Head Latent Attention]]、[[architecture/sparse-and-efficient/moe|DeepSeekMoE]]、[[architecture/model-families/deepseek|DeepSeek]]、[[inference/kv-cache-and-memory/kv-cache|KV Cache]]、[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]、[[training/post-training/grpo|GRPO]]
+## 研究对象与实验范围
+
 - 模型规模：236B total parameters，21B activated parameters per token
-- 预训练数据：8.1T tokens，中英双语
 - 上下文长度：128K
 - 核心架构：[[architecture/attention/multi-head-latent-attention|Multi-Head Latent Attention]] 与 [[architecture/sparse-and-efficient/moe|DeepSeekMoE]]
-- 相关主题：[[architecture/model-families/deepseek|DeepSeek]]，[[inference/kv-cache-and-memory/kv-cache|KV Cache]]，[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]，[[training/post-training/grpo|GRPO]]
-
-DeepSeek-V2 是 DeepSeek 高效模型路线中的关键节点。它第一次把 MLA、DeepSeekMoE、长上下文扩展以及面向 MoE 的分布式训练优化整合到 236B 规模，并给出从模型效果到训练成本、KV Cache 和 serving throughput 的完整证据。后续 DeepSeek-V3 继续沿用 MLA 与 DeepSeekMoE，但改变了 expert 配置、负载均衡和系统实现；因此，理解 V2 不只是回顾前代模型，也是在理解 DeepSeek-V3 架构的起点。
-
-论文的主线不是单纯追求更大的 total parameter count，而是同时处理两个不同瓶颈：
-
-```text
-Attention history states
-  -> MLA low-rank KV compression
-  -> smaller KV Cache and higher serving batch capacity
-
-FFN model capacity
-  -> DeepSeekMoE sparse activation
-  -> more total capacity under lower per-token computation
-
-MoE system overhead
-  -> device-limited routing + balance losses + token dropping
-  -> bounded communication and more stable device load
-```
 
 ## 研究问题
 

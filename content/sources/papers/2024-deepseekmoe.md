@@ -19,10 +19,10 @@ paper_order: "06066"
 
 ## 基本信息
 
-- Title: [DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models](https://arxiv.org/abs/2401.06066)
-- Source type: paper
-- Related topic notes: [[architecture/sparse-and-efficient/moe|Mixture of Experts]], [[architecture/model-families/deepseek|DeepSeek]]
-
+- 标题：[DeepSeekMoE](https://arxiv.org/abs/2401.06066)
+- 发表：arXiv:2401.06066
+- 日期：2024-01
+- 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[architecture/model-families/deepseek|DeepSeek]]
 ## TODO
 
 - 阅读论文原文，整理 fine-grained expert segmentation、shared experts 和 expert specialization 的设计动机。

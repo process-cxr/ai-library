@@ -27,17 +27,14 @@ paper_order: "14071"
 ## 基本信息
 
 - 标题：[Scaling Domain Data Repetition in LLM Pretraining](https://arxiv.org/abs/2608.14071)
-- 版本：arXiv:2608.14071v1，2026-08-14
 - 作者：Jingwei Li、Xinran Gu、Rui Dai、Xintong Hao、Chengyin Xu、Yan Wu、Shuran Zheng、Jingzhao Zhang
+- 发表：arXiv:2608.14071
+- 日期：2026-08
+- 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/deduplication|Deduplication]]、[[training/scaling/scaling-law|Scaling Law]]、[[training/pretraining/pretraining|Pretraining]]
+## 研究对象与实验范围
+
 - 研究背景：高校与产业研究团队合作完成的 LLM pretraining data scaling 研究
 - 研究对象：固定 `tokens-per-parameter (TPP)` 条件下，高质量 domain data 的重复训练
-- 相关 topic：[[training/pretraining/data-mix|Data Mix]]，[[training/data-engineering/deduplication|Deduplication]]，[[training/scaling/scaling-law|Scaling Law]]，[[training/pretraining/pretraining|Pretraining]]
-
-这篇论文研究一个在大模型训练中非常实际、但容易被简单化的问题：**当某个高质量领域的数据不够多时，应该重复使用已有数据多少次？**
-
-如果只看“重复会导致 overfitting”，结论会过于粗糙。高质量代码、数学、百科或医学数据往往比普通网页数据更难扩展；当模型规模和训练 token budget 同时增长时，固定规模的高质量数据会在 mixture 中被逐渐稀释。理解这篇论文，首先需要把 `unique domain data`、总 `token presentations` 和 `repetition count` 分开：前者决定内容覆盖，后两者决定模型对已有内容的训练深度与重复程度。论文围绕这几个变量，分析 domain、model size、unique-domain allocation fraction、总训练预算和 learning-rate schedule 如何共同改变 repetition 的收益与代价。
-
-论文最重要的价值不是给出一个可以直接复制的 repetition 倍数，而是把 repetition 从一个数据清洗副作用，提升为一个需要单独调参、单独评估的 data-mix 变量。
 
 ## 研究问题
 

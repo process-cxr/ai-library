@@ -20,10 +20,10 @@ paper_order: "06499"
 
 ## 基本信息
 
-- Title: [Deduplicating Training Data Makes Language Models Better](https://arxiv.org/abs/2107.06499)
-- Source type: paper
-- Related topic notes: [[training/data-engineering/deduplication|Deduplication]], [[training/data-engineering/data-engineering|Data Engineering]], [[application/evaluation/evaluation|Evaluation]]
-
+- 标题：[Deduplicating Training Data Makes Language Models Better](https://arxiv.org/abs/2107.06499)
+- 发表：arXiv:2107.06499
+- 日期：2021-07
+- 相关主题：[[training/data-engineering/deduplication|Deduplication]]、[[training/data-engineering/data-engineering|Data Engineering]]、[[application/evaluation/evaluation|Evaluation]]
 ## TODO
 
 - 阅读论文原文，整理 exact / near dedup 对语言模型训练、记忆和泛化的影响。

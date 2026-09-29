@@ -20,10 +20,10 @@ paper_order: "12409"
 
 ## 基本信息
 
-- Title: [Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation](https://arxiv.org/abs/2108.12409)
-- Source type: paper
-- Related topic notes: [[architecture/positional-encoding/alibi|ALiBi]], [[architecture/positional-encoding/positional-encoding|Positional Encoding]], [[training/mid-training/long-context-training|Long-context Training]]
-
+- 标题：[ALiBi](https://arxiv.org/abs/2108.12409)
+- 发表：arXiv:2108.12409
+- 日期：2021-08
+- 相关主题：[[architecture/positional-encoding/alibi|ALiBi]]、[[architecture/positional-encoding/positional-encoding|Positional Encoding]]、[[training/mid-training/long-context-training|Long-context Training]]
 ## TODO
 
 - 阅读论文原文，整理 ALiBi 的 head-specific linear attention bias 机制。

@@ -19,10 +19,10 @@ paper_order: "09864"
 
 ## 基本信息
 
-- Title: [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
-- Source type: paper
-- Related topic notes: [[architecture/positional-encoding/rope|RoPE]], [[architecture/positional-encoding/positional-encoding|Positional Encoding]], [[architecture/attention/attention|Attention]]
-
+- 标题：[RoFormer](https://arxiv.org/abs/2104.09864)
+- 发表：arXiv:2104.09864
+- 日期：2021-04
+- 相关主题：[[architecture/positional-encoding/rope|RoPE]]、[[architecture/positional-encoding/positional-encoding|Positional Encoding]]、[[architecture/attention/attention|Attention]]
 ## TODO
 
 - 阅读论文原文，整理 Rotary Position Embedding 的旋转形式和相对位置性质。

@@ -25,35 +25,15 @@ paper_order: "03961"
 
 ## 基本信息
 
-- 标题：[Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity](https://arxiv.org/abs/2101.03961)
+- 标题：[Switch Transformers](https://arxiv.org/abs/2101.03961)
 - 作者：William Fedus、Barret Zoph、Noam Shazeer
-- 版本：arXiv:2101.03961v3，2022-06-16
-- 发表：Journal of Machine Learning Research 23，2022-04
-- 机构：Google
+- 发表：arXiv:2101.03961；Journal of Machine Learning Research 23，2022-04
+- 日期：2021-01
+- 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[training/optimization/mixed-precision|Mixed Precision Training]]、[[training/distributed-training/data-parallel|Data Parallel]]、[[training/distributed-training/tensor-parallel|Tensor Parallel]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]
+## 研究对象与实验范围
+
 - JAX 实现与 checkpoints：[google-research/t5x](https://github.com/google-research/t5x)
 - Mesh TensorFlow 实现：[mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
-- 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]，[[training/optimization/mixed-precision|Mixed Precision Training]]，[[training/distributed-training/data-parallel|Data Parallel]]，[[training/distributed-training/tensor-parallel|Tensor Parallel]]，[[training/post-training/knowledge-distillation|Knowledge Distillation]]
-
-Switch Transformer 是现代 MoE 路线中最重要的简化之一。它延续 [[sources/papers/2020-gshard|GShard]] 将 Transformer FFN 替换为 sparse expert layer 的基本结构，却把每个 token 的 top-2 routing 缩减为 top-1 routing。这个变化减少了 expert computation、capacity buffer 与跨设备通信，使“增加 total parameters、保持每 token FLOPs 大致不变”成为更容易实现和扩展的模型设计。
-
-论文的贡献不只是一条 router 规则。作者围绕 top-1 routing 补齐了完整训练系统：
-
-```text
-token representation
-  -> float32 router + top-1 expert
-  -> capacity / overflow control
-  -> auxiliary load-balancing loss
-  -> AllToAll dispatch
-  -> local expert FFN
-  -> AllToAll combine + residual
-
-training stability
-  -> selective precision
-  -> 0.1x initialization scale
-  -> expert-specific dropout during fine-tuning
-```
-
-在 T5 encoder-decoder 与 span-corruption pre-training 设置下，论文报告 FLOP-matched Switch models 相比 dense T5 获得最高约 7 倍 wall-clock pre-training speedup；通过 data、model 与 expert parallelism 的组合，模型规模扩展到 1.571T parameters。与此同时，论文也系统记录了 sparse model 的边界：overflow tokens 可能跳过 expert computation，最大模型仍会不稳定，upstream perplexity 优势不总能转化为 reasoning downstream gains，蒸馏只能保留约 30% 的 sparse teacher 增益。
 
 ## 研究问题
 

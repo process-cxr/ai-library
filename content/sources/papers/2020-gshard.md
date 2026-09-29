@@ -23,32 +23,15 @@ paper_order: "16668"
 
 ## 基本信息
 
-- 论文：[GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding](https://arxiv.org/abs/2006.16668)
+- 标题：[GShard](https://arxiv.org/abs/2006.16668)
 - 作者：Dmitry Lepikhin、HyoukJoong Lee、Yuanzhong Xu、Dehao Chen、Orhan Firat、Yanping Huang 等
-- 发布信息：arXiv:2006.16668，v1 发布于 2020-06-30
+- 发表：arXiv:2006.16668
+- 日期：2020-06
+- 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[training/distributed-training/torch-distributed|torch.distributed]]、[[training/distributed-training/tensor-parallel|Tensor Parallel]]、[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]
+## 研究对象与实验范围
+
 - 研究对象：基于 XLA 的自动模型分片系统，以及大规模 multilingual MoE Transformer
 - 主要实验：100 个语言到英语的 massively multilingual machine translation
-- 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[training/distributed-training/torch-distributed|torch.distributed]]、[[training/distributed-training/tensor-parallel|Tensor Parallel]]、[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]
-
-GShard 的重点不是提出一种新的 Transformer block，而是解决一个更基础的系统问题：当模型被拆到数百或数千个加速器上时，模型代码、tensor partition、跨设备通信和编译器如何协同工作，才能让开发者不必为每一种架构手写完整的 model-parallel implementation。
-
-论文给出的答案由两部分组成：
-
-1. 用 sparsely-gated Mixture of Experts（MoE）让模型容量随 expert 数量增长，而每个 token 只激活少数 experts；
-2. 用轻量的 `replicate`、`split`、`shard` annotations 描述 tensor 的分布方式，再由 XLA SPMD partitioner 自动生成每个设备执行的程序和必要通信。
-
-因此，GShard 应该被理解为一条完整的 co-design 链路：
-
-```text
-conditional computation
-  -> larger total capacity at bounded per-token compute
-  -> tensor sharding annotations
-  -> XLA SPMD partitioner
-  -> AllReduce / AllGather / AllToAll / CollectivePermute
-  -> scalable execution on thousands of TPU devices
-```
-
-论文在 multilingual translation 上展示了这条链路的效果：600B 参数的 MoE Transformer 使用 2,048 个 TPU v3 加速器训练约 4 天，平均 BLEU 为 `44.3`，训练成本为 `22.4 TPU v3 core-years`；相比之下，100 个 bilingual baseline 需要约 `29 TPU core-years`，同一数据上的 2.3B dense Transformer 则需要约 `235.5 TPU core-years`。
 
 ## 研究问题
 

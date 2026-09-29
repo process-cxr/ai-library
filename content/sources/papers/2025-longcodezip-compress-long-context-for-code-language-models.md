@@ -23,19 +23,15 @@ code_url: https://github.com/YerbaPage/LongCodeZip
 
 ## 基本信息
 
-- Title: [LongCodeZip: Compress Long Context for Code Language Models](https://arxiv.org/abs/2510.00446)
-- Authors: Yuling Shi, Yichun Qian, Hongyu Zhang, Beijun Shen, Xiaodong Gu
-- Institutions: Shanghai Jiao Tong University, Stanford University, Chongqing University
-- Date: 2025-10-01
-- Venue: ASE 2025
-- Code: `https://github.com/YerbaPage/LongCodeZip`
-- Related topic notes: [[application/rag/context-compression|Context Compression]], [[application/rag/retrieval|Retrieval]], [[application/rag/chunking|Chunking]]
+- 标题：[LongCodeZip: Compress Long Context for Code Language Models](https://arxiv.org/abs/2510.00446)
+- 作者：Yuling Shi, Yichun Qian, Hongyu Zhang, Beijun Shen, Xiaodong Gu
+- 发表：arXiv:2510.00446；ASE 2025
+- 日期：2025-10
+- 代码/数据：`https://github.com/YerbaPage/LongCodeZip`
+- 相关主题：[[application/rag/context-compression|Context Compression]]、[[application/rag/retrieval|Retrieval]]、[[application/rag/chunking|Chunking]]
+## 研究对象与实验范围
 
-这篇论文提出 LongCodeZip，一个面向 code LLM 的 training-free、model-agnostic、plug-and-play 长代码上下文压缩框架。它的 motivation 和 CodeRAG 一样，也是在说：**相关不一定好用**。长代码上下文里，embedding / BM25 / RAG 召回的片段可能和 query 看起来相关，但真正要保留的是“加入后能让模型更理解当前 instruction / target”的片段。
-
-它仍然使用 PPL 作为信号，但不是直接看某段代码自己的困惑度，而是看 **加入这段 context 后，instruction 的 PPL 减少了多少**。这个差值更有含义：如果给定某个代码片段后，模型生成/解释当前 instruction 更容易，说明这个片段对任务更可能是有用上下文。
-
-论文的关键设计是两阶段压缩：先按函数或类边界切分代码，计算每个函数级 chunk 对 instruction 的 AMI，按分数排序，并在粗粒度预算内保留最相关函数；再对已保留的大函数继续切成语义 block，根据函数重要性分配 token budget，用 0/1 knapsack 选择最有价值的 block。相比普通文本压缩或仅靠 embedding 相似度的 RAG，LongCodeZip 更强调代码结构、跨函数依赖和任务指令之间的关系。
+- Institutions：Shanghai Jiao Tong University, Stanford University, Chongqing University
 
 ## 研究问题
 

@@ -20,10 +20,10 @@ paper_order: "01325"
 
 ## 基本信息
 
-- Title: [Learning to summarize from human feedback](https://arxiv.org/abs/2009.01325)
-- Source type: paper
-- Related topic notes: [[training/post-training/rlhf|RLHF]], [[training/post-training/reward-model|Reward Model]], [[training/post-training/on-policy-kd|On-policy KD]]
-
+- 标题：[Learning to summarize from human feedback](https://arxiv.org/abs/2009.01325)
+- 发表：arXiv:2009.01325
+- 日期：2020-09
+- 相关主题：[[training/post-training/rlhf|RLHF]]、[[training/post-training/reward-model|Reward Model]]、[[training/post-training/on-policy-kd|On-policy KD]]
 ## TODO
 
 - 阅读论文原文，整理 summarization 场景中人类偏好、reward model 和 policy optimization 的流程。

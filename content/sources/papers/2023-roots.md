@@ -20,10 +20,10 @@ paper_order: "03915"
 
 ## 基本信息
 
-- Title: [The BigScience ROOTS Corpus: A 1.6TB Composite Multilingual Dataset](https://arxiv.org/abs/2303.03915)
-- Source type: paper
-- Related topic notes: [[training/pretraining/data-mix|Data Mix]], [[training/data-engineering/data-engineering|Data Engineering]], [[training/data-engineering/quality-filtering|Quality Filtering]]
-
+- 标题：[ROOTS](https://arxiv.org/abs/2303.03915)
+- 发表：arXiv:2303.03915
+- 日期：2023-03
+- 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/data-engineering|Data Engineering]]、[[training/data-engineering/quality-filtering|Quality Filtering]]
 ## TODO
 
 - 阅读论文原文，整理 ROOTS 的多语言数据构成、治理流程、数据来源和质量控制。

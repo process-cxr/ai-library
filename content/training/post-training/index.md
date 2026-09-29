@@ -87,6 +87,7 @@ Post-training 不应被理解为“给模型补一点对话数据”。它是一
 
 ## Notes
 
+- [[training/post-training/model-merging|Model Merging]]：任务向量、源模型兼容性和合并前调理。
 - [[training/post-training/sft|SFT 监督微调]]
 - [[training/post-training/instruction-tuning|Instruction Tuning]]
 - [[training/post-training/chat-template|Chat Template]]

@@ -19,10 +19,10 @@ paper_order: "14062"
 
 ## 基本信息
 
-- Title: [Big Bird: Transformers for Longer Sequences](https://arxiv.org/abs/2007.14062)
-- Source type: paper
-- Related topic notes: [[architecture/attention/sliding-window-attention|Sliding Window Attention]], [[architecture/attention/attention|Attention]], [[training/mid-training/long-context-training|Long-context Training]]
-
+- 标题：[Big Bird](https://arxiv.org/abs/2007.14062)
+- 发表：arXiv:2007.14062
+- 日期：2020-07
+- 相关主题：[[architecture/attention/sliding-window-attention|Sliding Window Attention]]、[[architecture/attention/attention|Attention]]、[[training/mid-training/long-context-training|Long-context Training]]
 ## TODO
 
 - 阅读论文原文，整理 sparse attention pattern 如何组合局部、全局和随机连接。

@@ -30,16 +30,14 @@ paper_order: "04148"
 ## 基本信息
 
 - 标题：[Terminal-Universe: Turning Agent Trajectories into Scalable Terminal Environments](https://arxiv.org/abs/2609.04148)
-- 版本：arXiv:2609.04148v1，2026-09-03
 - 作者：Jie Wu、Zhenru Zhang、Beichen Zhang、Xuwu Wang、Yuhui Su、Mouxiang Chen、Peng Wang、Zhihai Wang、Que Shen、Hao Zhou、An Yang、Fei Huang、Yujiu Yang、Dayiheng Liu
-- 机构：Qwen Team, Alibaba Group；Tsinghua University
+- 发表：arXiv:2609.04148
+- 日期：2026-09
+- 相关主题：[[training/data-engineering/synthetic-data|Synthetic Data]]、[[application/agents/agent|Agent]]、[[application/agents/planning|Planning]]、[[application/agents/workflow-agent|Workflow Agent]]、[[training/post-training/sft|SFT]]
+## 研究对象与实验范围
+
 - 研究对象：从既有 terminal agent trajectory 中恢复可执行 workspace，再生成可验证的单 workspace、跨 workspace 和多轮任务
 - 训练验证：使用 Qwen3.7-Max 生成任务、解答与 verifier，以约 1.42B tokens 的合成轨迹对 Qwen3.5-27B 进行 supervised fine-tuning
-- 相关 topic：[[training/data-engineering/synthetic-data|Synthetic Data]]，[[application/agents/agent|Agent]]，[[application/agents/planning|Planning]]，[[application/agents/workflow-agent|Workflow Agent]]，[[training/post-training/sft|SFT]]
-
-Terminal-Universe 讨论的核心资源不是又一批静态 agent demonstrations，而是 demonstrations 背后的可执行环境。作者观察到，terminal agent trajectory 中记录的文件读取、写入、编辑和命令执行，已经暴露了原 workspace 的一部分结构与内容。即使原始 repository 或 container 不再可得，也可以利用这些证据恢复一个近似的初始环境，再在其中重新提出任务、重新 rollout、运行 verifier，并继续扩展新的交互。
-
-论文由此提出一种 trajectory-environment duality：已有方法通常从 environment rollout 出 trajectory，Terminal-Universe 则尝试反转这一映射，从 trajectory 重建 environment。这个反向过程并不完美，因为未访问文件、隐式系统依赖和外部网络资源不会完整留在轨迹中；论文的主要工作，就是通过 deterministic replay、agentic completion 和 task-conditioned sufficiency filtering，把这种有损恢复变成可规模化的数据生产管线。
 
 ## 研究问题
 

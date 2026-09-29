@@ -26,21 +26,15 @@ paper_order: "19437"
 ## 基本信息
 
 - 标题：[DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437)
-- 版本：arXiv:2412.19437v2，2025-02-18
 - 作者：DeepSeek-AI
+- 发表：arXiv:2412.19437
+- 日期：2024-12
+- 相关主题：[[architecture/model-families/deepseek|DeepSeek]]、[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[architecture/attention/multi-head-latent-attention|Multi-Head Latent Attention]]、[[training/optimization/mixed-precision|Mixed Precision]]、[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]、[[training/pretraining/data-mix|Data Mix]]、[[training/pretraining/objective|Training Objective]]
+## 研究对象与实验范围
+
 - 研究对象：大规模 decoder-only Mixture-of-Experts language model
 - 模型规模：671B total parameters，37B activated parameters per token
-- 预训练数据：14.8T tokens
 - 训练硬件：2,048 张 NVIDIA H800 GPU
-- 相关 topic：[[architecture/model-families/deepseek|DeepSeek]]，[[architecture/sparse-and-efficient/moe|Mixture of Experts]]，[[architecture/attention/multi-head-latent-attention|Multi-Head Latent Attention]]，[[training/optimization/mixed-precision|Mixed Precision]]，[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]，[[training/pretraining/data-mix|Data Mix]]，[[training/pretraining/objective|Training Objective]]
-
-这篇技术报告的价值，不在于单独提出一个新的网络模块，而在于展示了一套大规模 MoE 模型如何把架构、路由、低精度训练、分布式通信、数据配方、长上下文扩展和后训练组织成一个可运行的整体。DeepSeek-V3 继承 DeepSeek-V2 的 MLA 与 DeepSeekMoE，在此基础上加入 auxiliary-loss-free load balancing 和 Multi-Token Prediction，并通过 FP8 mixed precision、DualPipe 与定制化 cross-node all-to-all 把 671B total parameters 的训练成本压到可接受范围。
-
-报告给出的主线可以概括为：
-
-> 大容量 MoE + 每 token 稀疏激活 + 低 KV Cache + 通信与计算重叠 + 低精度训练
-
-这不是“671B 参数自然带来更强能力”的单因素故事。模型规模、14.8T 高质量 tokens、MLA / DeepSeekMoE、FP8 数值策略、专家通信系统和后续 reasoning distillation 共同决定了最终结果。阅读这篇报告时，最值得抓住的是这种算法、系统和数据之间的 co-design 关系。
 
 ## 研究问题
 

@@ -20,10 +20,10 @@ paper_order: "14314"
 
 ## 基本信息
 
-- Title: [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/abs/2305.14314)
-- Source type: paper
-- Related topic notes: [[training/post-training/sft|SFT]], [[training/optimization/training-memory-estimation|Training Memory Estimation]], [[inference/quantization/quantization|Quantization]]
-
+- 标题：[QLoRA](https://arxiv.org/abs/2305.14314)
+- 发表：arXiv:2305.14314
+- 日期：2023-05
+- 相关主题：[[training/post-training/sft|SFT]]、[[training/optimization/training-memory-estimation|Training Memory Estimation]]、[[inference/quantization/quantization|Quantization]]
 ## TODO
 
 - 阅读论文原文，整理 4-bit base model、LoRA adapters、NF4、double quantization 和 paged optimizer。

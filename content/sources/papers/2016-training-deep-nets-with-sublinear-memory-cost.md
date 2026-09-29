@@ -20,10 +20,10 @@ paper_order: "06174"
 
 ## 基本信息
 
-- Title: [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174)
-- Source type: paper
-- Related topic notes: [[training/optimization/gradient-checkpointing|Gradient Checkpointing]], [[training/optimization/training-memory-estimation|Training Memory Estimation]]
-
+- 标题：[Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174)
+- 发表：arXiv:1604.06174
+- 日期：2016-04
+- 相关主题：[[training/optimization/gradient-checkpointing|Gradient Checkpointing]]、[[training/optimization/training-memory-estimation|Training Memory Estimation]]
 ## TODO
 
 - 阅读论文原文，整理 activation checkpointing / rematerialization 如何用重算换显存。

@@ -25,16 +25,14 @@ venue: Lifelong Agent Workshop @ ICLR 2026
 
 ## 基本信息
 
-- Title: [KLong: Training LLM Agent for Extremely Long-horizon Tasks](https://arxiv.org/pdf/2602.17547v2)
-- Authors: Yue Liu, Yingwei Ma, Yibo Miao, Yanhao Li, Yuchong Xie, Xinlong Yang, Zhiyuan Hu, Flood Sung, Jiaheng Zhang, Bryan Hooi
-- Institutions: NUS, HKUST, SJTU, PKU, MIT
-- Date: arXiv v2, 2026-04-06
-- Venue: Lifelong Agent Workshop @ ICLR 2026
-- Related topic notes: [[application/agents/agent|Agent]], [[application/agents/planning|Planning]], [[application/agents/memory|Memory]], [[application/agents/workflow-agent|Workflow Agent]], [[application/tool-use/tool-calling|Tool Calling]], [[application/rag/context-compression|Context Compression]], [[application/evaluation/benchmark|Benchmark]], [[application/evaluation/llm-as-judge|LLM-as-a-Judge]], [[training/post-training/sft|SFT]], [[training/post-training/ppo|PPO]], [[training/post-training/grpo|GRPO]], [[training/post-training/rejection-sampling|Rejection Sampling]], [[training/mid-training/long-context-training|Long Context Training]]
+- 标题：[KLong: Training LLM Agent for Extremely Long-horizon Tasks](https://arxiv.org/abs/2602.17547)
+- 作者：Yue Liu, Yingwei Ma, Yibo Miao, Yanhao Li, Yuchong Xie, Xinlong Yang, Zhiyuan Hu, Flood Sung, Jiaheng Zhang, Bryan Hooi
+- 发表：arXiv:2602.17547v2；Lifelong Agent Workshop @ ICLR 2026
+- 日期：2026-02
+- 相关主题：[[application/agents/agent|Agent]]、[[application/agents/planning|Planning]]、[[application/agents/memory|Memory]]、[[application/agents/workflow-agent|Workflow Agent]]、[[application/tool-use/tool-calling|Tool Calling]]、[[application/rag/context-compression|Context Compression]]、[[application/evaluation/benchmark|Benchmark]]、[[application/evaluation/llm-as-judge|LLM-as-a-Judge]]、[[training/post-training/sft|SFT]]、[[training/post-training/ppo|PPO]]、[[training/post-training/grpo|GRPO]]、[[training/post-training/rejection-sampling|Rejection Sampling]]、[[training/mid-training/long-context-training|Long Context Training]]
+## 研究对象与实验范围
 
-KLong 的核心问题是：如何训练一个 LLM agent 去完成超过常规上下文窗口和常规 rollout 时长的极长程任务。论文把 extremely long-horizon task 定义为同时满足两个条件的任务：如果没有 context management 就会超出 context window；并且任务本身包含长时间运行的实验或环境交互。典型例子是 PaperBench 中的论文复现任务和 MLE-bench 中的机器学习竞赛任务。
-
-论文的答案不是单纯扩大 context window，也不是只改 agent scaffold，而是提出一套训练和基础设施结合的方案：先用 trajectory-splitting SFT 冷启动 agent 的长程行为，再用 progressive RL 在逐步延长的任务超时限制下继续优化，同时用 Research-Factory 自动构造论文复现任务、rubric 和长轨迹数据。实验上，KLong 主要针对 PaperBench 训练，并在 SWE-bench Verified、Terminal-Bench Hard、SEC-bench 和 MLE-bench 上报告一定程度的泛化。
+- Institutions：NUS, HKUST, SJTU, PKU, MIT
 
 ## 研究问题
 

@@ -2,7 +2,7 @@
 title: Knowledge Distillation
 created: 2026-03-08
 published: 2026-03-08
-modified: 2026-08-11
+modified: 2026-09-23
 type: topic
 status: mature
 area: training
@@ -86,6 +86,8 @@ Sequence-level distillation 让 teacher 直接生成完整回答，student 对�
 [[training/post-training/on-policy-kd|On-policy KD]] 指 student 根据当前 policy 生成样本，再由 teacher、verifier 或 reward model 提供反馈。优点是更贴近 student 分布，能针对性纠错；缺点是系统更复杂，成本更高，也更容易训练不稳定。
 
 ## 蒸馏与压缩
+
+蒸馏也可以用于合并前的参数调理。[[sources/papers/2025-distac-conditioning-task-vectors-via-distillation-for-robust-model-merging|DisTaC]] 以原任务模型为 teacher，以缩放任务向量后的同架构模型为 student，在无标签输入上匹配输出，同时将参数约束在新锚点附近。这使蒸馏能够在调整参数尺度后恢复部分任务行为，为 [[training/post-training/model-merging|Model Merging]] 提供更兼容的输入。这里的行为保持是有限数据上的优化目标，不是全输入域上的严格等价保证。
 
 蒸馏常用于压缩大模型能力，但“压缩”并不只意味着参数更少。它也可以压缩：
 

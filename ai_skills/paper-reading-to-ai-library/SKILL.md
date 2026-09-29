@@ -56,6 +56,28 @@ Use this skill to convert an external AI source into maintainable notes for the 
    - Perform an abbreviation audit before finishing: every abbreviation used in the report should be expanded at its first body occurrence and used consistently afterward. Check abbreviations in equations, tables, figure descriptions, experiment settings, and evaluation metrics, not only in the opening paragraph.
    - The note should be useful for future review without requiring the original conversation.
 
+## Basic Information Template
+
+For paper source notes, keep `## 基本信息` concise and use this field order:
+
+```markdown
+## 基本信息
+
+- 标题：[Paper Title](source link)
+- 作者：...
+- 发表：arXiv:... / Conference Name Year / Publisher
+- 日期：YYYY-MM-DD 或 YYYY-MM
+- 代码/数据：[Link]（没有则省略）
+- 相关主题：[[...]]、[[...]]
+```
+
+- Use the canonical paper or publisher link in `标题`; use `source_url` when it is a reliable public source.
+- Combine source identity and version into `发表`; do not create separate `来源`、`版本`、`发表线索` fields.
+- Use `paper_date` for the public paper month when an exact date is unavailable. For conference papers without arXiv, use the conference publication month.
+- Add `代码/数据` only when a public repository or dataset link exists.
+- Do not put local PDF paths, `paper_order`, research-object descriptions, model-scale details, or the reading process in `基本信息`. Move substantive experiment metadata into the report body.
+- `paper_order` is a frontmatter-only field for arXiv papers and is used only as the same-month homepage tie-breaker. Omit it for non-arXiv papers.
+
 ## Source Note Shape
 
 Use only sections that serve the source. For a standard paper/report note, prefer:

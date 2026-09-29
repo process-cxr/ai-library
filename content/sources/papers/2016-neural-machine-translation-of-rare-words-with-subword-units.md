@@ -20,10 +20,10 @@ paper_order: "07909"
 
 ## 基本信息
 
-- Title: [Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
-- Source type: paper
-- Related topic notes: [[training/pretraining/tokenizer|Tokenizer]], [[training/pretraining/data-mix|Data Mix]]
-
+- 标题：[Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
+- 发表：arXiv:1508.07909
+- 日期：2015-08
+- 相关主题：[[training/pretraining/tokenizer|Tokenizer]]、[[training/pretraining/data-mix|Data Mix]]
 ## TODO
 
 - 阅读论文原文，整理 BPE 在 neural machine translation 中处理 rare words / open vocabulary 的动机。

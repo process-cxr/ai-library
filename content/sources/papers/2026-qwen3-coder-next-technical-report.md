@@ -27,19 +27,12 @@ paper_order: "00729"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:2603.00729v1 |
-| 标题 | Qwen3-Coder-Next Technical Report |
-| 作者/机构 | Qwen Team |
-| 日期 | 2026-02-28 arXiv v1；报告页标注 2026-03-03 |
-| 链接 | https://arxiv.org/abs/2603.00729 |
-| 模型与代码 | https://huggingface.co/Qwen/Qwen3-Coder-Next；https://www.modelscope.cn/models/Qwen/Qwen3-Coder-Next；https://github.com/QwenLM/Qwen3-Coder |
-| 相关 topic | [[architecture/model-families/qwen|Qwen]], [[architecture/sparse-and-efficient/moe|Mixture of Experts]], [[training/mid-training/continued-pretraining|Continued Pretraining]], [[training/data-engineering/synthetic-data|Synthetic Data]], [[training/data-engineering/packing|Packing]], [[training/post-training/sft|SFT]], [[training/post-training/grpo|GRPO]], [[application/tool-use/tool-calling|Tool Calling]], [[application/agents/agent|Agent]], [[application/evaluation/benchmark|Benchmark]] |
-
-Qwen3-Coder-Next 是 Qwen Team 发布的 open-weight coding agent 技术报告。模型基于 Qwen3-Next，采用 hybrid attention 与 [[architecture/sparse-and-efficient/moe|MoE]] 架构，总参数量为 80B，但每次前向只激活 3B 参数。报告的核心并不是证明一个小 active-parameter 模型在所有代码 benchmark 上都超过更大模型，而是展示：在有限 active compute 约束下，能否通过更强的 agentic training recipe、可执行任务合成、长上下文代码中训练、多 scaffold 工具格式训练和 RL，使模型在真实 coding agent 场景中获得接近大型开放模型的能力。
-
-如果只保留一个核心观点：**Qwen3-Coder-Next 将 coding model 的训练重点从静态代码建模推进到可执行、可验证、可交互的 agentic software engineering 数据规模化，并表明 agentic training recipe 可以显著放大小 active-parameter MoE 模型的实用能力。**
+- 标题：[Qwen3-Coder-Next Technical Report](https://arxiv.org/abs/2603.00729)
+- 作者：Qwen Team
+- 发表：arXiv:2603.00729
+- 日期：2026-03
+- 代码/数据：https://huggingface.co/Qwen/Qwen3-Coder-Next；https://www.modelscope.cn/models/Qwen/Qwen3-Coder-Next；https://github.com/QwenLM/Qwen3-Coder
+- 相关主题：[[architecture/model-families/qwen|Qwen]]、[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[training/data-engineering/packing|Packing]]、[[training/post-training/sft|SFT]]、[[training/post-training/grpo|GRPO]]、[[application/tool-use/tool-calling|Tool Calling]]、[[application/agents/agent|Agent]]、[[application/evaluation/benchmark|Benchmark]]
 
 ## 研究问题
 

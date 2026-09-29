@@ -20,10 +20,10 @@ paper_order: "00027"
 
 ## 基本信息
 
-- Title: [The Pile: An 800GB Dataset of Diverse Text for Language Modeling](https://arxiv.org/abs/2101.00027)
-- Source type: paper
-- Related topic notes: [[training/pretraining/data-mix|Data Mix]], [[training/data-engineering/data-engineering|Data Engineering]], [[training/data-engineering/quality-filtering|Quality Filtering]]
-
+- 标题：[The Pile](https://arxiv.org/abs/2101.00027)
+- 发表：arXiv:2101.00027
+- 日期：2021-01
+- 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/data-engineering|Data Engineering]]、[[training/data-engineering/quality-filtering|Quality Filtering]]
 ## TODO
 
 - 阅读论文原文，整理 The Pile 的数据组成、采样设计、数据文档和评测方式。

@@ -19,10 +19,10 @@ paper_order: "07467"
 
 ## 基本信息
 
-- Title: [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
-- Source type: paper
-- Related topic notes: [[architecture/transformer/normalization|Normalization in Transformer]], [[fundamentals/neural-network-basics/normalization|Normalization]]
-
+- 标题：[Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
+- 发表：arXiv:1910.07467
+- 日期：2019-10
+- 相关主题：[[architecture/transformer/normalization|Normalization in Transformer]]、[[fundamentals/neural-network-basics/normalization|Normalization]]
 ## TODO
 
 - 阅读论文原文，整理 RMSNorm 与 LayerNorm 的公式差异和效率动机。

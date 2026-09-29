@@ -19,10 +19,10 @@ paper_order: "06450"
 
 ## 基本信息
 
-- Title: [Layer Normalization](https://arxiv.org/abs/1607.06450)
-- Source type: paper
-- Related topic notes: [[architecture/transformer/normalization|Normalization in Transformer]], [[fundamentals/neural-network-basics/normalization|Normalization]]
-
+- 标题：[Layer Normalization](https://arxiv.org/abs/1607.06450)
+- 发表：arXiv:1607.06450
+- 日期：2016-07
+- 相关主题：[[architecture/transformer/normalization|Normalization in Transformer]]、[[fundamentals/neural-network-basics/normalization|Normalization]]
 ## TODO
 
 - 阅读论文原文，整理 LayerNorm 与 BatchNorm 的统计维度差异。

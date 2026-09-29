@@ -26,20 +26,11 @@ paper_order: "18418"
 
 ## 基本信息
 
-| 字段 | 内容 |
-|---|---|
-| 来源 | arXiv:2601.18418v2 |
-| 标题 | daVinci-Dev: Agent-native Mid-training for Software Engineering |
-| 作者/机构 | Ji Zeng, Dayuan Fu, Tiantian Mi, Yumin Zhuang, Yaxing Huang, Xuefeng Li, Lyumanshan Ye, Muhang Xie, Qishuo Hua, Zhen Huang, Mohan Jiang, Hanning Wang, Jifan Lin, Yang Xiao, Jie Sun, Yunze Wu, Pengfei Liu / SII, SJTU, GAIR |
-| 日期 | 2026-01-27 |
-| 链接 | https://arxiv.org/abs/2601.18418 |
-| 相关 topic | [[training/mid-training/continued-pretraining|Continued Pretraining]], [[training/mid-training/capability-injection|Capability Injection]], [[training/data-engineering/synthetic-data|Synthetic Data]], [[application/agents/agent|Agent]], [[application/tool-use/tool-calling|Tool Calling]], [[application/evaluation/benchmark|Benchmark]] |
-
-daVinci-Dev 讨论的是 code agent 训练中一个比 SFT / RL 更靠前的阶段：**能否在 mid-training 阶段，通过大规模接近真实软件工程流程的数据，把 agentic software engineering 的基础行为注入 base model**。论文认为，当前 code agent 训练过度依赖 post-training：用少量高质量轨迹做 SFT，再用执行反馈或 RL 进一步优化。这样的路线有效，但受限于可执行环境数量、成功轨迹稀缺、闭源强模型生成成本，以及 base model 本身是否已经具备 agentic reasoning 的能力上限。
-
-论文提出的核心概念是 **agent-native data**：训练数据不应只展示最终代码、最终 patch 或孤立的 localization / editing 子任务，而应尽量保留 agent 在真实开发中经历的信息流、操作顺序和环境反馈。围绕这个概念，daVinci-Dev 构造两类互补数据：contextually-native trajectories 提供大规模、多样化的 PR 级上下文与编辑流程；environmentally-native trajectories 提供来自真实 Docker 环境、工具调用和单元测试的执行反馈。
-
-如果只保留一个核心观点：**软件工程 agent 的 mid-training 数据应当从“静态代码或孤立技能样本”转向“保留 localize-read-edit-test-revise 流程的 agent-native trajectories”。**
+- 标题：[daVinci-Dev: Agent-native Mid-training for Software Engineering](https://arxiv.org/abs/2601.18418)
+- 作者：Ji Zeng, Dayuan Fu, Tiantian Mi, Yumin Zhuang, Yaxing Huang, Xuefeng Li, Lyumanshan Ye, Muhang Xie, Qishuo Hua, Zhen Huang, Mohan Jiang, Hanning Wang, Jifan Lin, Yang Xiao, Jie Sun, Yunze Wu, Pengfei Liu
+- 发表：arXiv:2601.18418
+- 日期：2026-01
+- 相关主题：[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/mid-training/capability-injection|Capability Injection]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[application/agents/agent|Agent]]、[[application/tool-use/tool-calling|Tool Calling]]、[[application/evaluation/benchmark|Benchmark]]
 
 ## 研究问题
 

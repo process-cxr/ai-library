@@ -28,18 +28,15 @@ paper_order: "18734"
 
 ## 基本信息
 
-- 来源：arXiv:2601.18734v3
-- 标题：Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models
-- 作者/机构：Siyan Zhao, Zhihui Xie, Mengchen Liu, Jing Huang, Guan Pang, Feiyu Chen, Aditya Grover / UCLA, HKU, Meta Superintelligence Labs
-- 日期：2026-03-20
+- 标题：[Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models](https://arxiv.org/abs/2601.18734)
+- 作者：Siyan Zhao, Zhihui Xie, Mengchen Liu, Jing Huang, Guan Pang, Feiyu Chen, Aditya Grover
+- 发表：arXiv:2601.18734
+- 日期：2026-01
+- 代码/数据：https://github.com/siyan-zhao/OPSD
+- 相关主题：[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/grpo|GRPO]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]、[[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]、[[sources/papers/2023-minillm-knowledge-distillation-of-large-language-models|MiniLLM: Knowledge Distillation of Large Language Models]]
+## 研究对象与实验范围
+
 - 链接：https://arxiv.org/abs/2601.18734
-- 代码：https://github.com/siyan-zhao/OPSD
-- 相关 topic：[[training/post-training/knowledge-distillation|Knowledge Distillation]]，[[training/post-training/on-policy-kd|On-policy KD]]，[[training/post-training/grpo|GRPO]]，[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]
-- 相关 source：[[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]，[[sources/papers/2023-minillm-knowledge-distillation-of-large-language-models|MiniLLM: Knowledge Distillation of Large Language Models]]
-
-这篇论文讨论的是 reasoning model 的一个更激进版本：不依赖外部 teacher，而是让同一个 LLM 在不同上下文下同时扮演 teacher 和 student。Teacher policy 能看到 privileged information，比如 ground-truth reasoning trace 或 reference solution；student policy 只看到问题本身。训练时让 student 按自己的 policy rollout，再让 teacher 在这些 rollout 上提供 token-level supervision。
-
-它的关键点不在于“又一个蒸馏技巧”，而在于把 on-policy distillation 推进到 self-distillation：**模型可以借助正确答案和 privileged reasoning traces 教自己。**
 
 ## 研究问题
 

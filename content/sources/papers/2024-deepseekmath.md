@@ -24,16 +24,15 @@ paper_order: "03300"
 
 ## 基本信息
 
-- 论文：[DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models](https://arxiv.org/abs/2402.03300)
+- 标题：[DeepSeekMath](https://arxiv.org/abs/2402.03300)
 - 作者：Zhihong Shao、Peiyi Wang、Qihao Zhu、Runxin Xu 等
-- 发布信息：arXiv:2402.03300，v3 发布于 2024-04-27
-- 开源代码：[deepseek-ai/DeepSeek-Math](https://github.com/deepseek-ai/DeepSeek-Math)
-- 研究对象：7B 规模的数学 reasoning language model
+- 发表：arXiv:2402.03300
+- 日期：2024-02
+- 代码/数据：[deepseek-ai/DeepSeek-Math](https://github.com/deepseek-ai/DeepSeek-Math)
 - 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/post-training/grpo|GRPO]]、[[training/post-training/rejection-sampling|Rejection Sampling]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]
+## 研究对象与实验范围
 
-这篇论文同时讨论了 math pre-training 和 reasoning RL。它的贡献不应只被概括为“提出了 GRPO”，因为论文的结果来自一条连续的训练链路：先从 Common Crawl 中筛出规模化、跨语言的数学语料，再用 code 与 math 的训练配方塑造具有较强数学先验的 base model，之后通过数学 instruction tuning 建立可交互的解题行为，最后用可验证 reward 进行 GRPO。
-
-从研究方法上看，论文最值得保留的是两个观察：一是**数据选择和数据混合方式可以在不扩大模型规模的情况下显著改变数学 reasoning 能力**；二是**在已有 reasoning 能力上进行 RL 时，训练效果取决于数据来源、reward function 与 gradient coefficient 的组合，而不只是算法名称**。
+- 研究对象：7B 规模的数学 reasoning language model
 
 ## 研究问题
 
