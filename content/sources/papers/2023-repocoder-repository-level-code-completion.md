@@ -34,6 +34,7 @@ RepoCoder 这篇论文的核心想法是：**repository-level code completion �
 
 - 标题：[RepoCoder: Repository-Level Code Completion Through Iterative Retrieval and Generation](https://arxiv.org/abs/2303.12570)
 - 作者：Fengji Zhang, Bei Chen, Yue Zhang, Jacky Keung, Jin Liu, Daoguang Zan, Yi Mao, Jian-Guang Lou, Weizhu Chen
+- 机构/来源：City University of Hong Kong、Microsoft、Wuhan University
 - 发表：arXiv:2303.12570；EMNLP 2023 main
 - 日期：2023-03
 - 代码/数据：https://github.com/microsoft/CodeT/tree/main/RepoCoder

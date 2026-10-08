@@ -28,6 +28,7 @@ paper_order: "14228"
 
 - 标题：[Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems](https://arxiv.org/abs/2604.14228)
 - 作者：Jiacheng Liu, Xiaohan Zhao, Xinyi Shang, Zhiqiang Shen
+- 机构/来源：VILA Lab、Mohamed bin Zayed University of Artificial Intelligence、University College London
 - 发表：arXiv:2604.14228
 - 日期：2026-04
 - 代码/数据：`https://github.com/VILA-Lab/Dive-into-Claude-Code`

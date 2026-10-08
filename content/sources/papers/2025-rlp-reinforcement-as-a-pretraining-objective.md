@@ -27,6 +27,7 @@ publisher: NVIDIA
 
 - 标题：[RLP: Reinforcement as a Pretraining Objective](https://arxiv.org/abs/2510.01265)
 - 作者：Ali Hatamizadeh, Syeda Nahida Akter, Shrimai Prabhumoye, Jan Kautz, Mostofa Patwary, Mohammad Shoeybi, Bryan Catanzaro, Yejin Choi
+- 机构/来源：NVIDIA、Carnegie Mellon University、Boston University、Stanford University
 - 发表：arXiv:2510.01265
 - 日期：2025-10
 - 代码/数据：`https://github.com/NVlabs/RLP`

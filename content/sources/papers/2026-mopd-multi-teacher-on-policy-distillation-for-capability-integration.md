@@ -29,6 +29,7 @@ paper_order: "30406"
 
 - 标题：[MOPD: Multi-Teacher On-Policy Distillation for Capability Integration in LLM Post-Training](https://arxiv.org/abs/2606.30406)
 - 作者：Wenhan Ma, Jianyu Wei, Liang Zhao, Hailin Zhang, Bangjun Xiao, Lei Li, Qibin Yang, Bofei Gao, Yudong Wang, Rang Li, Jinhao Dong, Zhifang Sui, Fuli Luo
+- 机构/来源：Peking University、LLM Core, Xiaomi、University of Hong Kong、Renmin University of China
 - 发表：arXiv:2606.30406
 - 日期：2026-06
 - 相关主题：[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/grpo|GRPO]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]

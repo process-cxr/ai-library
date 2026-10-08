@@ -44,6 +44,7 @@ CodeRAG 这篇论文的 motivation 很直观：repository-level code completion 
 
 - 标题：[CodeRAG: Finding Relevant and Necessary Knowledge for Retrieval-Augmented Repository-Level Code Completion](https://arxiv.org/abs/2509.16112)
 - 作者：Sheng Zhang, Yifan Ding, Shuquan Lian, Shun Song, Hui Li
+- 机构/来源：Xiamen University、Ant Group
 - 发表：arXiv:2509.16112
 - 日期：2025-09
 - 代码/数据：https://github.com/KDEGroup/CodeRAG

@@ -25,6 +25,7 @@ paper_order: "11794"
 
 - 标题：[DataComp-LM](https://arxiv.org/abs/2406.11794)
 - 作者：Jeffrey Li、Alex Fang、Georgios Smyrnis 等
+- 机构/来源：University of Washington、Apple、Toyota Research Institute 等
 - 发表：arXiv:2406.11794
 - 日期：2024-06
 - 代码/数据：[DataComp for Language Models](https://datacomp.ai/dclm)；[mlfoundations/dclm](https://github.com/mlfoundations/dclm)

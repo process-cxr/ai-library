@@ -28,6 +28,7 @@ paper_date: "2026-07"
 
 - 标题：[Learn to Merge: Meta-Learning for Adaptive Multi-Task Model Merging](https://proceedings.mlr.press/v306/)
 - 作者：Jun Chen、Qin Zhang、Weizhi Zhang、Xiao Luo、Philip S. Yu、Ziyue Qiao。
+- 机构/来源：Shenzhen University、Great Bay University、University of Illinois at Chicago、University of Wisconsin-Madison
 - 发表：[ICML 2026](https://icml.cc/Conferences/2026)，PMLR 306。
 - 日期：2026-07
 - 代码/数据：[MetaMerging](https://github.com/cjcj46262/MetaMerging)。
@@ -109,6 +110,100 @@ MetaMerging 在 inner loop 快速模拟 task-specific adapter training，在 out
 
 ## 方法与机制
 
+### 先区分 unified backbone、adapter 与 task head
+
+这篇论文的最终产物不是“一个统一模型直接完成所有任务”。它把共享参数和任务专属参数拆成三部分：
+
+1. **Unified backbone**：由多个 task vector 合并得到的共享模型主体，负责提供跨任务共享的表示。它是 MetaMerging 真正要学习的初始化。
+2. **Task-specific adapter**：每个任务独立拥有的轻量可训练模块，用来在共享表示上补回该任务特有的偏差。它不是另一个完整模型，也不是把所有任务合并后产生的新 backbone，而是对 unified backbone 的小规模任务条件化修正。
+3. **Task-specific head**：每个任务自己的输出头，将该任务的表示映射到对应的标签空间。论文保留这些 heads，不把不同任务的输出空间强行合并。
+
+因此，推理时实际使用的是一个任务条件化模型：
+
+$$
+\boxed{
+\text{Unified backbone}
+\;+
+\text{Task-specific adapter}_k
+\;+
+\text{Task-specific head}_k
+}
+$$
+
+对任务 $k$，可以把一次预测抽象写成：
+
+$$
+\hat y_k
+=h_k\left(A_{\phi_k}\left(f_{\theta_{\mathrm{uni}}}(x)\right)\right),
+$$
+
+其中 $f_{\theta_{\mathrm{uni}}}$ 是共享 unified backbone，$A_{\phi_k}$ 是任务 $k$ 的 adapter，$h_k$ 是任务 $k$ 的 head。任务 id 决定使用哪一组 $(A_{\phi_k},h_k)$；不同任务共享同一份 backbone，但并不共享全部参数。
+
+这也解释了论文中两个容易混淆的说法：
+
+- **unified model** 通常指合并后的共享 backbone，强调的是合并结果本身以及它作为后续适配初始化的作用；
+- **adapted task model** 指把某个任务的 adapter 和 head 接到 unified backbone 上并完成训练后的任务模型。
+
+论文比较的关键不是“unified model 是否已经独立解决所有任务”，而是“这个 unified backbone 是否容易被各任务自己的 adapter 适配到较好的最终状态”。
+
+### 两阶段训练与最终产物
+
+MetaMerging 可以分成两个阶段。两阶段优化的对象、使用的 adapter 和最终保存的参数都不同。
+
+#### 阶段一：学习 merge coefficients
+
+首先从预训练模型 $\theta_{\mathrm{pre}}$ 出发，为每个任务单独 fine-tune 得到 $\theta_k$，形成 task vector：
+
+$$
+V_k=\theta_k-\theta_{\mathrm{pre}}.
+$$
+
+随后把系数 $\lambda$ 作为外层可学习变量，构造共享 unified backbone：
+
+$$
+\theta_{\mathrm{uni}}(\lambda)
+=\theta_{\mathrm{pre}}+\sum_{k=1}^{K}\lambda_kV_k.
+$$
+
+在每一个 meta-learning episode 中，论文为每个任务临时初始化一个 adapter，使用 task-train batch 对它做少量 inner updates，再用独立的 meta-test batch 计算适配后的 representation loss。这个临时 adapter 的作用只是回答：
+
+> 如果当前的 unified backbone 采用这组 $\lambda$，任务 $k$ 能否用少量 adapter 更新快速恢复自己的任务表示？
+
+外层根据所有任务的 meta-test loss 更新 $\lambda$。因此，阶段一的输出是 learned merge coefficients $\lambda^*$，以及由它们构造的共享 unified backbone $\theta_{\mathrm{uni}}^*$；inner loop 中的临时 adapters 不属于最终部署产物。
+
+#### 阶段二：固定 unified backbone，分别训练任务 adapter
+
+得到 $\lambda^*$ 后，先固定：
+
+$$
+\theta_{\mathrm{uni}}^*
+=\theta_{\mathrm{pre}}+\sum_{k=1}^{K}\lambda_k^*V_k.
+$$
+
+然后对每个任务重新创建并训练自己的 adapter $A_{\phi_k}$，同时保留该任务对应的 head $h_k$。这一阶段不再继续把不同任务的 adapter 合并，也不把某一个任务的 adapter 当作所有任务共享的模块。最终会得到：
+
+$$
+\left\{
+\left(\theta_{\mathrm{uni}}^*,\phi_1^*,h_1\right),
+\ldots,
+\left(\theta_{\mathrm{uni}}^*,\phi_K^*,h_K\right)
+\right\}.
+$$
+
+部署时共享存储一份 $\theta_{\mathrm{uni}}^*$，并为每个任务保留一份轻量的 $(\phi_k^*,h_k)$。所以最终得到的是“一个共享 backbone 加多组任务专属参数”，而不是一个不带任务信息的单一模型。若任务数量增加，新增任务通常仍需要自己的 head 和 adapter；MetaMerging 解决的是共享初始化如何构造，不是取消任务适配本身。
+
+整个关系可以概括为：
+
+~~~text
+pretrained backbone
+  -> task-specific fine-tuning
+  -> task vectors V_1 ... V_K
+  -> Stage 1: learn merge coefficients lambda
+  -> unified backbone theta_uni*
+  -> Stage 2: train one adapter + one head per task
+  -> (unified backbone + adapter_k + head_k), for each task k
+~~~
+
 ### Unified backbone 与 task-specific adapters
 
 作者保留 task-specific prediction head，并在共享 unified backbone 上连接 adapter $A_{\theta_{\mathrm{ada},k}}$。给定输入 batch $X$，adapter 的训练目标是使 adapted unified representation 接近原 task-specific fine-tuned model 的 representation：
@@ -179,14 +274,21 @@ $$
 ### 完整训练流程
 
 ~~~
-1. 由 pretrained model 和 task vectors 构造 unified backbone
-2. 为每个 task 初始化 adapter
-3. 采样 task train batch，做少量 adapter inner updates
-4. 采样 task meta-test batch，计算适配后 loss
-5. 通过 meta-gradient 更新 merging coefficients
-6. 重复 meta cycles，得到 learned lambda
-7. 固定 unified backbone，分别完整训练各 task adapter
-8. 评估各 task 的 adapted model
+准备阶段：从 pretrained model 和各任务 fine-tuned model 得到 task vectors
+
+阶段一：MetaMerging
+1. 用当前 lambda 构造 unified backbone
+2. 为每个 task 初始化临时 adapter
+3. 采样 task-train batch，做少量 adapter inner updates
+4. 采样独立 meta-test batch，计算适配后的 outer loss
+5. 通过 meta-gradient 更新 lambda
+6. 重复 meta cycles，得到 learned lambda*
+
+阶段二：最终任务适配
+7. 用 lambda* 固定 unified backbone
+8. 为每个 task 重新初始化并完整训练独立 adapter
+9. 保留对应 task head，得到每个 task 的 adapted model
+10. 分别评估各 task 的 adapted model
 ~~~
 
 ## 理论解释

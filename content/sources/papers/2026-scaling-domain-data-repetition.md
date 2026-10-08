@@ -28,6 +28,7 @@ paper_order: "14071"
 
 - 标题：[Scaling Domain Data Repetition in LLM Pretraining](https://arxiv.org/abs/2608.14071)
 - 作者：Jingwei Li、Xinran Gu、Rui Dai、Xintong Hao、Chengyin Xu、Yan Wu、Shuran Zheng、Jingzhao Zhang
+- 机构/来源：Tsinghua University、ByteDance Seed
 - 发表：arXiv:2608.14071
 - 日期：2026-08
 - 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/deduplication|Deduplication]]、[[training/scaling/scaling-law|Scaling Law]]、[[training/pretraining/pretraining|Pretraining]]

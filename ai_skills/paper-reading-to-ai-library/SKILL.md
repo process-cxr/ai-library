@@ -65,6 +65,7 @@ For paper source notes, keep `## 基本信息` concise and use this field order:
 
 - 标题：[Paper Title](source link)
 - 作者：...
+- 机构/来源：主要作者所属机构或作者团队（无法可靠确认时省略）
 - 发表：arXiv:... / Conference Name Year / Publisher
 - 日期：YYYY-MM-DD 或 YYYY-MM
 - 代码/数据：[Link]（没有则省略）
@@ -72,7 +73,9 @@ For paper source notes, keep `## 基本信息` concise and use this field order:
 ```
 
 - Use the canonical paper or publisher link in `标题`; use `source_url` when it is a reliable public source.
+- Add `机构/来源` only when the author affiliation or publishing organization is supported by the paper, an official project page, or another reliable primary source. For team-authored papers, use the team or organization name when that is the meaningful source identity.
 - Combine source identity and version into `发表`; do not create separate `来源`、`版本`、`发表线索` fields.
+- Keep `发表` for the venue or publication channel; do not use it for author affiliation. Do not guess affiliations from author names, and omit `机构/来源` when it cannot be verified.
 - Use `paper_date` for the public paper month when an exact date is unavailable. For conference papers without arXiv, use the conference publication month.
 - Add `代码/数据` only when a public repository or dataset link exists.
 - Do not put local PDF paths, `paper_order`, research-object descriptions, model-scale details, or the reading process in `基本信息`. Move substantive experiment metadata into the report body.
@@ -99,7 +102,8 @@ tags:
 ## 基本信息
 
 - Source: ...
-- Authors / Institution: ...
+- Authors: ...
+- Institution / Source: ... (optional; use only when verified)
 - Date: ...
 - Link: ...
 - Related topic notes: [[...]], [[...]]

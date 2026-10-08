@@ -25,6 +25,7 @@ paper_order: "03741"
 
 - 标题：[Deep Reinforcement Learning from Human Preferences](https://arxiv.org/abs/1706.03741)
 - 作者：Paul F. Christiano, Jan Leike, Tom B. Brown, Miljan Martic, Shane Legg, Dario Amodei
+- 机构/来源：OpenAI、DeepMind
 - 发表：arXiv:1706.03741
 - 日期：2017-06
 - 相关主题：[[training/post-training/rlhf|RLHF]]、[[training/post-training/reward-model|Reward Model]]、[[training/post-training/ppo|PPO]]、[[fundamentals/information-theory/kl-divergence|KL Divergence]]

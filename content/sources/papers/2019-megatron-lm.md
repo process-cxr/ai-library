@@ -28,6 +28,7 @@ paper_order: "08053"
 
 - 标题：[Megatron-LM](https://arxiv.org/abs/1909.08053)
 - 作者：Mohammad Shoeybi, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, Bryan Catanzaro
+- 机构/来源：NVIDIA
 - 发表：arXiv:1909.08053
 - 日期：2019-09
 - 代码/数据：[NVIDIA/Megatron-LM](https://github.com/NVIDIA/Megatron-LM)

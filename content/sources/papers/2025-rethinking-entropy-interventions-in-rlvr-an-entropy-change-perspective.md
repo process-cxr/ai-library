@@ -31,6 +31,7 @@ paper_order: "10150"
 
 - 标题：[Rethinking Entropy Interventions in RLVR: An Entropy Change Perspective](https://arxiv.org/abs/2510.10150)
 - 作者：Zhezheng Hao, Hong Wang, Haoyang Liu, Jian Luo, Jiarui Yu, Hande Dong, Qiang Lin, Can Wang, Jiawei Chen
+- 机构/来源：Zhejiang University、Tencent、Independent Researcher、Hangzhou High-Tech Zone (Binjiang) Institute of Blockchain and Data Security
 - 发表：arXiv:2510.10150
 - 日期：2025-10
 - 相关主题：[[training/post-training/grpo|GRPO]]、[[training/post-training/ppo|PPO]]、[[training/post-training/rlhf|RLHF]]

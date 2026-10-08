@@ -29,6 +29,7 @@ paper_order: "15161"
 
 - 标题：[On-Policy Delta Distillation](https://arxiv.org/abs/2607.15161)
 - 作者：Byeongho Heo, Jaehui Hwang, Sangdoo Yun, Dongyoon Han
+- 机构/来源：NAVER AI Lab
 - 发表：arXiv:2607.15161
 - 日期：2026-07
 - 代码/数据：https://github.com/naver-ai/opd2

@@ -28,6 +28,7 @@ paper_order: "23045"
 
 - 标题：[Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents](https://arxiv.org/abs/2509.23045)
 - 作者：Zonghan Yang, Shengjie Wang, Kelin Fu, Wenyang He, Weimin Xiong, Yibo Liu, Yibo Miao, Bofei Gao, Yejie Wang, Yingwei Ma, Yanhao Li, Yue Liu, Zhenxing Hu, Kaitai Zhang, Shuyi Wang, Huarong Chen, Flood Sung, Yang Liu, Yang Gao, Zhilin Yang, Tianyu Liu
+- 机构/来源：Moonshot AI、Tsinghua University、Peking University、University of Chinese Academy of Sciences、Beijing University of Posts and Telecommunications、National University of Singapore
 - 发表：arXiv:2509.23045
 - 日期：2025-09
 - 代码/数据：https://github.com/MoonshotAI/Kimi-Dev；https://huggingface.co/moonshotai/Kimi-Dev-72B

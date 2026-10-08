@@ -24,6 +24,7 @@ paper_order: "08361"
 
 - 标题：[Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
 - 作者：Jared Kaplan, Sam McCandlish, Tom Henighan, Tom B. Brown, Benjamin Chess, Rewon Child, Scott Gray, Alec Radford, Jeffrey Wu, Dario Amodei
+- 机构/来源：OpenAI、Johns Hopkins University
 - 发表：arXiv:2001.08361
 - 日期：2020-01
 - 代码/数据：WebText2

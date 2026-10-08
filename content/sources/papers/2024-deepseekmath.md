@@ -26,6 +26,7 @@ paper_order: "03300"
 
 - 标题：[DeepSeekMath](https://arxiv.org/abs/2402.03300)
 - 作者：Zhihong Shao、Peiyi Wang、Qihao Zhu、Runxin Xu 等
+- 机构/来源：DeepSeek-AI、Tsinghua University、Peking University
 - 发表：arXiv:2402.03300
 - 日期：2024-02
 - 代码/数据：[deepseek-ai/DeepSeek-Math](https://github.com/deepseek-ai/DeepSeek-Math)

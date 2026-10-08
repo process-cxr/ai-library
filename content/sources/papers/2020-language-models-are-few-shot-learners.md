@@ -27,6 +27,7 @@ paper_order: "14165"
 
 - 标题：[Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
 - 作者：Tom B. Brown、Benjamin Mann、Nick Ryder、Melanie Subbiah 等
+- 机构/来源：OpenAI、Johns Hopkins University
 - 发表：arXiv:2005.14165
 - 日期：2020-05
 - 相关主题：[[architecture/model-families/gpt|GPT]]、[[architecture/transformer/decoder-only-transformer|Decoder-only Transformer]]、[[application/prompting/few-shot|Few-shot Prompting]]、[[training/scaling/scaling-law|Scaling Law]]、[[training/pretraining/data-mix|Data Mix]]

@@ -29,6 +29,7 @@ code_url: https://github.com/Alibaba-NLP/DeepResearch
 
 - 标题：[Scaling Agents via Continual Pre-training](https://arxiv.org/abs/2509.13310)
 - 作者：Liangcai Su, Zhen Zhang, Guangyu Li, Zhuo Chen, Chenxi Wang 等
+- 机构/来源：Tongyi Lab、Alibaba Group
 - 发表：arXiv:2509.13310
 - 日期：2025-09
 - 相关主题：[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[training/post-training/sft|SFT]]、[[application/agents/agent|Agent]]、[[application/tool-use/tool-calling|Tool Calling]]

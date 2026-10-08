@@ -30,6 +30,7 @@ paper_order: "27483"
 
 - 标题：[Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning](https://arxiv.org/abs/2606.27483)
 - 作者：Xuan Zhang, Zhijian Zhou, Lingfeng Qiao, Yulei Qin, Ke Li, Xing Sun, Xiaoyu Tan, Chao Qu, Yuan Qi
+- 机构/来源：Fudan University、Shanghai Innovation Institute、Tencent Youtu Lab
 - 发表：arXiv:2606.27483
 - 日期：2026-06
 - 相关主题：[[application/agents/planning|Planning]]、[[application/agents/agent|Agent]]、[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/mid-training/capability-injection|Capability Injection]]、[[training/post-training/grpo|GRPO]]、[[training/post-training/reward-model|Reward Model]]、[[training/pretraining/reinforcement-pretraining|Reinforcement Pretraining]]

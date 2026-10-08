@@ -25,6 +25,7 @@ code_url: https://github.com/Ayanami1314/swe-pruner
 
 - 标题：[SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents](https://arxiv.org/abs/2601.16746)
 - 作者：Yuhang Wang, Yuling Shi, Mo Yang, Rongrui Zhang, Shilin He, Heng Lian, Yuting Chen, Siyu Ye, Kai Cai, Xiaodong Gu
+- 机构/来源：Shanghai Jiao Tong University、Sun Yat-sen University、Douyin Group
 - 发表：arXiv:2601.16746
 - 日期：2026-01
 - 代码/数据：`https://github.com/Ayanami1314/swe-pruner`

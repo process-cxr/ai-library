@@ -24,6 +24,7 @@ paper_order: "02301"
 
 - 标题：[Distilling Step-by-Step](https://arxiv.org/abs/2305.02301)
 - 作者：Cheng-Yu Hsieh, Chun-Liang Li, Chih-Kuan Yeh, Hootan Nakhost, Yasuhisa Fujii, Alexander Ratner, Ranjay Krishna, Chen-Yu Lee, Tomas Pfister
+- 机构/来源：University of Washington、Google Cloud AI Research、Google Research
 - 发表：arXiv:2305.02301
 - 日期：2023-05
 - 代码/数据：[google-research/distilling-step-by-step](https://github.com/google-research/distilling-step-by-step)

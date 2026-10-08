@@ -35,6 +35,7 @@ Repoformer 的贡献是发现“检索不是总有用”，于是把 always-retr
 
 - 标题：[Repoformer: Selective Retrieval for Repository-Level Code Completion](https://arxiv.org/abs/2403.10059)
 - 作者：Di Wu, Wasi Uddin Ahmad, Dejiao Zhang, Murali Krishna Ramanathan, Xiaofei Ma
+- 机构/来源：University of California, Los Angeles、AWS AI Labs
 - 发表：arXiv:2403.10059；ICML 2024
 - 日期：2024-03
 - 相关主题：[[application/rag/context-compression|Context Compression]]

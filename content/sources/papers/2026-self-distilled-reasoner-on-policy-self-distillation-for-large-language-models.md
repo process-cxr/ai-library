@@ -30,6 +30,7 @@ paper_order: "18734"
 
 - 标题：[Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models](https://arxiv.org/abs/2601.18734)
 - 作者：Siyan Zhao, Zhihui Xie, Mengchen Liu, Jing Huang, Guan Pang, Feiyu Chen, Aditya Grover
+- 机构/来源：University of California, Los Angeles、The University of Hong Kong、Meta Superintelligence Labs
 - 发表：arXiv:2601.18734
 - 日期：2026-01
 - 代码/数据：https://github.com/siyan-zhao/OPSD

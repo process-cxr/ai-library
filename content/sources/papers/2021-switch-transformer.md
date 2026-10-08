@@ -27,6 +27,7 @@ paper_order: "03961"
 
 - 标题：[Switch Transformers](https://arxiv.org/abs/2101.03961)
 - 作者：William Fedus、Barret Zoph、Noam Shazeer
+- 机构/来源：Google
 - 发表：arXiv:2101.03961；Journal of Machine Learning Research 23，2022-04
 - 日期：2021-01
 - 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[training/optimization/mixed-precision|Mixed Precision Training]]、[[training/distributed-training/data-parallel|Data Parallel]]、[[training/distributed-training/tensor-parallel|Tensor Parallel]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]

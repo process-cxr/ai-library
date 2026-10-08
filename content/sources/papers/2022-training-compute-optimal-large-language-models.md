@@ -25,6 +25,7 @@ paper_order: "15556"
 
 - 标题：[Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
 - 作者：Jordan Hoffmann, Sebastian Borgeaud, Arthur Mensch, Elena Buchatskaya, Trevor Cai, Eliza Rutherford 等
+- 机构/来源：DeepMind
 - 发表：arXiv:2203.15556
 - 日期：2022-03
 - 相关主题：[[training/scaling/compute-optimal|Compute Optimal]]、[[training/scaling/scaling-law|Scaling Law]]、[[training/pretraining/compute-optimal|Pretraining Compute Optimal]]、[[training/pretraining/data-mix|Data Mix]]、[[training/scaling/training-budget|Training Budget]]

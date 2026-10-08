@@ -26,6 +26,7 @@ paper_order: "06965"
 
 - 标题：[GPipe](https://arxiv.org/abs/1811.06965)
 - 作者：Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Mia Xu Chen, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, Yonghui Wu, Zhifeng Chen
+- 机构/来源：Google
 - 发表：arXiv:1811.06965
 - 日期：2018-11
 - 代码/数据：[Lingvo](https://github.com/tensorflow/lingvo)
