@@ -28,6 +28,7 @@ code_url: https://github.com/TencentYoutuResearch/APTBench
 
 - 标题：[APTBench: Benchmarking Agentic Potential of Base LLMs During Pre-Training](https://arxiv.org/abs/2510.24397)
 - 作者：Jiarui Qin, Yunjia Xi, Junjie Huang, Renting Rui, Di Yin, Weiwen Liu, Yong Yu, Weinan Zhang, Xing Sun
+- 机构/来源：Tencent Youtu Lab、Shanghai Jiao Tong University
 - 发表：arXiv:2510.24397
 - 日期：2025-10
 - 代码/数据：https://github.com/TencentYoutuResearch/APTBench

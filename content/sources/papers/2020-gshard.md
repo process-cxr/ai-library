@@ -25,6 +25,7 @@ paper_order: "16668"
 
 - 标题：[GShard](https://arxiv.org/abs/2006.16668)
 - 作者：Dmitry Lepikhin、HyoukJoong Lee、Yuanzhong Xu、Dehao Chen、Orhan Firat、Yanping Huang 等
+- 机构/来源：Google
 - 发表：arXiv:2006.16668
 - 日期：2020-06
 - 相关主题：[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[training/distributed-training/torch-distributed|torch.distributed]]、[[training/distributed-training/tensor-parallel|Tensor Parallel]]、[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]

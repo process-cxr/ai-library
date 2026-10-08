@@ -26,6 +26,7 @@ paper_order: "13169"
 
 - 标题：[A Pretrainer's Guide to Training Data](https://arxiv.org/abs/2305.13169)
 - 作者：Shayne Longpre, Gregory Yauney, Emily Reif, Katherine Lee, Adam Roberts, Barret Zoph, Denny Zhou, Jason Wei, Kevin Robinson, David Mimno, Daphne Ippolito
+- 机构/来源：MIT、Cornell University、Google Research、OpenAI
 - 发表：arXiv:2305.13169
 - 日期：2023-05
 - 相关主题：[[training/pretraining/data-mix|Data Mix]]、[[training/data-engineering/quality-filtering|Quality Filtering]]、[[training/data-engineering/data-engineering|Data Engineering]]、[[training/data-engineering/deduplication|Deduplication]]、[[training/scaling/compute-optimal|Compute Optimal]]

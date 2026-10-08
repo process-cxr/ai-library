@@ -33,6 +33,7 @@ Squeez 这篇论文讨论的是 coding agent 中一个很具体的压缩问题�
 
 - 标题：[Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents](https://arxiv.org/abs/2604.04979)
 - 作者：Adam Kovacs, KR Labs
+- 机构/来源：KR Labs
 - 发表：arXiv:2604.04979
 - 日期：2026-04
 - 代码/数据：https://arxiv.org/abs/2604.04979, https://github.com/KRLabsOrg/squeez

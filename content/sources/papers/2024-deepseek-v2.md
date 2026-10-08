@@ -27,6 +27,7 @@ paper_order: "04434"
 
 - 标题：[DeepSeek-V2](https://arxiv.org/abs/2405.04434)
 - 作者：DeepSeek-AI
+- 机构/来源：DeepSeek-AI
 - 发表：arXiv:2405.04434
 - 日期：2024-05
 - 代码/数据：[deepseek-ai/DeepSeek-V2](https://github.com/deepseek-ai/DeepSeek-V2)

@@ -25,6 +25,7 @@ code_url: https://github.com/YerbaPage/LongCodeZip
 
 - 标题：[LongCodeZip: Compress Long Context for Code Language Models](https://arxiv.org/abs/2510.00446)
 - 作者：Yuling Shi, Yichun Qian, Hongyu Zhang, Beijun Shen, Xiaodong Gu
+- 机构/来源：Shanghai Jiao Tong University、Stanford University、Chongqing University
 - 发表：arXiv:2510.00446；ASE 2025
 - 日期：2025-10
 - 代码/数据：`https://github.com/YerbaPage/LongCodeZip`

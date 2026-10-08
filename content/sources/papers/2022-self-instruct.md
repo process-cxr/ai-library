@@ -23,6 +23,7 @@ paper_order: "10560"
 
 - 标题：[Self-Instruct](https://arxiv.org/abs/2212.10560)
 - 作者：Yizhong Wang, Yeganeh Kordi, Swaroop Mishra, Alisa Liu, Noah A. Smith, Daniel Khashabi, Hannaneh Hajishirzi
+- 机构/来源：University of Washington、Tehran Polytechnic、Arizona State University、Johns Hopkins University、Allen Institute for AI
 - 发表：arXiv:2212.10560；ACL 2023
 - 日期：2022-12
 - 代码/数据：[yizhongw/self-instruct](https://github.com/yizhongw/self-instruct)

@@ -24,6 +24,7 @@ paper_order: "03762"
 
 - 标题：[Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 - 作者：Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin
+- 机构/来源：Google Brain、Google Research、University of Toronto
 - 发表：arXiv:1706.03762
 - 日期：2017-06
 - 代码/数据：[tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor)

@@ -34,6 +34,7 @@ paper_order: "12125"
 
 - 标题：[Learning beyond Teacher: Generalized On-Policy Distillation with Reward Extrapolation](https://arxiv.org/abs/2602.12125)
 - 作者：Wenkai Yang, Weijie Liu, Ruobing Xie, Kai Yang, Saiyong Yang, Yankai Lin
+- 机构/来源：Renmin University of China、Tencent
 - 发表：arXiv:2602.12125
 - 日期：2026-02
 - 代码/数据：https://github.com/RUCBM/G-OPD

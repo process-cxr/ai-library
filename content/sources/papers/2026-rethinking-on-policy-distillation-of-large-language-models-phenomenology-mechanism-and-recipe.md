@@ -30,6 +30,7 @@ paper_order: "13016"
 
 - 标题：[Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe](https://arxiv.org/abs/2604.13016)
 - 作者：Yaxuan Li, Yuxin Zuo, Bingxiang He, Jinqian Zhang, Chaojun Xiao, Cheng Qian, Tianyu Yu, Huan-ang Gao, Wenkai Yang, Zhiyuan Liu, Ning Ding
+- 机构/来源：Tsinghua University、ShanghaiTech University、University of Illinois Urbana-Champaign、Renmin University of China
 - 发表：arXiv:2604.13016
 - 日期：2026-04
 - 代码/数据：https://github.com/thunlp/OPD

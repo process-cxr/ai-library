@@ -29,6 +29,7 @@ paper_order: "07508"
 
 - 标题：[Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning](https://arxiv.org/abs/2607.07508)
 - 作者：Zhenyu Hou, Yujiang Li, Jie Tang, Yuxiao Dong
+- 机构/来源：Tsinghua University、Z.AI
 - 发表：arXiv:2607.07508
 - 日期：2026-07
 - 相关主题：[[training/post-training/grpo|GRPO]]、[[training/post-training/reinforcement-learning|Reinforcement Learning]]、[[application/agents/agent|Agent]]、[[application/evaluation/benchmark|Benchmark]]

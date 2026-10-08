@@ -33,6 +33,7 @@ CodePromptZip 这篇论文的核心想法是：**RAG-based coding task 里的 re
 
 - 标题：[CodePromptZip: Code-specific Prompt Compression for Retrieval-Augmented Generation in Coding Tasks with LMs](https://arxiv.org/abs/2502.14925)
 - 作者：Pengfei He, Shaowei Wang, Tse-Hsun Chen
+- 机构/来源：University of Manitoba、Concordia University
 - 发表：arXiv:2502.14925
 - 日期：2025-02
 - 代码/数据：paper 中给出匿名 replication package：`CodePromptZip-6B2B`

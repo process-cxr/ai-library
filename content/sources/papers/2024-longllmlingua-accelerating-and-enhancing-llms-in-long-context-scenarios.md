@@ -33,6 +33,7 @@ LongLLMLingua 的 motivation 是：**长上下文不只是贵，还会因为噪�
 
 - 标题：[LongLLMLingua: Accelerating and Enhancing LLMs in Long Context Scenarios via Prompt Compression](https://arxiv.org/abs/2310.06839)
 - 作者：Huiqiang Jiang, Qianhui Wu, Xufang Luo, Dongsheng Li, Chin-Yew Lin, Yuqing Yang, Lili Qiu
+- 机构/来源：Microsoft Corporation
 - 发表：arXiv:2310.06839
 - 日期：2023-10
 - 代码/数据：https://aka.ms/LongLLMLingua

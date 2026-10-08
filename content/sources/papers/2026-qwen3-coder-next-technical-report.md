@@ -29,6 +29,7 @@ paper_order: "00729"
 
 - 标题：[Qwen3-Coder-Next Technical Report](https://arxiv.org/abs/2603.00729)
 - 作者：Qwen Team
+- 机构/来源：Qwen Team
 - 发表：arXiv:2603.00729
 - 日期：2026-03
 - 代码/数据：https://huggingface.co/Qwen/Qwen3-Coder-Next；https://www.modelscope.cn/models/Qwen/Qwen3-Coder-Next；https://github.com/QwenLM/Qwen3-Coder

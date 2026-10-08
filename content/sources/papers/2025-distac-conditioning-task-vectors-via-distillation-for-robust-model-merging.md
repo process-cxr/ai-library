@@ -27,6 +27,7 @@ paper_order: "01148"
 
 - 标题：[DisTaC: Conditioning Task Vectors via Distillation for Robust Model Merging](https://arxiv.org/abs/2508.01148)
 - 作者：Kotaro Yoshida、Yuji Naraki、Takafumi Horie、Ryotaro Shimizu、Ioannis Mitliagkas、Hiroki Naganuma，以所读 PDF 首页为准。
+- 机构/来源：Institute of Science Tokyo、Independent Researcher、Kyoto University、ZOZO Research、Mila、Université de Montréal
 - 发表：arXiv:2508.01148；International Conference on Learning Representations（ICLR，国际学习表征会议）2026。
 - 日期：2025-08
 - 代码/数据：[katoro8989/DisTaC](https://github.com/katoro8989/DisTaC)。本报告分析论文，未执行代码复现。

@@ -27,6 +27,7 @@ paper_order: "19437"
 
 - 标题：[DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437)
 - 作者：DeepSeek-AI
+- 机构/来源：DeepSeek-AI
 - 发表：arXiv:2412.19437
 - 日期：2024-12
 - 相关主题：[[architecture/model-families/deepseek|DeepSeek]]、[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[architecture/attention/multi-head-latent-attention|Multi-Head Latent Attention]]、[[training/optimization/mixed-precision|Mixed Precision]]、[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]、[[training/pretraining/data-mix|Data Mix]]、[[training/pretraining/objective|Training Objective]]

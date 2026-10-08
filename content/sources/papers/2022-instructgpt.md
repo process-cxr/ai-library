@@ -26,6 +26,7 @@ paper_order: "02155"
 
 - 标题：[Training language models to follow instructions with human feedback](https://arxiv.org/abs/2203.02155)
 - 作者：Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton, Fraser Kelton, Luke Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul Christiano, Jan Leike, Ryan Lowe
+- 机构/来源：OpenAI
 - 发表：arXiv:2203.02155
 - 日期：2022-03
 - 相关主题：[[training/post-training/rlhf|RLHF]]、[[training/post-training/sft|SFT]]、[[training/post-training/reward-model|Reward Model]]、[[training/post-training/ppo|PPO]]、[[training/post-training/instruction-tuning|Instruction Tuning]]

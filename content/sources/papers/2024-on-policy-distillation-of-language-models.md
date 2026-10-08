@@ -31,6 +31,7 @@ paper_order: "13649"
 
 - 标题：[On-Policy Distillation of Language Models](https://arxiv.org/abs/2306.13649)
 - 作者：Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos, Matthieu Geist, Olivier Bachem
+- 机构/来源：Google DeepMind、Mila、University of Toronto
 - 发表：arXiv:2306.13649
 - 日期：2023-06
 - 相关主题：[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/logits-distillation|Logits Distillation]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]

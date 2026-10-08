@@ -28,6 +28,7 @@ paper_order: "18418"
 
 - 标题：[daVinci-Dev: Agent-native Mid-training for Software Engineering](https://arxiv.org/abs/2601.18418)
 - 作者：Ji Zeng, Dayuan Fu, Tiantian Mi, Yumin Zhuang, Yaxing Huang, Xuefeng Li, Lyumanshan Ye, Muhang Xie, Qishuo Hua, Zhen Huang, Mohan Jiang, Hanning Wang, Jifan Lin, Yang Xiao, Jie Sun, Yunze Wu, Pengfei Liu
+- 机构/来源：Shanghai Innovation Institute、Shanghai Jiao Tong University、GAIR
 - 发表：arXiv:2601.18418
 - 日期：2026-01
 - 相关主题：[[training/mid-training/continued-pretraining|Continued Pretraining]]、[[training/mid-training/capability-injection|Capability Injection]]、[[training/data-engineering/synthetic-data|Synthetic Data]]、[[application/agents/agent|Agent]]、[[application/tool-use/tool-calling|Tool Calling]]、[[application/evaluation/benchmark|Benchmark]]

@@ -29,6 +29,7 @@ paper_order: "08543"
 
 - 标题：[MiniLLM: Knowledge Distillation of Large Language Models](https://arxiv.org/abs/2306.08543)
 - 作者：Yuxian Gu, Li Dong, Furu Wei, Minlie Huang
+- 机构/来源：CoAI Group、Tsinghua University、Microsoft Research
 - 发表：arXiv:2306.08543
 - 日期：2023-06
 - 相关主题：[[training/post-training/knowledge-distillation|Knowledge Distillation]]、[[training/post-training/on-policy-kd|On-policy KD]]、[[training/post-training/sequence-level-distillation|Sequence-level Distillation]]、[[sources/papers/2024-on-policy-distillation-of-language-models|On-Policy Distillation of Language Models]]

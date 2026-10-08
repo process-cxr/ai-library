@@ -31,6 +31,7 @@ paper_order: "04148"
 
 - 标题：[Terminal-Universe: Turning Agent Trajectories into Scalable Terminal Environments](https://arxiv.org/abs/2609.04148)
 - 作者：Jie Wu、Zhenru Zhang、Beichen Zhang、Xuwu Wang、Yuhui Su、Mouxiang Chen、Peng Wang、Zhihai Wang、Que Shen、Hao Zhou、An Yang、Fei Huang、Yujiu Yang、Dayiheng Liu
+- 机构/来源：Qwen Team、Alibaba Group、Tsinghua University
 - 发表：arXiv:2609.04148
 - 日期：2026-09
 - 相关主题：[[training/data-engineering/synthetic-data|Synthetic Data]]、[[application/agents/agent|Agent]]、[[application/agents/planning|Planning]]、[[application/agents/workflow-agent|Workflow Agent]]、[[training/post-training/sft|SFT]]
@@ -548,5 +549,4 @@ Terminal-Universe 最重要的贡献，是把 agent trajectory 的价值从“�
 - [[training/post-training/sft|SFT]]
 - [[training/post-training/rejection-sampling|Rejection Sampling]]
 - [[sources/reports/code-agent-trajectory-reasoning-synthesis|Code Agent Trajectory Reasoning Synthesis]]
-- [[sources/papers/2026-klong-training-llm-agent-for-extremely-long-horizon-tasks|KLong]]
 - [[sources/papers/2026-davinci-dev-agent-native-mid-training-for-software-engineering|daVinci-Dev]]

@@ -88,5 +88,4 @@ modified: 2026-08-12
 - [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]
 - [[sources/papers/2026-single-rollout-asynchronous-optimization-agentic-reinforcement-learning|Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
-- [[sources/papers/2026-klong-training-llm-agent-for-extremely-long-horizon-tasks|KLong: Training LLM Agent for Extremely Long-horizon Tasks]]
 - [[sources/papers/2026-dive-into-claude-code-design-space-ai-agent-systems|Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems]]
