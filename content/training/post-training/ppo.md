@@ -2,7 +2,7 @@
 title: PPO
 created: 2026-03-07
 published: 2026-03-07
-modified: 2026-07-14
+modified: 2026-10-09
 type: topic
 status: mature
 area: training
@@ -14,7 +14,7 @@ tags:
 
 PPO，Proximal Policy Optimization，是一种 policy gradient 强化学习算法。它的核心目标是：**在提高 reward 的同时，限制新 policy 相对旧 policy 的单次更新幅度**。在大模型后训练中，PPO 最典型的用途是 [[training/post-training/rlhf|RLHF]]：语言模型作为 policy 生成回答，[[training/post-training/reward-model|Reward Model]] 或 verifier 提供 reward，PPO 根据 reward 更新 policy，并通过 clipping、KL penalty、value baseline 等机制控制训练稳定性。
 
-原始 PPO 论文是 [[sources/papers/2017-ppo|Proximal Policy Optimization Algorithms]]。论文的 clipped objective 允许同一批 rollout 做多个 minibatch epochs，同时通过 old-policy probability ratio 的截断限制过度更新。需要注意：ratio clipping 是 surrogate objective 中的局部保护，不等价于严格限制所有状态上的 full-distribution KL，也不等价于 gradient clipping。
+原始 PPO 论文是 [[sources/papers/2017-ppo|Proximal Policy Optimization Algorithms]]。本页保留对 LLM/RLHF 最有用的概念、数据流和工程判断；论文笔记则保留从 policy gradient 到 CPI、clipping、GAE 以及原始实验的完整推导。论文的 clipped objective 允许同一批 rollout 做多个 minibatch epochs，同时通过 old-policy probability ratio 的截断限制过度更新。需要注意：ratio clipping 是 surrogate objective 中的局部保护，不等价于严格限制所有状态上的 full-distribution KL，也不等价于 gradient clipping。
 
 PPO 的直觉可以先压缩成一句话：
 
@@ -34,20 +34,65 @@ $$
 J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]
 $$
 
-其中 $\tau$ 是 trajectory，$R(\tau)$ 是整条轨迹的回报。policy gradient 的基本形式是：
+其中 $\tau$ 是 trajectory，$R(\tau)$ 是整条轨迹的回报。这里需要区分三个层次，才能看清 PPO 的公式是怎样接起来的：
+
+1. **真实目标**：最大化当前 policy 产生的轨迹回报 $J(\theta)$。
+2. **Policy-gradient 估计**：用 likelihood-ratio trick 把对轨迹分布的求导改写成 $\nabla_\theta\log\pi_\theta(a_t\mid s_t)$，再用 reward-to-go 或 $Q(s_t,a_t)$ 估计每个动作的贡献。
+3. **PPO surrogate objective**：rollout 已经由 old policy 采样后，用 probability ratio 把“当前 policy 的梯度”改写成“可以在旧数据上计算的局部目标”，再对这个目标做 clipping。
+
+完整的 likelihood-ratio、reward-to-go、baseline 和 advantage 推导见 [[sources/papers/2017-ppo|PPO 原始论文笔记]]。这里保留理解 PPO 所需的最短公式链：
 
 $$
 \nabla_\theta J(\theta)
-=
-\mathbb{E}
+\approx
+\mathbb{E}_{\tau\sim\pi_\theta}
 \left[
-\nabla_\theta \log \pi_\theta(a_t\mid s_t) A_t
-\right]
+\sum_t
+\nabla_\theta\log\pi_\theta(a_t\mid s_t)\hat A_t
+\right],
+\qquad
+\hat A_t\approx A_t=Q^\pi(s_t,a_t)-V^\pi(s_t).
 $$
 
-这里的 $A_t$ 是 advantage，表示在状态 $s_t$ 下采取动作 $a_t$ 比当前平均水平好多少。
+$A_t$ 表示当前动作相对于状态 baseline 的优势：$A_t>0$ 时提高动作概率，$A_t<0$ 时降低动作概率。实际训练中，$Q$、$V$ 和 $A$ 都是由 rollout 估计的，PPO 常用 critic、return 或 GAE 得到它们。
 
-如果 $A_t>0$，应该提高 $a_t$ 的概率；如果 $A_t<0$，应该降低 $a_t$ 的概率。问题在于，普通 policy gradient 没有天然限制更新幅度。一次训练 step 可能把某些 token 概率推得过高或过低，导致 policy 跳出原本可控的语言分布。
+### 为什么从 policy gradient 变成 surrogate objective
+
+上面的 policy-gradient 估计假设样本来自当前 policy $\pi_\theta$。PPO 却先用冻结的 old policy $\pi_{\theta_{\text{old}}}$ 生成一批 rollout，再在固定数据上做多个 minibatch 更新。为了在 old-policy 数据上评价 current policy，引入 importance ratio：
+
+$$
+r_t(\theta)
+=
+\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{\theta_{\text{old}}}(a_t\mid s_t)}.
+$$
+
+于是得到未裁剪的 surrogate objective：
+
+$$
+L^{\text{CPI}}(\theta)
+=
+\mathbb{E}_{(s_t,a_t)\sim\pi_{\text{old}}}
+\left[
+ r_t(\theta)\hat A_t
+\right].
+$$
+
+它不是把真实回报目标 $J(\theta)$ 做了全局等价变形，而是一个以 old policy 为参考、在其附近近似 policy-gradient 的局部目标。固定 rollout 的状态、动作和 $\hat A_t$ 后，只有 ratio 随 current policy 变化；因此一批 rollout 可以被重复用于多个优化 step。PPO 再把它改成 clipped objective：
+
+$$
+L^{\text{CLIP}}(\theta)
+=
+\mathbb{E}_t
+\left[
+\min\left(
+ r_t(\theta)\hat A_t,
+ \operatorname{clip}(r_t(\theta),1-\epsilon,1+\epsilon)\hat A_t
+\right)
+\right].
+$$
+
+Clipping 的含义是：当 $\hat A_t>0$ 时，ratio 超过 $1+\epsilon$ 后不再奖励继续提高该动作概率；当 $\hat A_t<0$ 时，ratio 低于 $1-\epsilon$ 后不再奖励继续降低该动作概率。它限制的是 surrogate objective 中“过度有利更新”的收益，不是把所有 policy ratio 强制截断，也不是 gradient clipping。
 
 PPO 解决的问题不是“如何定义 reward”，而是：**给定一批由旧 policy 采样出来的数据，如何比较稳定地更新当前 policy。**
 

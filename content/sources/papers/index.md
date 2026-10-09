@@ -88,4 +88,5 @@ modified: 2026-08-12
 - [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]
 - [[sources/papers/2026-single-rollout-asynchronous-optimization-agentic-reinforcement-learning|Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
+- [[sources/papers/2025-muon-is-scalable-for-llm-training|Muon is Scalable for LLM Training]]
 - [[sources/papers/2026-dive-into-claude-code-design-space-ai-agent-systems|Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems]]

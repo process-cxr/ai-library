@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technical Report Reading to AI Library"
+  short_description: "Analyze complete model and system reports for AI Library"
+  default_prompt: "Use $technical-report-reading-to-ai-library to read this technical report and document its system design, training stages, artifacts, evidence, and reproducibility limits in AI Library."

@@ -105,7 +105,7 @@ V4 引入 [[architecture/attention/hybrid-attention|Hybrid Attention]] Architect
 
 V4 还引入 Manifold-Constrained Hyper-Connections，简称 mHC。官方说明中，mHC 将 residual mapping 约束到 doubly stochastic matrices 的流形，也就是 Birkhoff polytope，以增强 signal propagation stability，同时保持模型表达能力。
 
-在当前知识库里，mHC 可以先理解为 V4 的连接结构创新。它关注的不是“token 之间如何 attention”，也不是“token 路由到哪个 expert”，而是深层网络中 residual / hidden-state propagation 如何更稳定。由于公开资料对数学细节展开有限，暂时不应把 mHC 写成过度确定的完整理论。
+在当前知识库里，mHC 可以先理解为 Hyper-Connections 的稳定化版本。它关注的不是“token 之间如何 attention”，也不是“token 路由到哪个 expert”，而是深层网络中 residual / hidden-state propagation 如何更稳定。完整背景见 [[architecture/transformer/hyper-connections|Hyper-Connections and mHC]]。
 
 ### Muon Optimizer
 

@@ -2,7 +2,7 @@
 title: verl Source Reading Roadmap
 created: 2026-09-02
 published: 2026-09-02
-modified: 2026-09-03
+modified: 2026-10-09
 type: project
 status: growing
 tags:
@@ -12,9 +12,11 @@ tags:
   - roadmap
 ---
 
-这份路线图按照训练数据流与工程依赖组织 verl 源码阅读。顺序不追随仓库目录，也不同时展开所有算法和 backend：先建立一条能够闭合的同步训练链，再沿着数据、算法、调度、执行后端和异步系统逐层深入。
+这份路线图只负责说明 verl 源码的学习顺序、依赖关系、源码入口、阅读产物和完成标准。它按照训练数据流与工程依赖组织阅读，不追随仓库目录，也不同时展开所有算法和 backend：先建立一条能够闭合的同步训练链，再沿着数据、算法、调度、执行后端和异步系统逐层深入。
 
 项目定位、系统地图与固定源码版本见 [[projects/verl-source-reading/|verl Source Reading]]。
+
+如果还没有建立 PPO/GRPO、batch、worker 和 policy version 的共同坐标，先读 [[projects/verl-source-reading/00-learning-guide|00 verl Learning Guide]]；本页随后按专题给出更细的源码顺序和完成标准。
 
 ## 路线总览
 
@@ -25,6 +27,7 @@ sync GRPO 闭环
   -> advantage / policy loss / PPO comparison
   -> Single Controller / Ray
   -> FSDP / Megatron backend
+  -> OPD / MOPD teacher loop
   -> hybrid engine / weight sync
   -> agentic RL
   -> async / off-policy
@@ -57,7 +60,7 @@ SFT 不作为 RL 阅读路线中的一轮，而作为一条辅助对照路径单
 - [[projects/verl-source-reading/03-data-protocol-and-batch-lifecycle|03 Data Protocol and Batch Lifecycle]]
 - [[projects/verl-source-reading/labs/01-trace-config-and-batch|Lab 01: Trace Config and Batch]]
 
-当前已经完成固定 revision 下的静态调用链、session / trajectory 层级、字段 lineage、batch-size 语义和 FSDP baseline 边界；下一步是用最小 GPU run 将实际 shape、device、timing 和 weight version 回填为 tested behavior。
+完成这一轮的最低标准是能够说明 session / trajectory 层级、字段 lineage、batch-size 作用域和 FSDP baseline 边界；如果要把实际 shape、device、timing 和 weight metadata 写成运行结论，还必须通过最小 GPU run 单独验证。两者属于不同证据等级。
 
 ## 第二轮：Config 与数据生命周期
 
@@ -121,7 +124,7 @@ AgentLoopManager
 
 ```text
 rm_scores
-  -> token_level_scores / rewards
+  -> token-level rewards
   -> advantages / returns
   -> old / reference / current log-prob
   -> policy loss / KL loss
@@ -184,7 +187,38 @@ logical role
 
 - [[projects/verl-source-reading/07-model-engine-and-backend|07 Model Engine and Backend]]
 
-## 第七轮：Hybrid Engine 与 Weight Sync
+## 第七轮：On-Policy Distillation 与 MOPD
+
+**核心问题**
+
+```text
+student rollout
+  -> teacher routing
+  -> teacher log-prob inference
+  -> teacher_ids / teacher_logprobs
+  -> distillation loss
+  -> student actor update
+```
+
+这一轮在已经理解 rollout、policy loss、Ray worker 和 model engine 后，引入冻结的 teacher inference runtime。先理解单教师 OPD，再理解 MOPD 如何用 `data_source` 等 routing field 把不同样本分配给不同 teacher。必须区分 teacher 的推理资源池、student 的训练资源池，以及 distillation signal 与 task reward 的组合关系。
+
+**阅读入口**
+
+1. [`docs/algo/opd.md`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/docs/algo/opd.md)
+2. [`DistillationConfig`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/config/distillation.py)
+3. [`MultiTeacherModelManager`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/teacher_loop/teacher_model.py)
+4. [`AsyncTeacherLLMServerManager`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/teacher_loop/teacher_manager.py)
+5. [`distillation_ppo_loss`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/distillation/losses.py)
+6. [`run_qwen3_8b_mopd_fsdp.sh`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/examples/on_policy_distillation_trainer/run_qwen3_8b_mopd_fsdp.sh)
+
+**阅读产物**
+
+- [[projects/verl-source-reading/12-on-policy-distillation-and-mopd|12 On-Policy Distillation and MOPD]]
+- [[projects/verl-source-reading/labs/05-multi-teacher-opd|Lab 05: Multi-Teacher OPD]]
+
+完成这一轮后，应能回答：一个 sample 如何选择 teacher；teacher log-prob 在哪个 runtime 计算；teacher resource pool 如何切分；GKD OPD 与 PG OPD 的 loss path 有何区别；MOPD 当前是样本级路由还是 token 级混合。
+
+## 第八轮：Hybrid Engine 与 Weight Sync
 
 **核心问题**
 
@@ -202,7 +236,7 @@ actor training weights
 
 - [[projects/verl-source-reading/08-hybrid-engine-and-weight-sync|08 Hybrid Engine and Weight Sync]]
 
-## 第八轮：Agentic RL
+## 第九轮：Agentic RL
 
 **核心问题**
 
@@ -222,7 +256,7 @@ assistant generation
 - [[projects/verl-source-reading/11-agentic-rl-extension|11 Agentic RL Extension]]
 - [[projects/verl-source-reading/labs/04-multiturn-tool-agent|Lab 04: Multi-turn Tool Agent]]
 
-## 第九轮：Async 与 Off-policy
+## 第十轮：Async 与 Off-policy
 
 最后比较 V1 的 `sync`、`colocate_async` 和 `separate_async`：
 
@@ -255,3 +289,4 @@ assistant generation
 9. multi-turn observation 为什么不能进入 policy loss；
 10. async trainer 的 off-policy 来自哪些 policy-version 差异；
 11. 训练异常应从 rollout、reward、advantage、loss、调度、backend 还是 weight sync 哪一层定位。
+12. MOPD 中一个样本如何从 `data_source` 路由到 teacher，并把 teacher log-prob 送入 student loss？

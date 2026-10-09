@@ -2,7 +2,7 @@
 title: "DeepSeek-V3 Technical Report"
 created: 2026-06-01
 published: 2026-08-31
-modified: 2026-08-31
+modified: 2026-10-07
 type: source
 status: processed
 source_type: paper
@@ -16,7 +16,7 @@ tags:
   - fp8
   - multi-token-prediction
   - pretraining
-source_url: https://arxiv.org/abs/2412.19437
+source_url: https://arxiv.org/abs/2412.19437v2
 paper_date: "2024-12"
 paper_order: "19437"
 ---
@@ -25,17 +25,52 @@ paper_order: "19437"
 
 ## 基本信息
 
-- 标题：[DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437)
+- 标题：[DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437v2)
 - 作者：DeepSeek-AI
 - 机构/来源：DeepSeek-AI
-- 发表：arXiv:2412.19437
+- 发表：arXiv:2412.19437v2
 - 日期：2024-12
+- 代码/数据：[DeepSeek-V3](https://github.com/deepseek-ai/DeepSeek-V3)
 - 相关主题：[[architecture/model-families/deepseek|DeepSeek]]、[[architecture/sparse-and-efficient/moe|Mixture of Experts]]、[[architecture/attention/multi-head-latent-attention|Multi-Head Latent Attention]]、[[training/optimization/mixed-precision|Mixed Precision]]、[[training/distributed-training/pipeline-parallel|Pipeline Parallel]]、[[training/pretraining/data-mix|Data Mix]]、[[training/pretraining/objective|Training Objective]]
-## 研究对象与实验范围
+## 报告范围与整体方案
 
-- 研究对象：大规模 decoder-only Mixture-of-Experts language model
-- 模型规模：671B total parameters，37B activated parameters per token
-- 训练硬件：2,048 张 NVIDIA H800 GPU
+这篇技术报告真正值得看的，不只是 671B 参数和几个漂亮的 benchmark 分数，而是它把模型结构、训练目标、并行系统和后训练配方放在了一起。下面按这条主线梳理 DeepSeek-V3：它如何构成、如何训练、怎样部署，以及哪些结果有直接消融支撑。
+
+DeepSeek-V3 的最终形态不是一个单独由预训练得到的 checkpoint，而是一条包含“目标模型训练”和“教师/数据生成分支”的模型产物链：
+
+~~~text
+DeepSeek-V3-Base
+  -> 4K pre-training on 14.8T tokens
+  -> 32K context extension
+  -> 128K context extension
+  -> target-model SFT checkpoint
+  -> target-model RL with rule-based / model-based rewards
+  -> DeepSeek-V3 chat model
+
+R1 / domain expert models
+  -> expert SFT + RL
+  -> high-temperature generation
+  -> rejection sampling
+  -> reasoning and instruction data
+  -> target-model SFT
+~~~
+
+其中，架构组件和训练基础设施服务于不同层面的约束：
+
+| 层面 | 主要组件 | 解决的问题 |
+|---|---|---|
+| 模型容量与稀疏计算 | DeepSeekMoE | 增加 total capacity，同时限制每个 token 的 active computation |
+| 推理状态存储 | Multi-Head Latent Attention（MLA，多头潜在注意力） | 压缩生成时需要保存的 Key-Value（KV）状态 |
+| 训练目标 | Multi-Token Prediction（MTP，多 token 预测） | 提供更密集的未来 token 监督，并可辅助 speculative decoding |
+| 路由与通信 | auxiliary-loss-free load balancing、node-limited routing | 平衡专家负载，降低跨节点 all-to-all 代价 |
+| 训练系统 | FP8 mixed precision、DualPipe、Expert Parallelism（EP，专家并行） | 降低显存和通信成本，隐藏 MoE 的跨节点通信 |
+| 后训练 | SFT、RL、R1 distillation | 将 base model 能力转化为 chat、reasoning 和 instruction-following 行为 |
+
+先把几个容易混淆的对象分开：模型参数本身，训练/推理系统组件，以及只在数据生成或奖励建模阶段出现的临时模型。最终的 chat model 不是 R1 teacher，也不是只加了 MTP 的 base model。
+
+### 术语与缩写
+
+文中首次出现的关键缩写统一解释如下：Mixture-of-Experts（MoE，混合专家）、Feed-Forward Network（FFN，前馈网络）、Multi-Head Attention（MHA，多头注意力）、Rotary Positional Embedding（RoPE，旋转位置编码）、Floating Point 8（FP8，8 位浮点）、Brain Floating Point 16（BF16，16 位脑浮点）、General Matrix Multiplication（GEMM，通用矩阵乘法）、Pipeline Parallelism（PP，流水线并行）、Data Parallelism（DP，数据并行）、Expert Parallelism（EP，专家并行）、Tensor Parallelism（TP，张量并行）、Sequence Parallelism（SP，序列并行）、Supervised Fine-Tuning（SFT，有监督微调）、Reinforcement Learning（RL，强化学习）、Reward Model（RM，奖励模型）、Group Relative Policy Optimization（GRPO，组相对策略优化）、Chain-of-Thought（CoT，思维链）、Tokens Per Second（TPS，每秒生成 token 数）、Exact Match（EM，精确匹配）、Bits-Per-Byte（BPB，每字节比特数）、Needle In A Haystack（NIAH，长上下文中的定位测试）。
 
 ## 研究问题
 
@@ -77,7 +112,7 @@ MoE 路由的困难不是选择 top-k 这么简单。若 router 总把 token 发
 
 ### 低精度训练能否支持 trillion-token 规模
 
-FP8 可以降低 GEMM 的计算、激活存储和通信成本，但其动态范围与累加精度不足，容易受到 outlier、underflow、overflow 和梯度异常影响。报告需要回答哪些算子可以使用 FP8、哪些路径必须保留 BF16 / FP32，以及如何设计 quantization scale 和高精度 accumulation。
+FP8 可以降低 GEMM 的计算、激活存储和通信成本，但其动态范围与累加精度不足，容易受到 outlier、underflow、overflow 和梯度异常影响。关键问题是：哪些算子可以使用 FP8，哪些路径必须保留 BF16 / FP32，以及 quantization scale 和高精度 accumulation 应该怎样设计。
 
 ## 核心主张
 
@@ -91,9 +126,21 @@ FP8 可以降低 GEMM 的计算、激活存储和通信成本，但其动态范�
 
 这些结论都来自特定模型、数据和系统设置。训练成本、benchmark 和 ablation 主要由作者在内部框架中报告，不能直接视为独立复现实验结论。最终 chat model 的提升同时受到模型规模、数据规模、架构、训练系统、SFT、RL 和 distillation 的共同影响。
 
-## 整体方法
+## 训练流程与阶段产物
 
-DeepSeek-V3 的系统可以按以下链路理解：
+把训练流程拆开看，每个阶段的输入、更新对象和输出都不一样：
+
+| 阶段 | 输入 | 主要更新/操作 | 阶段产物 | 是否是最终部署模型 |
+|---|---|---|---|---|
+| Pre-training | 随机初始化的 671B MoE 模型与 14.8T tokens | Next-Token Prediction（NTP，下一个 token 预测）、MTP、AdamW 更新 | DeepSeek-V3-Base | 否 |
+| Context extension | Base checkpoint | YaRN 与 32K/128K 长序列训练 | 128K-capable base checkpoint | 否，仍未对齐人类偏好 |
+| Expert/data branch | R1 系列模型、领域数据与目标任务 | 领域 expert 的 SFT + RL、高温采样、rejection sampling | reasoning / instruction SFT corpus | 否，属于数据生成分支 |
+| Target SFT | 128K-capable base checkpoint 与约 1.5M instances | 监督学习，样本 packing 但采用 sample masking | target SFT checkpoint | 否 |
+| Target RL | target SFT checkpoint、rule-based RM 和 model-based RM | GRPO，使用组内 reward 估计 advantage | DeepSeek-V3 chat model | 是 |
+
+这条链路中，R1 系列模型和领域 expert 主要承担数据生成或教师角色，不是 DeepSeek-V3 的组成模块；R1 distillation 不是目标模型在 RL 之后又执行的一轮独立训练，而是通过 expert/data branch 生成 reasoning SFT data，再进入目标模型的 SFT。MTP module 主要服务训练目标，推理时可以丢弃，或者重新用于 speculative decoding。最终发布模型仍然是一个以 DeepSeek-V3 backbone 为主体的单模型，而不是由多个 teacher checkpoint 在线路由组成的系统。
+
+从系统瓶颈看，可以把整条方案概括为：
 
 ~~~text
 DeepSeekMoE + MLA + MTP
@@ -110,8 +157,10 @@ FP8 GEMM + fine-grained quantization + FP32 accumulation
         v
 14.8T-token pre-training + 4K -> 32K -> 128K extension
         |
+        +--> R1 / domain expert SFT + RL -> rejection-sampled SFT data
+        |
         v
-SFT + rule/model-based RM + GRPO + R1 reasoning distillation
+target SFT + rule/model-based RM + GRPO -> DeepSeek-V3 chat
 ~~~
 
 每一层都对应一个瓶颈：
@@ -124,7 +173,9 @@ SFT + rule/model-based RM + GRPO + R1 reasoning distillation
 - data / schedule 主要决定预训练信息覆盖与优化轨迹；
 - SFT / RL / distillation 主要把 base model 能力转成可用的 chat 和 reasoning 行为。
 
-## Architecture
+这里的总成本只计算上述正式训练阶段，不包括数据探索、架构消融、基础设施开发和失败 run 等前置研发成本。
+
+## 模型架构与关键机制
 
 ### 基本配置
 
@@ -235,7 +286,7 @@ DeepSeek-V3 使用的 $\alpha=0.0001$ 很小，它的作用更接近防止单条
 
 在这种 balance strategy 下，训练和 inference 都不进行 token dropping。训练阶段依赖稳定的 expert load；推理阶段则通过 redundant experts 和 expert placement 处理不同请求分布带来的局部热点。
 
-## Multi-Token Prediction
+## Multi-Token Prediction：训练目标与可选推理加速
 
 ### 为什么在 NTP 之外增加 MTP
 
@@ -260,9 +311,9 @@ $$
 
 DeepSeek-V3 的 MTP depth $D=1$，即在主模型 next-token prediction 外，再预测一个额外未来 token。$\lambda$ 在前 10T tokens 中为 0.3，剩余 4.8T tokens 中为 0.1。
 
-推理时 MTP module 可以直接丢弃，主模型 inference cost 不增加；也可以重新利用为 speculative decoding 的 draft predictor。报告中第二个 token 的 acceptance rate 约为 85%-90%，并据此报告约 1.8x 的 TPS 提升。
+推理时可以直接丢弃 MTP module，主模型的 inference cost 不会因此增加；也可以把它重新用作 speculative decoding 的 draft predictor。作者测得第二个 token 的 acceptance rate 约为 85%-90%，对应约 1.8x 的 TPS 提升。
 
-## Training Infrastructure
+## 训练系统与基础设施
 
 ### 集群与并行组合
 
@@ -314,7 +365,7 @@ DualPipe 需要保存两份 model parameters，但作者认为在较大 EP size 
 
 这些优化共同解释了为什么模型可以在不使用 training TP 的情况下运行。单个优化都不是决定性的，整体收益来自多个小幅节省叠加。
 
-## FP8 Mixed Precision Training
+## 混合精度与数值稳定性
 
 ### Mixed precision policy
 
@@ -357,7 +408,7 @@ H800 Tensor Core 的 FP8 GEMM accumulation 有效精度约 14 bits。作者每�
 
 因此，FP8 不是统一 cast 到 FP8，而是对不同张量、不同方向和不同算子分别设计 quantization granularity 与 accumulation path。
 
-## Inference 与 Deployment
+## 推理部署与服务系统
 
 ### Prefill
 
@@ -370,7 +421,7 @@ Prefill 的最小部署单元是 4 nodes、32 GPUs：
 - 使用与训练类似的 IB -> NVLink token dispatch；
 - 通过两个 workload 相近的 micro-batches 重叠 attention、MoE、dispatch 和 combine。
 
-为了处理不同输入分布造成的 expert hotspots，系统会根据 online service 统计周期性复制高负载 experts。报告中的部署设置使用 32 个 redundant experts，每张 GPU 在原有 experts 外再承载一个额外 redundant expert。
+为了处理不同输入分布造成的 expert hotspots，系统会根据 online service 的统计周期性复制高负载 experts。部署设置使用 32 个 redundant experts，每张 GPU 在原有 experts 外再承载一个额外的 redundant expert。
 
 ### Decoding
 
@@ -389,7 +440,7 @@ Decoding 阶段把 shared expert 当作 routed expert 看待，因此每个 toke
 
 MoE 的 active parameters 较低并不意味着 deployment unit 可以很小。推理仍需要承担 total experts 的存储、expert dispatch、跨节点通信和 redundant expert placement。论文也承认，模型虽然训练成本高效，但小团队部署仍有较高门槛。
 
-## Pre-Training
+## 预训练与长上下文扩展
 
 ### Data Construction
 
@@ -400,7 +451,7 @@ DeepSeek-V3 的 14.8T-token corpus 相比 DeepSeek-V2 做了几类调整：
 - 优化数据处理流程，减少 redundancy，同时保留 diversity；
 - 使用 document packing 保持文档完整性；
 - packing 时不加入 cross-sample attention masking；
-- 采用 Fill-in-Middle，帮助代码与文档中的中间内容预测。
+- 采用 Fill-in-the-Middle（FIM，中间填空），帮助代码与文档中的中间内容预测。
 
 FIM 使用 Prefix-Suffix-Middle 格式：
 
@@ -412,7 +463,7 @@ FIM rate 为 0.1，并在 document-level、pre-packing 阶段应用。其目标�
 
 ### Tokenizer
 
-DeepSeek-V3 使用 byte-level BPE，vocabulary size 为 128K。tokenizer 与 pretokenizer 针对 multilingual compression 做了调整，并引入了组合 punctuation 与 line break 的 token。
+DeepSeek-V3 使用 byte-level Byte Pair Encoding（BPE，字节级字节对编码），vocabulary size 为 128K。tokenizer 与 pretokenizer 针对 multilingual compression 做了调整，并引入了组合 punctuation 与 line break 的 token。
 
 这种组合 token 会带来 token boundary bias：如果 few-shot prompt 的多行文本没有以 terminal line break 结束，模型可能遇到训练中较少出现的边界形式。作者通过在训练中随机拆分一部分组合 token，让模型接触更多边界情况，以缓解这一问题。
 
@@ -441,9 +492,9 @@ batch size 在前 469B tokens 中从 3,072 逐渐增加到 15,360，之后保持
 
 作者使用 YaRN，但只应用于 decoupled shared key $k_t^R$。两阶段使用相同 YaRN 配置：$s=40$、$\alpha=1$、$\beta=32$，scaling factor 为 $0.1\ln s+1$。
 
-在经过 SFT 后的 NIAH 测试中，DeepSeek-V3 在 2K 到 128K 的不同 context length 和 document depth 上保持较好表现。NIAH 证明的是特定 needle retrieval 压力测试中的鲁棒性，不等价于所有 128K 任务都具有相同的有效利用能力。
+在经过 SFT 后的 Needle In A Haystack（NIAH，长上下文中的定位测试）中，DeepSeek-V3 在 2K 到 128K 的不同 context length 和 document depth 上保持较好表现。NIAH 证明的是特定 needle retrieval 压力测试中的鲁棒性，不等价于所有 128K 任务都具有相同的有效利用能力。
 
-## Base Model Evaluation
+## 评测设置、结果与归因
 
 ### Evaluation protocol
 
@@ -472,9 +523,9 @@ Base model 评估覆盖 English / Chinese / multilingual multiple choice、langu
 
 作者报告 DeepSeek-V3-Base 在大多数 benchmark 上超过 DeepSeek-V2-Base 和 Qwen2.5-72B Base，并在 multilingual、code、math 等任务上超过 LLaMA-3.1 405B Base。这个结果支持稀疏激活、更大 total capacity、更多高质量 tokens 和系统性训练优化的组合价值，但不能将提升单独归因于某一个组件。
 
-## Base Model Ablations
+### Base Model Ablations：局部机制证据
 
-### MTP ablation
+#### MTP ablation
 
 作者在约 15.7B total / 2.4B active 的 Small MoE 和约 228.7B total / 20.9B active 的 Large MoE 上比较 baseline 与 1-depth MTP。训练数据和其他架构保持一致，inference 时都丢弃 MTP module。
 
@@ -489,7 +540,7 @@ Base model 评估覆盖 English / Chinese / multilingual multiple choice、langu
 
 MTP 在多数指标上有收益，但并非每个指标都单调提升，例如 large model 的 MMLU 略低。这组结果更适合支持“增加未来预测训练信号具有平均收益”，而不是“每个任务必然提升”。
 
-### Auxiliary-loss-free ablation
+#### Auxiliary-loss-free ablation
 
 作者在相同规模 baseline 上比较 sequence / batch auxiliary-loss-based routing 与 auxiliary-loss-free routing：
 
@@ -506,7 +557,9 @@ MTP 在多数指标上有收益，但并非每个指标都单调提升，例如 
 
 在 1B MoE 实验中，sequence-wise auxiliary loss、auxiliary-loss-free 和 batch-wise auxiliary loss 的 validation loss 分别为 2.258、2.253、2.253；在 3B MoE 中分别为 2.085、2.080、2.080。这说明收益可能主要来自 balancing 的作用范围，而不一定完全来自“是否显式写了 auxiliary loss”。
 
-## Post-Training
+## 后训练与最终模型形成
+
+后训练部分需要区分两个容易混淆的对象：**目标模型的参数更新**与**教师/专家模型的数据生成**。报告先用 R1 系列和领域 expert 构造高质量 reasoning / instruction data，再把这些数据用于 DeepSeek-V3-Base 的 SFT；随后在目标 SFT checkpoint 上进行 RL。因而，R1 distillation 的主要落点是 SFT 数据，而不是把 R1 参数直接合并进 DeepSeek-V3。
 
 ### SFT data construction
 
@@ -557,15 +610,15 @@ policy objective 使用 clipped importance ratio，并加 reference policy KL re
 
 对于无法写出可靠规则 verifier 的开放任务，作者采用 constitutional AI 思路，让 DeepSeek-V3 自身的 voting evaluation 作为 feedback source，并结合 constitutional inputs 引导 alignment。它把非结构化的开放任务判断转为可扩展 reward signal，但 reliability 仍然依赖 judge 的一致性和抗偏差能力。
 
-## Chat Model Evaluation
+### Chat Model Evaluation：最终交互能力
 
-### Evaluation setting
+#### Evaluation setting
 
-Chat model 额外评估 IFEval、FRAMES、LongBench v2、GPQA、SimpleQA / Chinese SimpleQA、SWE-Bench Verified、Aider、LiveCodeBench、Codeforces、CNMO 2024 和 AIME 2024。
+Chat model 额外评估 Instruction-Following Evaluation（IFEval，指令遵循评测）、FRAMES、LongBench v2、GPQA、SimpleQA / Chinese SimpleQA、SWE-Bench Verified、Aider、LiveCodeBench、Codeforces、CNMO 2024 和 AIME 2024。
 
 代码和数学任务允许最大 8,192 output tokens；AIME 和 CNMO 使用 temperature 0.7、平均 16 次运行，MATH-500 使用 greedy decoding；SWE-Bench Verified 使用 agentless framework，并以 diff format 评估 Aider 任务。
 
-### Representative results
+#### Representative results
 
 论文 Table 6 报告的 DeepSeek-V3 chat model 结果如下：
 
@@ -595,7 +648,7 @@ Chat model 额外评估 IFEval、FRAMES、LongBench v2、GPQA、SimpleQA / Chine
 
 这些结果显示，DeepSeek-V3 不仅在 code / math 上强，也在 long-context、instruction following、Chinese knowledge 和 open-ended conversation 上保持竞争力。但不同 benchmark 的评估机制不同，不能把所有分数压成一个“总能力”指标。
 
-## 训练成本与效率
+## 训练成本、效率与部署代价
 
 论文按 H800 GPU hour 统计：
 
@@ -610,7 +663,7 @@ Chat model 额外评估 IFEval、FRAMES、LongBench v2、GPQA、SimpleQA / Chine
 
 成本只包含官方 DeepSeek-V3 training，不包含 architecture、algorithm、data 和 ablation research 的前置成本。因此它更适合说明 production run 的系统效率，不应理解为从零研发同等模型的全部成本。
 
-## 论文贡献的因果边界
+## 证据边界与复现条件
 
 ### 证据较直接的部分
 
@@ -630,7 +683,13 @@ Chat model 额外评估 IFEval、FRAMES、LongBench v2、GPQA、SimpleQA / Chine
 
 最终 DeepSeek-V3 并不是一个只改变单一变量的 controlled experiment。最可靠的阅读方式是把 ablation 用于理解局部机制，把最终 benchmark 视为整个系统组合的结果。
 
-## 对当前 Agentic Mid-training 研究的启发
+### 公开信息与复现条件
+
+报告公开了模型架构、主要训练超参数、数据总 token 数、部分消融设置、并行组合、FP8 策略和部署拓扑；同时提供了 DeepSeek-V3 的公开代码/模型入口。报告没有公开完整的 14.8T-token 训练语料、完整数据混合比例、内部 HAI-LLM 训练框架、内部评测框架、全部 preference data、RM checkpoint、RL prompt 分布和所有生产级通信 kernel。因此，外部研究者可以复现局部机制或使用公开模型进行推理评测，但不能仅凭报告完整复现官方训练 run。
+
+2,788K H800 GPU hours 只覆盖官方模型训练、context extension 和 post-training，不包含数据探索、架构研究、系统开发、消融实验和失败 run。这个数字只能理解为特定硬件和软件栈下的一次 production training estimate，不能当作普适的训练成本定律。
+
+## 对 Agentic Mid-training 的启发
 
 这篇论文的核心对象是 base model pre-training，不是 agentic mid-training，因此不能直接把 14.8T tokens、37B active parameters 或 FP8 recipe 套到 agent trajectory 上。但它提供了几条可迁移的方法论：
 
@@ -642,7 +701,7 @@ Chat model 额外评估 IFEval、FRAMES、LongBench v2、GPQA、SimpleQA / Chine
 6. **长任务的瓶颈可能来自系统而非 loss。** 训练时应记录数据读取、packing、attention、activation memory 和 checkpoint 代价，不要只看 NTP loss。
 7. **组件 ablation 要围绕可归因变量设计。** 如果同时改变 reasoning content、tool schema、trajectory length、数据 mixture 和 tokenizer，就无法判断能力提升来自哪里。
 
-## 局限与疑问
+## 报告局限与公开边界
 
 ### 最终模型缺少完整的单变量归因
 
@@ -690,3 +749,10 @@ NIAH 能验证特定位置检索，但不能覆盖真实长文档中的多跳推
 - [[sources/papers/2024-deepseek-v2|DeepSeek-V2]]
 - [[sources/papers/2024-deepseekmoe|DeepSeekMoE]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
+
+## 参考资料
+
+- [DeepSeek-V3 Technical Report, arXiv:2412.19437v2](https://arxiv.org/abs/2412.19437v2)
+- [DeepSeek-V3 official repository](https://github.com/deepseek-ai/DeepSeek-V3)
+- [[sources/papers/2024-deepseek-v2|DeepSeek-V2]]：MLA、DeepSeekMoE 和长上下文路线的前序报告。
+- [[sources/papers/2024-deepseekmath|DeepSeekMath]]：GRPO 与数学 reasoning 后训练的相关背景。
