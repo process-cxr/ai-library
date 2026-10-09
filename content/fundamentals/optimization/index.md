@@ -46,6 +46,7 @@ aliases:
 - [[fundamentals/optimization/sgd-momentum|SGD 与 Momentum]] — 随机梯度和动量加速。
 - [[fundamentals/optimization/adam|Adam]] — 自适应一阶/二阶矩估计。
 - [[fundamentals/optimization/adamw-weight-decay|AdamW 与 Weight Decay]] — 大模型训练中的常见优化器配置。
+- [[training/optimization/muon|Muon Optimizer]] — 面向矩阵参数的 momentum 正交化优化器，以及它在 LLM pre-training 中的扩展。
 
 ### 学习率与稳定性
 

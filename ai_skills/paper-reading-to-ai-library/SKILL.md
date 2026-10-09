@@ -1,11 +1,17 @@
 ---
 name: paper-reading-to-ai-library
-description: Read AI/large-model papers, technical reports, blogs, courses, or official docs and turn them into AI Library knowledge-base notes. Use when the user asks Codex to read a paper or source, write a reading report, add it to the ai-library Quartz knowledge base, backfill durable conclusions into topic notes, or maintain linked source notes under content/sources.
+description: Read AI/large-model research papers, blogs, courses, or official docs into AI Library source notes and linked topic knowledge. Use for a focused research question or method. For complete model/system technical reports spanning architecture, data, training, deployment, and evaluation, use technical-report-reading-to-ai-library instead, even if the note is archived under papers.
 ---
 
 # Paper Reading To AI Library
 
 Use this skill to convert an external AI source into maintainable notes for the `ai-library` Quartz digital garden.
+
+## Routing and Shared Conventions
+
+Use [source-note conventions](references/source-note-conventions.md) for the common basic-information template, affiliations, chronology, writing, abbreviations, and validation. The technical-report skill uses the same reference.
+
+Use `technical-report-reading-to-ai-library` for a complete model/system training and deployment report. Long method papers still belong here. Do not route a self-authored research plan or cross-paper synthesis merely because its frontmatter says `report`; classify the actual source, not the folder or page count.
 
 ## Core Workflow
 
@@ -38,7 +44,7 @@ Use this skill to convert an external AI source into maintainable notes for the 
    - Use Markdown, wikilinks, callouts, tables, LaTeX, and code fences as appropriate.
    - Keep the source's research question, method, evidence, and limitations as the main narrative. Do not force a separate "knowledge sedimentation" essay at the end when the report itself already explains the paper.
    - Put knowledge-base links where they naturally support the discussion. If a closing link section is useful, keep it lightweight, e.g. `## 相关知识链接`, and list only related topic notes without re-explaining each concept.
-   - Explain abbreviations on first use in the report body. Write the English full name, then give the Chinese meaning or the role in the paper when useful, e.g. `in-distribution (IID，分布内)` or `tokens per parameter (TPP，每个参数对应的训练 token 数)`. Apply this to paper-specific abbreviations as well as standard names for objectives, algorithms, datasets, metrics, and evaluation settings. If an abbreviation appears in the title or metadata, still expand it at its first substantive use in the body; do not leave readers to infer it from a glossary.
+   - Explain abbreviations on first use in the report body, following the shared conventions. Apply this to objectives, algorithms, datasets, metrics, and evaluation settings, not only the opening paragraph.
    - Avoid chat transcript language, temporary TODOs, and progress-log phrasing.
 
 5. Backfill stable knowledge.
@@ -58,36 +64,15 @@ Use this skill to convert an external AI source into maintainable notes for the 
 
 ## Basic Information Template
 
-For paper source notes, keep `## 基本信息` concise and use this field order:
-
-```markdown
-## 基本信息
-
-- 标题：[Paper Title](source link)
-- 作者：...
-- 机构/来源：主要作者所属机构或作者团队（无法可靠确认时省略）
-- 发表：arXiv:... / Conference Name Year / Publisher
-- 日期：YYYY-MM-DD 或 YYYY-MM
-- 代码/数据：[Link]（没有则省略）
-- 相关主题：[[...]]、[[...]]
-```
-
-- Use the canonical paper or publisher link in `标题`; use `source_url` when it is a reliable public source.
-- Add `机构/来源` only when the author affiliation or publishing organization is supported by the paper, an official project page, or another reliable primary source. For team-authored papers, use the team or organization name when that is the meaningful source identity.
-- Combine source identity and version into `发表`; do not create separate `来源`、`版本`、`发表线索` fields.
-- Keep `发表` for the venue or publication channel; do not use it for author affiliation. Do not guess affiliations from author names, and omit `机构/来源` when it cannot be verified.
-- Use `paper_date` for the public paper month when an exact date is unavailable. For conference papers without arXiv, use the conference publication month.
-- Add `代码/数据` only when a public repository or dataset link exists.
-- Do not put local PDF paths, `paper_order`, research-object descriptions, model-scale details, or the reading process in `基本信息`. Move substantive experiment metadata into the report body.
-- `paper_order` is a frontmatter-only field for arXiv papers and is used only as the same-month homepage tie-breaker. Omit it for non-arXiv papers.
+Use the single maintained template in [source-note conventions](references/source-note-conventions.md#basic-information). Keep `标题 → 作者 → 机构/来源（可选）→ 发表 → 日期 → 代码/数据（可选）→ 相关主题` in that order; do not introduce an alternate English-field template.
 
 ## Source Note Shape
 
-Use only sections that serve the source. For a standard paper/report note, prefer:
+Use only sections that serve the source. For a standard research-paper note, prefer:
 
 ```markdown
 ---
-title: Paper or Report Title
+title: Paper Title
 created: YYYY-MM-DD
 published: YYYY-MM-DD
 modified: YYYY-MM-DD
@@ -101,12 +86,7 @@ tags:
 
 ## 基本信息
 
-- Source: ...
-- Authors: ...
-- Institution / Source: ... (optional; use only when verified)
-- Date: ...
-- Link: ...
-- Related topic notes: [[...]], [[...]]
+<!-- Insert the shared basic-information template. -->
 
 ## 研究问题
 

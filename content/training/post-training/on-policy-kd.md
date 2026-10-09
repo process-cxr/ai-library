@@ -507,3 +507,5 @@ OPD 可以理解为：**让 student 先走自己的路，再让 teacher 在 stud
 - [[training/post-training/grpo|GRPO]]
 - [[training/post-training/rlhf|RLHF]]
 - [[training/post-training/dpo|DPO]]
+
+verl 中 OPD / MOPD 的源码实现见 [[projects/verl-source-reading/12-on-policy-distillation-and-mopd|verl On-Policy Distillation and MOPD]]。

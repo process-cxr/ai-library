@@ -2,7 +2,7 @@
 title: verl Source Reading Labs
 created: 2026-09-02
 published: 2026-09-02
-modified: 2026-09-02
+modified: 2026-10-09
 type: project
 status: seed
 tags:
@@ -20,6 +20,7 @@ Labs 用于把源码阅读结论转成可复现的观察。每个实验记录环
 - [[projects/verl-source-reading/labs/02-custom-reward|Lab 02: Custom Reward]]：实现并验证一个 function-based reward。
 - [[projects/verl-source-reading/labs/03-compare-grpo-ppo|Lab 03: Compare GRPO and PPO]]：在控制变量下比较两条 codepath。
 - [[projects/verl-source-reading/labs/04-multiturn-tool-agent|Lab 04: Multi-turn Tool Agent]]：验证多轮 tool trajectory、mask 和 reward。
+- [[projects/verl-source-reading/labs/05-multi-teacher-opd|Lab 05: Multi-Teacher OPD]]：验证 MOPD 的 teacher routing、字段回写和资源池约束。
 
 ## 实验记录规范
 
@@ -37,4 +38,3 @@ Labs 用于把源码阅读结论转成可复现的观察。每个实验记录环
 ```
 
 大型训练前先完成 CPU unit test、config resolution 和小 batch trace。实验重点是验证字段和控制流，不追求 benchmark 分数。
-

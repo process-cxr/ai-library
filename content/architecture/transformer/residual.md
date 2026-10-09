@@ -123,6 +123,7 @@ Residual addition 会把多个分支的信号相加。如果没有 normalization
 - [[training/optimization/training-stability|Training Stability]]
 - [[training/optimization/loss-spike|Loss Spike]]
 - [[fundamentals/neural-network-basics/residual-connection|Residual Connection]]
+- [[architecture/transformer/hyper-connections|Hyper-Connections and mHC]] — 将单路 residual 扩展为多路，并对 residual mixing 加入稳定性约束。
 
 ## 经典论文与资料
 

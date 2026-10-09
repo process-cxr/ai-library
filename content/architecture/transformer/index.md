@@ -14,6 +14,7 @@ Transformer 模块负责整理标准 Transformer 架构及其核心组成，包�
 3. [[architecture/attention/self-attention|Self-Attention]] 与 [[architecture/attention/multi-head-attention|Multi-Head Attention]]：block 中的信息交互机制。
 4. [[architecture/transformer/feed-forward|Feed Forward Network]]：逐 token 非线性变换和 MoE 的基础。
 5. [[architecture/transformer/normalization|Normalization in Transformer]] 与 [[architecture/transformer/residual|Residual in Transformer]]：深层训练稳定性的结构条件。
+6. [[architecture/transformer/hyper-connections|Hyper-Connections and mHC]]：从单路 residual 到受流形约束的多路 residual mixing。
 
 ## Notes
 
@@ -23,6 +24,7 @@ Transformer 模块负责整理标准 Transformer 架构及其核心组成，包�
 - [[architecture/transformer/feed-forward|Feed Forward Network]]
 - [[architecture/transformer/normalization|Normalization in Transformer]]
 - [[architecture/transformer/residual|Residual in Transformer]]
+- [[architecture/transformer/hyper-connections|Hyper-Connections and mHC]]
 
 ## Related Source Notes
 

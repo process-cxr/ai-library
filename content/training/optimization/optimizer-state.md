@@ -82,6 +82,8 @@ $$
 
 Optimizer 选择不只是收敛问题，也是内存预算问题。AdamW 稳定、常用，但状态显存高；低内存 optimizer 可能节省显存，但需要评估收敛质量和数值稳定性。
 
+Muon 是另一种重要的矩阵 optimizer 路线：它主要对二维 hidden-layer matrices 使用一个 momentum buffer，并通过 Newton-Schulz 正交化更新；embedding、LM head、norm 和 bias 通常仍使用 AdamW。它的 optimizer state 更轻，但分布式更新需要恢复完整 gradient matrix，不能简单套用 AdamW 的局部分片更新。详见 [[sources/papers/2025-muon-is-scalable-for-llm-training|Muon is Scalable for LLM Training]]。
+
 ## 什么时候会有 Master Weights
 
 Master weights 的存在取决于训练 recipe 和框架实现。早期 fp16 mixed precision 常保留 fp32 master copy，因为直接在 fp16 权重上做小幅更新容易丢失精度。bf16 训练由于 exponent range 更宽，有些实现可以不保留单独 master weights，但 optimizer state 仍常以 fp32 保存。
