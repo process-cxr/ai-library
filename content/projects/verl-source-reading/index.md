@@ -2,7 +2,7 @@
 title: verl Source Reading
 created: 2026-09-02
 published: 2026-09-02
-modified: 2026-10-09
+modified: 2026-10-10
 type: project
 status: growing
 tags:
@@ -56,7 +56,7 @@ verl 的主要职责，就是管理这条闭环中的数据依赖、模型角色
 
 ## 系统地图
 
-从源码职责看，可以先把 verl 分成五个职责区。它们不是五个彼此隔离的进程层，而是阅读时用来划分 ownership 和接口边界的视角。
+从源码职责看，可以先把 verl 分成五个职责区。它们不是五个彼此隔离的进程层，而是帮助我们看清每一部分负责什么、通过什么接口协作的阅读视角。
 
 ### 入口与配置
 
@@ -118,7 +118,7 @@ run script
 
 ## 阅读地图
 
-第一次进入本项目，先读 [[projects/verl-source-reading/00-learning-guide|00 verl Learning Guide]]。它给出先修知识、证据等级、源码阅读 ledger、最小实践顺序和自测问题；具体专题的依赖顺序与源码入口见 [[projects/verl-source-reading/roadmap|verl Source Reading Roadmap]]。
+第一次进入本项目，先读 [[projects/verl-source-reading/00-learning-guide|00 verl Learning Guide]]。它说明需要哪些基础、应该怎样读这套源码，以及如何判断自己是否真的看懂；具体专题的依赖顺序与源码入口见 [[projects/verl-source-reading/roadmap|verl Source Reading Roadmap]]。
 
 ### 主运行链与数据协议
 
@@ -162,7 +162,7 @@ run script
 
 源码链接固定到完整 commit，避免 upstream 演化导致函数、配置和行号与笔记失配。本项目入口选择 V1 trainer，并在该 revision 的范围内比较 `sync`、`colocate_async` 和 `separate_async`；旧 `main_ppo_v0.py` 只用于理解历史教程和旧架构，不作为正文主线。
 
-本项目将 `sync GRPO + FSDP + vLLM + rule-based reward` 的静态调用链与运行事实分开记录。GPU shape、runtime timing、显存行为和 backend performance 只有在可复现的 lab 中执行后，才能写成 Tested behavior。
+本项目将 `sync GRPO + FSDP + vLLM + rule-based reward` 的源码调用链与运行结果分开记录。GPU shape、运行时耗时、显存行为和 backend performance 只有在可复现的 lab 中执行后，才能作为运行结果写入。
 
 ## 与通用知识的连接
 

@@ -13,9 +13,9 @@ tags:
   - post-training
 ---
 
-这份指南说明如何进入 verl 源码阅读项目。它负责先修知识、证据等级、阅读方法、实践门槛和自测问题；具体专题的学习顺序、源码入口和产物见 [[projects/verl-source-reading/roadmap|verl Source Reading Roadmap]]。
+这份指南帮助你进入 verl 的源码主线。它先说明需要哪些基础，再用一次训练运行介绍阅读方法，最后给出几个可以检验理解的问题。具体专题的顺序和代码入口见 [[projects/verl-source-reading/roadmap|verl Source Reading Roadmap]]。
 
-项目的三页导航各有一个问题：[[projects/verl-source-reading/|项目首页]]回答“系统由什么组成”，roadmap 回答“按什么依赖顺序学习”，本页回答“如何判断自己真的理解了”。
+项目的三页入口各有一个作用：[[projects/verl-source-reading/|项目首页]]介绍系统由什么组成，roadmap 安排阅读顺序，本页帮助你建立阅读视角并检查理解。
 
 ## 先建立三个坐标系
 
@@ -42,9 +42,9 @@ tags:
 
 最低标准不是能推导所有公式，而是看到 `old_log_probs`、`ref_log_prob`、`advantages`、`response_mask` 和 `update_weights` 时，知道它们分别属于哪一个坐标系以及可能的 producer / consumer。
 
-## 阶段一：闭合一次 Sync GRPO Update
+## 先看懂一次 Sync GRPO Update
 
-第一阶段固定 `sync GRPO + FSDP + vLLM + rule-based reward`，暂时不切换算法、backend 或异步模式。
+先固定 `sync GRPO + FSDP + vLLM + rule-based reward` 这条路径，不要一开始同时切换算法、backend 和 trainer mode。
 
 阅读顺序：
 
@@ -60,7 +60,7 @@ example shell script
   -> rollout weight sync
 ```
 
-对应笔记：
+按下面的顺序阅读：
 
 1. [[projects/verl-source-reading/01-sync-grpo-run-overview|01 Sync GRPO Run Overview]]：先获得完整时序，不在第一次阅读时下钻所有实现。
 2. [[projects/verl-source-reading/02-config-and-hydra|02 Config and Hydra]]：把 shell override 映射到 resolved config 和 runtime consumer。
@@ -68,16 +68,16 @@ example shell script
 4. [[projects/verl-source-reading/04-rollout-reward-and-agent-loop|04 Rollout, Reward and AgentLoop]]：确认生成、tool interaction 和 reward 的边界。
 5. [[projects/verl-source-reading/05-advantage-and-policy-loss|05 Advantage and Policy Loss]]：把 GRPO 与 PPO 公式映射到实际 tensor、mask 和 reduction。
 
-完成本阶段后，应能不看图复述一次 update，并回答：
+读完这条主线后，应该能够不看图复述一次 update，并回答：
 
 - 一个 prompt 为什么会产生 `rollout.n` 个 sessions；
 - reward、old log-prob、reference log-prob 和 advantage 分别在哪里生成；
 - 哪些 token 进入 policy loss，padding 和 observation 为什么必须被 mask；
 - actor 更新后，下一批 rollout 何时开始使用新权重。
 
-## 阶段二：拆开控制面与执行面
+## 再看控制器如何调用训练后端
 
-第二阶段保持算法和数据不变，只替换观察角度：controller 负责组织训练语义，Ray 负责远程调度，FSDP 或 Megatron 负责设备内外的模型计算。
+接下来保持算法和数据不变，只追踪一次 actor update 是怎样被执行的：controller 组织训练步骤，Ray 把调用送到远程 worker，FSDP 或 Megatron 在各自的进程组中完成模型计算。
 
 ```text
 trainer request
@@ -89,17 +89,17 @@ trainer request
   -> collected metrics or tensors
 ```
 
-依次阅读：
+对应的文章是：
 
 1. [[projects/verl-source-reading/06-single-controller-and-ray|06 Single Controller and Ray]]：区分 Ray actor、logical role 和 distributed rank。
 2. [[projects/verl-source-reading/07-model-engine-and-backend|07 Model Engine and Backend]]：用同一个 actor update 对比 FSDP 与 Megatron。
 3. [[projects/verl-source-reading/08-hybrid-engine-and-weight-sync|08 Hybrid Engine and Weight Sync]]：追踪 training layout 到 rollout layout 的参数转换。
 
-这一阶段最重要的习惯，是每遇到一个 batch size 或 parallel size 都写出它的作用域。至少区分 dataset batch、prompt group、trajectory batch、global actor batch、PPO mini-batch、micro-batch、actor DP、rollout TP 和 world size。
+读到这里，需要开始区分不同参数的作用域：dataset batch、prompt group、trajectory batch、global actor batch、PPO mini-batch、micro-batch、actor DP、rollout TP 和 world size 并不是同一个层次的概念。
 
-## 阶段三：只增加一个新变量
+## 最后再看扩展路径
 
-同步闭环和执行层稳定后，再进入 PPO、Agentic RL、OPD/MOPD 与异步训练。每次只增加一个主要变量，避免把算法差异、轨迹差异和调度差异混在一起；完整的十轮专题顺序仍以 roadmap 为准。
+理解同步闭环和执行层之后，再进入 PPO、Agentic RL、OPD/MOPD 与异步训练。每次只引入一个主要变化，这样才能看清算法、轨迹和调度分别改变了什么；完整顺序以 roadmap 为准。
 
 | 扩展 | 保持不变 | 新增变量 | 对应笔记 |
 | --- | --- | --- | --- |
@@ -110,25 +110,27 @@ trainer request
 
 SFT 是辅助对照，不是 RL 主线的前置阶段。[[projects/verl-source-reading/verl-sft-training-path|verl SFT Training Path]] 用来观察相同 dataset、worker 和 engine 在没有 rollout、reward、advantage 时如何工作。
 
-## 源码阅读方法
+## 怎样读这套源码
 
-### 同时维护四类 ledger
+### 不要从目录开始
 
-阅读一个函数时，不只记录调用关系，同时更新四类表。它们对应 source-code-reading skill 中的 control、configuration、data、tensor、topology 和 state/version 追踪要求：
+verl 的目录很大，从目录逐个文件读，容易记住很多名字，却不知道一次训练是怎样跑起来的。更有效的方式是先选一条可以闭合的运行路径，再沿着同一个问题向下追踪：一个 prompt 从哪里进来，谁生成 response，reward 写到哪里，最后哪一个 worker 更新参数。
+
+读到一个函数时，可以顺手问下面几件事：
 
 ```text
-control/config: caller -> callee -> dispatch -> worker
-                default -> override -> resolved value -> runtime object
-field/data:     producer -> field -> representation -> consumer -> cleanup
-tensor/topology shape -> dtype -> device -> mask -> layout -> process group
-state/version:  owner -> creation -> step/version -> mutation -> sync -> recovery
+这个调用由谁发起，又在哪个 worker 中执行？
+配置文件里的值，最后变成了哪个运行时对象？
+这个字段在哪里产生，经过什么表示转换，又在哪里被消费？
+这个 tensor 的 shape、dtype、device、mask 和并行布局怎样变化？
+这份状态由谁创建，什么时候修改，什么时候与另一个 runtime 同步？
 ```
 
-仅有 call graph 不足以解释训练正确性。很多问题来自字段仍存在但语义已经过期，例如 trajectory 对应旧 policy version，或者 observation token 被错误纳入 loss。
+这样读出来的不是一张孤立的调用图，而是一条从配置到数据、从数据到计算、再从计算回到参数同步的完整链路。很多训练问题并不是字段不存在，而是字段的语义已经过期，例如 trajectory 属于旧 policy version，或者 observation token 被错误地放进了 policy loss。
 
-### 从不变量定位问题
+### 抓住几条不会轻易改变的关系
 
-比逐行记代码更有效的是先写不变量：
+阅读时可以先记住几条关系，再用源码确认它们：
 
 - 同一个 GRPO group 必须能追溯到同一个 prompt；
 - policy loss 只聚合有效的 policy action token；
@@ -136,29 +138,28 @@ state/version:  owner -> creation -> step/version -> mutation -> sync -> recover
 - global batch 经过 dispatch 后，样本身份和 mask 语义不能改变；
 - weight sync 前后的 rollout 权重状态应能通过 checkpoint、step 或其他可观察 metadata 区分；如果源码没有显式 version counter，不能把它写成已验证的运行事实。
 
-当 trace 违反不变量时，再沿 producer、dispatch、consumer 和 cleanup 回溯。
+如果某处违反这些关系，再回头检查它的 producer、dispatch、consumer 和 cleanup。
 
-### 区分源码事实与运行事实
+### 分清代码写明的内容和实际跑出来的内容
 
-静态源码可以确认注册关系、字段写入位置、默认分支和理论 shape；它不能替代真实环境中的 dtype、device、显存峰值、通信耗时、Ray placement 和 backend performance。正文中的结论应按三类证据标记：**Source fact** 直接来自固定 revision，**Tested behavior** 来自可复现运行或 trace，**Engineering interpretation** 是基于前两者的解释。运行结果应回填到 [[projects/verl-source-reading/labs/|verl Source Reading Labs]]。
+源码能够告诉我们调用关系、字段写入位置、默认分支和理论 shape；真实运行才会告诉我们 dtype、device、显存峰值、通信耗时、Ray placement 和 backend performance。阅读笔记中需要把这两类内容分开：代码明确写出的结论，实际运行观察到的结果，以及根据前两者做出的工程解释，不要混成一句话。运行观察会记录在 [[projects/verl-source-reading/labs/|verl Source Reading Labs]] 中。
 
-## 最小实践顺序
+## 如果要实际跑起来
 
-实践不应直接从完整多机训练开始。推荐按证据成本递增：
+不要一开始就启动完整多机训练。可以按下面的顺序逐步增加复杂度：
 
-1. 用 CPU unit test 验证 advantage、mask、loss reduction 和 custom reward 的纯函数行为；
-2. 输出 resolved Hydra config，确认关键 override 的最终值和 runtime consumer；
-3. 用最小 GPU run 记录一个 prompt group 的 uid、sessions、fields、shape、device 和 step / version metadata；
-4. 在控制变量下切换 GRPO/PPO、FSDP/Megatron 或 sync/async，每次只比较一个维度；
-5. 最后运行 multi-turn tool trajectory，审计 action/observation mask、termination 和 reward。
+1. 先用 CPU 测试熟悉 advantage、mask、loss reduction 和 custom reward；
+2. 打印 resolved Hydra config，确认命令行参数最后变成了什么；
+3. 再用最小 GPU run 看一个 prompt group 如何生成 sessions、字段和 tensor；
+4. 最后才比较 GRPO/PPO、FSDP/Megatron、sync/async 和 multi-turn tool trajectory。
 
-MOPD 的最小实践应放在 multi-turn agent 之前或并行进行：先用两个数据域验证 sample-level teacher routing，再把 teacher fields 与 student loss 对齐。对应实验见 [[projects/verl-source-reading/labs/05-multi-teacher-opd|Lab 05: Multi-Teacher OPD]]。
+MOPD 可以在 multi-turn agent 之前学习：先用两个数据域看清 sample-level teacher routing，再把 teacher fields 和 student loss 对上。对应实验见 [[projects/verl-source-reading/labs/05-multi-teacher-opd|Lab 05: Multi-Teacher OPD]]。
 
-具体记录模板见 [[projects/verl-source-reading/labs/01-trace-config-and-batch|Lab 01: Trace Config and Batch]]。实验输出至少应包含 revision、环境、resolved config、命令、关键 trace、失败条件和结论；没有实际执行的预期结果不能标为 tested behavior。
+第一个追踪实验见 [[projects/verl-source-reading/labs/01-trace-config-and-batch|Lab 01: Trace Config and Batch]]。它的重点是看清字段和控制流，而不是先追求 benchmark 分数。
 
-## 学习完成检查
+## 读完之后试着回答
 
-完成主线后，尝试在不查笔记的情况下解释以下场景：
+读完主线后，可以先不看笔记，自己解释下面这些问题：
 
 1. 在 `train_batch_size` 等配置保持不变时，`rollout.n` 从 4 改为 8，会改变哪些 trajectory batch 和计算，哪些 training / rollout parallel group 不应仅因这一项而改变？
 2. `use_kl_loss` 与 `use_kl_in_reward` 分别把 KL 放到哪条路径？
@@ -169,4 +170,4 @@ MOPD 的最小实践应放在 multi-turn agent 之前或并行进行：先用两
 7. loss 突然异常时，如何判断问题来自 reward、mask、advantage、dispatch、backend 还是 weight sync？
 8. MOPD 中 `teacher_key`、teacher 配置里的 `key` 和样本的 `data_source` 分别承担什么作用？
 
-如果回答只能停留在算法定义，而不能指出对应字段、调用层和可观察证据，说明还没有完成从“理解 RL”到“理解 verl 系统”的转换。
+如果只能复述算法定义，却说不清对应字段、调用层和可以观察到的现象，就还没有真正把 RL 算法和 verl 的实现联系起来。

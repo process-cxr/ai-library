@@ -164,6 +164,10 @@ Agentic coding、多文档处理、长任务规划都可能产生非常长的上
 
 ## 风险与边界
 
+### Compression phase sensitivity
+
+Chunked KV compression 还会引入一个容易被平均指标掩盖的问题：同一信息相对于 compression window 的 phase 可能影响它被写入 compressed KV 的方式。[[sources/papers/2026-periodic-weak-spots-phase-sensitivity-chunked-kv-cache-compression|Periodic Weak Spots]] 在 DeepSeek-V4 及从头训练的 compressed models 上观察到按 stride 周期重复的 retrieval gap；这说明 Hybrid Attention 的评测不能只看平均 NIAH 或平均长上下文分数，还应逐 phase 测量 best-worst gap。
+
 ### 1. 压缩可能丢失细节
 
 任何压缩都会带来信息损失。HCA 的 heavier compression 尤其需要关注：它可能保留全局语义，但丢掉细粒度证据。
@@ -206,3 +210,4 @@ Sparse attention 的难点是选对位置。如果稀疏模式没覆盖关键证
 - [[architecture/model-families/deepseek|DeepSeek]]
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]]
 - [[application/agents/|Agents]]
+- [[sources/papers/2026-periodic-weak-spots-phase-sensitivity-chunked-kv-cache-compression|Periodic Weak Spots]] — chunked KV compression 的 phase sensitivity 与 phase-aware evaluation。

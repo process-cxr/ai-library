@@ -2,7 +2,7 @@
 title: verl Source Reading Roadmap
 created: 2026-09-02
 published: 2026-09-02
-modified: 2026-10-09
+modified: 2026-10-10
 type: project
 status: growing
 tags:
@@ -12,11 +12,11 @@ tags:
   - roadmap
 ---
 
-这份路线图只负责说明 verl 源码的学习顺序、依赖关系、源码入口、阅读产物和完成标准。它按照训练数据流与工程依赖组织阅读，不追随仓库目录，也不同时展开所有算法和 backend：先建立一条能够闭合的同步训练链，再沿着数据、算法、调度、执行后端和异步系统逐层深入。
+这条路线按照一次训练数据如何流动来安排 verl 的学习顺序。先把同步训练跑通，再逐步加入算法分支、分布式执行、teacher loop、Agent trajectory 和异步调度。这样每一步都建立在已经理解的对象上，不需要同时阅读整个仓库。
 
 项目定位、系统地图与固定源码版本见 [[projects/verl-source-reading/|verl Source Reading]]。
 
-如果还没有建立 PPO/GRPO、batch、worker 和 policy version 的共同坐标，先读 [[projects/verl-source-reading/00-learning-guide|00 verl Learning Guide]]；本页随后按专题给出更细的源码顺序和完成标准。
+如果还不熟悉 PPO/GRPO、batch、worker 和 policy version 这些基本对象，先读 [[projects/verl-source-reading/00-learning-guide|00 verl Learning Guide]]。
 
 ## 路线总览
 
@@ -46,7 +46,7 @@ SFT 不作为 RL 阅读路线中的一轮，而作为一条辅助对照路径单
 经过 rollout、reward 和 advantage，最终完成 actor update？
 ```
 
-**阅读入口**
+**从这些文件开始**
 
 1. [`run_qwen3_4b_fsdp.sh`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/examples/grpo_trainer/run_qwen3_4b_fsdp.sh)
 2. [`main_ppo.py`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/main_ppo.py)
@@ -54,13 +54,13 @@ SFT 不作为 RL 阅读路线中的一轮，而作为一条辅助对照路径单
 4. [`PPOTrainer.init / fit / step`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L219)
 5. [`PPOTrainerSync hooks`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_sync.py)
 
-**阅读产物**
+**对应文章和实验**
 
 - [[projects/verl-source-reading/01-sync-grpo-run-overview|01 Sync GRPO Run Overview]]
 - [[projects/verl-source-reading/03-data-protocol-and-batch-lifecycle|03 Data Protocol and Batch Lifecycle]]
 - [[projects/verl-source-reading/labs/01-trace-config-and-batch|Lab 01: Trace Config and Batch]]
 
-完成这一轮的最低标准是能够说明 session / trajectory 层级、字段 lineage、batch-size 作用域和 FSDP baseline 边界；如果要把实际 shape、device、timing 和 weight metadata 写成运行结论，还必须通过最小 GPU run 单独验证。两者属于不同证据等级。
+读完这一轮，应该能说明 session 和 trajectory 的关系、主要字段怎样流动、batch-size 各自作用于哪一层，以及 FSDP 在这条路径中的位置。实际 shape、device、timing 和 weight metadata 需要再通过最小 GPU run 确认。
 
 ## 第二轮：Config 与数据生命周期
 
@@ -84,12 +84,12 @@ ppo_trainer.yaml and config groups
   -> worker dispatch
 ```
 
-**阅读产物**
+**对应文章**
 
 - [[projects/verl-source-reading/02-config-and-hydra|02 Config and Hydra]]
 - [[projects/verl-source-reading/03-data-protocol-and-batch-lifecycle|03 Data Protocol and Batch Lifecycle]]
 
-这一轮完成后，应能从任意一个训练字段反向回答它的 producer、consumer、shape、mask、存储位置和生命周期。
+读到这里，拿任意一个训练字段，都应该能说清它在哪里产生、在哪里消费、shape 和 mask 怎样变化，以及什么时候被清理。
 
 ## 第三轮：Rollout、Reward 与 AgentLoop
 
@@ -113,7 +113,7 @@ AgentLoopManager
   -> rm_scores
 ```
 
-**阅读产物**
+**对应文章和实验**
 
 - [[projects/verl-source-reading/04-rollout-reward-and-agent-loop|04 Rollout, Reward and AgentLoop]]
 - [[projects/verl-source-reading/labs/02-custom-reward|Lab 02: Custom Reward]]
@@ -141,7 +141,7 @@ critic initialization
   -> critic update
 ```
 
-**阅读产物**
+**对应文章和实验**
 
 - [[projects/verl-source-reading/05-advantage-and-policy-loss|05 Advantage and Policy Loss]]
 - [[projects/verl-source-reading/09-ppo-and-grpo-codepath|09 PPO and GRPO Codepath]]
@@ -167,7 +167,7 @@ logical role
   -> returned metadata or tensors
 ```
 
-**阅读产物**
+**对应文章**
 
 - [[projects/verl-source-reading/06-single-controller-and-ray|06 Single Controller and Ray]]
 
@@ -183,7 +183,7 @@ logical role
 
 先用 FSDP 解释公共 engine contract，再用同一组 controller-level 输入映射到 Megatron。对照时保持 rollout、reward 和 advantage 不变，只替换 worker-side execution，避免把算法差异与 backend 差异混在一起。
 
-**阅读产物**
+**对应文章**
 
 - [[projects/verl-source-reading/07-model-engine-and-backend|07 Model Engine and Backend]]
 
@@ -202,7 +202,7 @@ student rollout
 
 这一轮在已经理解 rollout、policy loss、Ray worker 和 model engine 后，引入冻结的 teacher inference runtime。先理解单教师 OPD，再理解 MOPD 如何用 `data_source` 等 routing field 把不同样本分配给不同 teacher。必须区分 teacher 的推理资源池、student 的训练资源池，以及 distillation signal 与 task reward 的组合关系。
 
-**阅读入口**
+**从这些文件开始**
 
 1. [`docs/algo/opd.md`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/docs/algo/opd.md)
 2. [`DistillationConfig`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/config/distillation.py)
@@ -211,7 +211,7 @@ student rollout
 5. [`distillation_ppo_loss`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/distillation/losses.py)
 6. [`run_qwen3_8b_mopd_fsdp.sh`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/examples/on_policy_distillation_trainer/run_qwen3_8b_mopd_fsdp.sh)
 
-**阅读产物**
+**对应文章和实验**
 
 - [[projects/verl-source-reading/12-on-policy-distillation-and-mopd|12 On-Policy Distillation and MOPD]]
 - [[projects/verl-source-reading/labs/05-multi-teacher-opd|Lab 05: Multi-Teacher OPD]]
@@ -232,7 +232,7 @@ actor training weights
 
 重点追踪 LLMServerManager、CheckpointEngineManager、sleep / wake、KV cache、abort / resume 和 `update_weights`。需要明确区分 rollout policy、old policy、current actor 和 reference policy，记录它们在每个时刻对应的版本。
 
-**阅读产物**
+**对应文章**
 
 - [[projects/verl-source-reading/08-hybrid-engine-and-weight-sync|08 Hybrid Engine and Weight Sync]]
 
@@ -251,7 +251,7 @@ assistant generation
 
 这一轮集中检查 chat template、continuous token construction、response / loss mask、turn state、tool result truncation、failure handling、terminal reward 和 trajectory-level credit assignment。普通 language-model response 与 environment observation 必须在 token、mask 和 reward 三个层面保持边界一致。
 
-**阅读产物**
+**对应文章和实验**
 
 - [[projects/verl-source-reading/11-agentic-rl-extension|11 Agentic RL Extension]]
 - [[projects/verl-source-reading/labs/04-multiturn-tool-agent|Lab 04: Multi-turn Tool Agent]]
@@ -270,13 +270,13 @@ assistant generation
 
 这一轮必须以已经完成的 sync 数据流为对照。异步系统增加的是时间和版本维度，不应重新发明 prompt、reward 和 advantage 的基本语义。
 
-**阅读产物**
+**对应文章**
 
 - [[projects/verl-source-reading/10-async-trainer-and-off-policy|10 Async Trainer and Off-policy]]
 
-## 完成标准
+## 读完整条路线后
 
-完成这组源码阅读后，应能够独立回答：
+你应该能够独立回答：
 
 1. 一个 prompt 如何形成 `rollout.n` 条独立 sessions；
 2. session、AgentLoopOutput、trajectory key 和多轮 turn 分别是什么；

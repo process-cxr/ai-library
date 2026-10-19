@@ -2,7 +2,7 @@
 title: Quality Filtering
 created: 2026-03-14
 published: 2026-03-14
-modified: 2026-08-31
+modified: 2026-10-15
 type: topic
 status: mature
 area: training
@@ -116,6 +116,14 @@ Model-based scoring 的优势是语义能力强，能处理规则和 PPL 难以�
 - **Multilingual**：按语言分别建质量指标，避免英语中心过滤器压制低资源语言。
 
 领域过滤通常比通用过滤更能提升目标能力，但过强会牺牲通用性。领域数据最好进入 [[training/pretraining/data-mix|Data Mix]] 的显式采样权重，而不是混在通用数据里不可追踪。
+
+## Agent 轨迹的过程质量
+
+Agent 轨迹包含 reasoning、工具动作和环境反馈，最终任务通过验证只确认 outcome，整段过程是否适合作为模仿目标还需单独判断。循环读取、重复失败或缺乏验证的轨迹，即使最后成功，也可能把不理想的交互行为带入学生。
+
+[[sources/papers/2026-tqs-quality-not-just-outcome-coding-agent-trajectories|Quality, Not Just Outcome]] 提出 TQS（Trajectory Quality Score，轨迹质量分数），从事件日志中组合文件范围收窄、粗粒度意图—动作匹配、工具转移、错误后行为和重复模式等信号，进行低成本排序。结构分数可作为 outcome filtering 之后的补充，但字符熵不等于语义信息量，动作变化不等于成功恢复，词典匹配也不等于推理正确。
+
+迁移结构评分时，需要同时保留分量值、字段覆盖率、长度与任务来源。缺失 reasoning 或不同工具粒度会改变评分含义；不能把不可计算分量一律记为低质量，也不能将一个 scaffold 上的手工权重当作通用标准。效果应通过固定学生、训练 recipe 和预算，并控制长度、来源、任务重复度的训练对照验证。TQS 的现有证据来自不超过 32K tokens 的少量轨迹 SFT，不能直接外推到完整超长轨迹或全部 tokens 参与 loss 的 mid-training。
 
 ## 阈值选择与 Ablation
 

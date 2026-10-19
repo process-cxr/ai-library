@@ -2,7 +2,7 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-08-12
+modified: 2026-10-15
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
@@ -42,6 +42,7 @@ modified: 2026-08-12
 - [[sources/papers/2021-zero-infinity|ZeRO-Infinity]]
 - [[sources/papers/2021-flan|Finetuned Language Models Are Zero-Shot Learners]]
 - [[sources/papers/2021-t0|Multitask Prompted Training Enables Zero-Shot Task Generalization]]
+- [[sources/papers/2022-flashattention|FlashAttention]]
 - [[sources/papers/2022-constitutional-ai|Constitutional AI]]
 - [[sources/papers/2022-instructgpt|Training language models to follow instructions with human feedback]]
 - [[sources/papers/2022-self-instruct|Self-Instruct]]
@@ -51,6 +52,7 @@ modified: 2026-08-12
 - [[sources/papers/2023-minillm-knowledge-distillation-of-large-language-models|MiniLLM: Knowledge Distillation of Large Language Models]]
 - [[sources/papers/2023-dpo|Direct Preference Optimization]]
 - [[sources/papers/2023-gqa|Grouped-Query Attention]]
+- [[sources/papers/2023-flashattention-2|FlashAttention-2]]
 - [[sources/papers/2023-repocoder-repository-level-code-completion|RepoCoder: Repository-Level Code Completion Through Iterative Retrieval and Generation]]
 - [[sources/papers/2023-longlora|LongLoRA]]
 - [[sources/papers/2023-position-interpolation|Position Interpolation]]
@@ -59,6 +61,7 @@ modified: 2026-08-12
 - [[sources/papers/2023-roots|ROOTS]]
 - [[sources/papers/2023-yarn|YaRN]]
 - [[sources/papers/2024-datacomp-lm|DataComp-LM]]
+- [[sources/papers/2024-flashattention-3|FlashAttention-3]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]
 - [[sources/papers/2024-deepseek-v2|DeepSeek-V2]]
 - [[sources/papers/2024-deepseek-v3|DeepSeek-V3]]
@@ -89,4 +92,6 @@ modified: 2026-08-12
 - [[sources/papers/2026-single-rollout-asynchronous-optimization-agentic-reinforcement-learning|Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning]]
 - [[sources/papers/2025-rlp-reinforcement-as-a-pretraining-objective|RLP: Reinforcement as a Pretraining Objective]]
 - [[sources/papers/2025-muon-is-scalable-for-llm-training|Muon is Scalable for LLM Training]]
+- [[sources/papers/2026-periodic-weak-spots-phase-sensitivity-chunked-kv-cache-compression|Periodic Weak Spots: Phase Sensitivity from Chunked KV-Cache Compression]]
 - [[sources/papers/2026-dive-into-claude-code-design-space-ai-agent-systems|Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems]]
+- [[sources/papers/2026-tqs-quality-not-just-outcome-coding-agent-trajectories|Quality, Not Just Outcome: A Structural Scoring Framework for Selecting Coding-Agent Trajectories for Supervised Fine-Tuning]]
