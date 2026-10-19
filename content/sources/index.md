@@ -20,6 +20,8 @@ modified: 2026-07-01
 
 ## Recent Notes
 
+- [[sources/blogs/2026-scaling-laws-carefully|Scaling Laws, Carefully]]
+- [[sources/blogs/2026-harness-engineering-for-self-improvement|Harness Engineering for Self-Improvement]]
 - [[sources/reports/agentic-mid-training-strategies-reading-synthesis|Agentic Mid-training Strategy for General-Purpose Agent Capability Injection]]
 - [[sources/papers/2025-kimi-dev-agentless-training-as-skill-prior-for-swe-agents|Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents]]
 - [[sources/papers/2026-qwen3-coder-next-technical-report|Qwen3-Coder-Next Technical Report]]

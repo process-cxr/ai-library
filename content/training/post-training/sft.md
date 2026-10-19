@@ -2,7 +2,7 @@
 title: SFT
 created: 2026-03-01
 published: 2026-03-01
-modified: 2026-05-29
+modified: 2026-10-15
 type: topic
 status: mature
 area: training
@@ -127,6 +127,12 @@ SFT 数据 mixture 决定模型行为的默认先验。常见混合维度包括�
 - **数据来源**：人工标注、专家写作、teacher model 生成、rejection sampling 筛选。
 
 高质量 SFT 数据通常具备四个特征：instruction 明确，response 正确，格式稳定，行为边界一致。相比之下，来源混乱、模板不一致、答案错误、语言风格摇摆的数据会让 SFT 变成行为噪声注入。
+
+### 轨迹监督中的 outcome 与 process
+
+对多轮工具轨迹，assistant-only loss 仍会同时模仿 reasoning 和 tool calls，因此最终 patch 通过测试不能保证完整过程都值得学习。数据选择需要同时考察任务结果、过程结构和任务覆盖，避免把重复读取、无效重试等行为作为默认示范。
+
+[[sources/papers/2026-tqs-quality-not-just-outcome-coding-agent-trajectories|Quality, Not Just Outcome]] 在同一 Instruct checkpoint 上比较额外 LoRA SFT，发现成功轨迹内的结构筛选优于随机筛选，而低分成功轨迹甚至可能使模型退化。这个对照支持过程质量是轨迹 SFT 的训练变量；具体分数不能替代语义验证，其效果也不能直接推广到全参数或全 token loss 训练。
 
 ## 与其他后训练方法的关系
 

@@ -57,7 +57,7 @@ Each page should own one coherent boundary, such as:
 - checkpoint and weight synchronization;
 - failure handling or asynchronous state.
 
-A useful topic page usually includes a runtime context, concrete call chain, field or tensor flow, source anchors, invariants, failure modes and links back to the whole run. Use only the sections needed by that topic.
+A useful topic page usually explains a concrete system question, places it in the end-to-end run, follows the relevant call and field or tensor flow, states the important boundaries and failure modes, and links to compact source anchors. Use only the sections needed by that topic. Write it as a learning explanation: the reader should understand the mechanism without reconstructing the author's search process from headings such as `Evidence Status` or `Next Trace`.
 
 ## Labs
 
@@ -73,6 +73,8 @@ A lab turns source interpretation into observable behavior. Record:
 - conclusions that can be promoted to topic pages.
 
 Keep planned observations visibly separate from measured results.
+
+Labs may contain commands, instrumentation plans, trace schemas, acceptance criteria, failure analysis, and follow-up work. See the learning-report guidance in `SKILL.md` for the boundary between these reproducibility records and explanatory topic pages.
 
 ## Navigation Rules
 

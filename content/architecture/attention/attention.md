@@ -324,6 +324,9 @@ Attention 的数值稳定性也会影响训练。比如 softmax 前的 score 过
 - [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
 - [[sources/papers/2019-fast-transformer-decoding-one-write-head-is-all-you-need|Fast Transformer Decoding]]
 - [[sources/papers/2023-gqa|Grouped-Query Attention]]
+- [[sources/papers/2022-flashattention|FlashAttention]]
+- [[sources/papers/2023-flashattention-2|FlashAttention-2]]
+- [[sources/papers/2024-flashattention-3|FlashAttention-3]]
 
 ## 相关概念
 

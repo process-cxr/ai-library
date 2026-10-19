@@ -19,6 +19,38 @@ This skill governs repository analysis, evidence collection and project informat
 - Preserve user changes in both the knowledge repository and source repository.
 - Do not expose local filesystem paths, credentials, private repository names, internal data, hostnames or company-specific details in public notes.
 
+## Write Learning Reports, Not Work Logs
+
+Source-reading pages are written for someone who wants to understand how the system works later. Start from the reader's question and explain the mechanism in the order needed to answer it. The page should read like a lesson built from source evidence, not like a diary of the author's search process.
+
+### Reader-facing structure
+
+Open a topic page with the system behavior it explains and enough context to understand its role in the whole run. Introduce the main objects through their purpose and interactions. These are explanatory goals, not a mandatory four-part introduction or a repeated template.
+
+Prefer headings that describe the mechanism, such as `Prompt 如何变成 trajectory`, `Reward 怎样变成 actor update`, or `更新后的权重怎样回到 rollout`. Use headings such as `Runtime Context`, `Call Chain`, `Evidence Status`, `Completion Criteria`, and `Next Trace` only when the page genuinely needs that artifact-oriented section.
+
+Explain before cataloguing. Connect each important operation to the data or state it changes and why the next operation needs that result. Support explanations of design intent with evidence or identify them as interpretation. A call-chain diagram should support the explanation rather than replace it. Use a small example when shapes, grouping, masks, or version changes are difficult to follow; label illustrative values separately from measured results.
+
+### Tone and vocabulary
+
+Write primarily in connected Chinese prose with standard English technical terms. Prefer sentences such as “源码中的 `X` 先把……写入……，随后 `Y` 读取……”. Keep precise API names, fields, formulas, and necessary technical terms. Internal authoring labels such as `ledger`, `reading artifact`, `completion criteria`, and `next trace` should not become the organizing vocabulary of a learning report. Do not mention the skill or its execution requirements in published learning pages.
+
+When evidence status matters, express it in the sentence that makes the claim: “源码显示……”“当前还没有实际运行，因此这里只能确认调用关系……”“这是根据调用关系作出的工程解释……”. Keep the evidence distinction, but let it serve the explanation instead of becoming the page's main outline.
+
+Avoid author progress narration such as “本轮阅读完成了……” and “下一步要追踪……”. Keep detailed commands, logs, instrumentation plans, and acceptance criteria in `labs/`. A short entry command, a necessary statement of source-access limits, or a pedagogical link to the next topic is appropriate in a learning article.
+
+### Quality check before publishing
+
+Read the page once as a learner and check:
+
+- The first substantive section explains a real system question rather than the writing process.
+- A reader can follow one concrete input through the relevant calls, fields, tensors, or state transitions.
+- Source links support claims without turning the page into a list of file paths.
+- Static source conclusions, runtime observations, and engineering explanations remain distinguishable in natural prose.
+- Changing English headings to Chinese is not sufficient: check explanation order, causal links, and concrete examples, not only vocabulary.
+
+The project index and roadmap may contain navigation and learning-order language. Topic pages should spend most of their space teaching the mechanism. Labs are the appropriate place for reproducibility records and operational checklists.
+
 ## Workflow
 
 ### 1. Inspect Both Repositories
@@ -72,7 +104,7 @@ Do not publish a `00-conventions` page for AI-facing templates, evidence policy 
 
 ### 4. Trace a Runtime Path
 
-Start at a runnable script, CLI, test or service request and trace downward. Maintain several synchronized ledgers when relevant:
+Start at a runnable script, CLI, test or service request and trace downward. Maintain several synchronized ledgers as analysis aids when relevant; turn their findings into explanatory prose and useful diagrams rather than publishing the ledger-maintenance instructions:
 
 ```text
 control flow     caller -> callee -> dispatch -> worker
@@ -128,7 +160,7 @@ When comparing backends, hold the controller-level input fixed and explain how e
 
 Read [Evidence and Tracing](references/evidence-and-tracing.md) when making source-backed claims, designing a lab, comparing backends or updating the pinned revision.
 
-Use three evidence labels where the distinction matters:
+Distinguish three evidence classes during analysis; in public prose, express the distinction next to the relevant claim rather than requiring these English labels as headings:
 
 - **Source fact**: directly visible in the pinned source revision.
 - **Tested behavior**: reproduced by a unit test, minimal run, trace or profiler.
