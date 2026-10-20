@@ -2,7 +2,7 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-10-15
+modified: 2026-10-20
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
@@ -95,3 +95,4 @@ modified: 2026-10-15
 - [[sources/papers/2026-periodic-weak-spots-phase-sensitivity-chunked-kv-cache-compression|Periodic Weak Spots: Phase Sensitivity from Chunked KV-Cache Compression]]
 - [[sources/papers/2026-dive-into-claude-code-design-space-ai-agent-systems|Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems]]
 - [[sources/papers/2026-tqs-quality-not-just-outcome-coding-agent-trajectories|Quality, Not Just Outcome: A Structural Scoring Framework for Selecting Coding-Agent Trajectories for Supervised Fine-Tuning]]
+- [[sources/papers/2026-dosa-dots-sparse-attention|DoSA: Dots Sparse Attention]]

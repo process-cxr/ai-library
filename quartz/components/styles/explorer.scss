@@ -93,6 +93,30 @@
   }
 }
 
+@media all and not ($mobile) {
+  // Keep both explorer trees in one scroll context so a long learning tree
+  // cannot trap the pointer above the research tree.
+  .page > #quartz-body > .sidebar.left {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .page > #quartz-body > .sidebar.left .explorer {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .page > #quartz-body > .sidebar.left .explorer-content {
+    overflow: visible;
+  }
+
+  .page > #quartz-body > .sidebar.left .explorer-ul {
+    overscroll-behavior: auto;
+  }
+}
+
 // Keep grouped explorers visually distinct without introducing another divider line.
 .explorer + .explorer {
   margin-top: 1.25rem;

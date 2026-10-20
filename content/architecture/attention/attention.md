@@ -2,7 +2,7 @@
 title: Attention
 created: 2026-01-25
 published: 2026-01-25
-modified: 2026-05-31
+modified: 2026-10-20
 type: topic
 status: mature
 area: architecture
@@ -191,11 +191,11 @@ $$
 
 因此出现了 MQA 和 GQA。
 
-| 机制 | Query heads | Key/Value heads | 主要目标 |
-|---|---:|---:|---|
-| MHA | 多个 | 多个 | 表达能力强，标准多头注意力 |
-| MQA | 多个 | 1 组共享 | 极大减少 KV Cache，但可能损失表达能力 |
-| GQA | 多个 | 多组共享 | 在 MHA 和 MQA 之间折中 |
+| 机制 | Query heads | Key/Value heads | 主要目标                              |
+| ---- | ----------: | --------------: | ------------------------------------- |
+| MHA  |        多个 |            多个 | 表达能力强，标准多头注意力            |
+| MQA  |        多个 |        1 组共享 | 极大减少 KV Cache，但可能损失表达能力 |
+| GQA  |        多个 |        多组共享 | 在 MHA 和 MQA 之间折中                |
 
 [[architecture/attention/multi-query-attention|Multi-Query Attention]] 让多个 query head 共享同一组 K/V。这样推理时 KV Cache 大幅减少，但 key/value 表达能力可能下降。
 
@@ -212,6 +212,10 @@ x_{t-w+1}, \dots, x_t
 $$
 
 这样 attention 的计算从全局 $O(n^2)$ 降低到近似 $O(nw)$。代价是模型不能在每一层直接访问窗口外的信息。为了保留长距离能力，一些模型会结合全局 token、层间传播或特殊位置策略。
+
+滑动窗口也可以覆盖当前位置两侧，适合双向文档编码。Longformer 为局部窗口加入少量全局位置，让问题或分类标记读取整段输入；它如何分别用于字符生成、RoBERTa 迁移和摘要编码器，详见 [[sources/papers/2020-longformer|Longformer 原文解析]]。
+
+更一般的 [[architecture/attention/sparse-attention|Sparse and Block-Sparse Attention]] 把可见位置建模成稀疏图，并把连接组织为适合硬件的 blocks。BigBird 同时研究局部、全局、随机连接与理论表达能力；其部分实验不使用随机连接，理论也保留了深度与精度假设，详见 [[sources/papers/2020-big-bird|BigBird 原文解析]]。这里的关键是改变连接范围，block 内仍保留逐 token 表示。
 
 ## Attention 与位置编码
 
@@ -272,14 +276,14 @@ The trophy would not fit in the suitcase because it was too large.
 
 ## 设计取舍
 
-| 设计点 | 优势 | 代价 |
-|---|---|---|
+| 设计点                | 优势                       | 代价                               |
+| --------------------- | -------------------------- | ---------------------------------- |
 | Dot-product attention | 计算简单，适合矩阵乘法加速 | 对尺度敏感，需要 $\sqrt{d_k}$ 缩放 |
-| Softmax 权重 | 提供归一化的信息聚合分布 | 可能过于尖锐，且需要数值稳定实现 |
-| Multi-Head | 多子空间建模不同关系 | 参数、计算和 KV Cache 增加 |
-| Causal Mask | 保证自回归训练合法 | 不能直接访问未来信息 |
-| MQA/GQA | 降低推理 KV Cache | 可能牺牲部分表达能力 |
-| Sliding Window | 降低长上下文计算成本 | 长距离依赖需要额外机制补偿 |
+| Softmax 权重          | 提供归一化的信息聚合分布   | 可能过于尖锐，且需要数值稳定实现   |
+| Multi-Head            | 多子空间建模不同关系       | 参数、计算和 KV Cache 增加         |
+| Causal Mask           | 保证自回归训练合法         | 不能直接访问未来信息               |
+| MQA/GQA               | 降低推理 KV Cache          | 可能牺牲部分表达能力               |
+| Sliding Window        | 降低长上下文计算成本       | 长距离依赖需要额外机制补偿         |
 
 Attention 的价值在于灵活的信息路由，但它的代价是复杂度和显存压力。现代大模型架构和推理系统的很多优化，都是在保留 attention 表达能力的同时降低它的系统成本。
 
@@ -324,6 +328,8 @@ Attention 的数值稳定性也会影响训练。比如 softmax 前的 score 过
 - [[sources/papers/2017-attention-is-all-you-need|Attention Is All You Need]]
 - [[sources/papers/2019-fast-transformer-decoding-one-write-head-is-all-you-need|Fast Transformer Decoding]]
 - [[sources/papers/2023-gqa|Grouped-Query Attention]]
+- [[sources/papers/2020-longformer|Longformer]]
+- [[sources/papers/2020-big-bird|Big Bird]]
 - [[sources/papers/2022-flashattention|FlashAttention]]
 - [[sources/papers/2023-flashattention-2|FlashAttention-2]]
 - [[sources/papers/2024-flashattention-3|FlashAttention-3]]
@@ -336,6 +342,7 @@ Attention 的数值稳定性也会影响训练。比如 softmax 前的 score 过
 - [[architecture/attention/multi-query-attention|Multi-Query Attention]] — 多个 query head 共享一组 K/V，降低 KV Cache。
 - [[architecture/attention/grouped-query-attention|Grouped-Query Attention]] — 在 MHA 与 MQA 之间折中。
 - [[architecture/attention/sliding-window-attention|Sliding Window Attention]] — 限制注意力窗口以降低长序列成本。
+- [[architecture/attention/sparse-attention|Sparse and Block-Sparse Attention]] — 设计局部、全局和随机连接，并组织块级计算。
 - [[architecture/positional-encoding/rope|RoPE]] — 在 Q/K 中注入相对位置信息。
 - [[inference/kv-cache-and-memory/kv-cache|KV Cache]] — 自回归推理中保存历史 K/V 的缓存机制。
 - [[inference/attention-acceleration/flash-attention|FlashAttention]] — 面向 attention 的 IO-aware 加速实现。

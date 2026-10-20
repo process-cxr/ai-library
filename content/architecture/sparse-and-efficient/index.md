@@ -2,7 +2,7 @@
 title: Sparse and Efficient Architectures
 created: 2026-02-14
 published: 2026-02-14
-modified: 2026-05-31
+modified: 2026-10-20
 ---
 
 稀疏与高效架构模块负责整理 MoE、Mamba、SSM、Linear Attention 等用于提升扩展性、效率或长序列建模能力的架构路线。
@@ -12,6 +12,7 @@ modified: 2026-05-31
 1. [[architecture/sparse-and-efficient/moe|Mixture of Experts]]：通过 sparse FFN 扩大 total capacity。
 2. [[architecture/sparse-and-efficient/linear-attention|Linear Attention]] 与 [[architecture/sparse-and-efficient/efficient-transformer|Efficient Transformer]]：降低 attention 长序列复杂度的路线。
 3. [[architecture/sparse-and-efficient/ssm|State Space Model]] 与 [[architecture/sparse-and-efficient/mamba|Mamba / SSM]]：用状态空间结构替代或补充 attention 的路线。
+4. [[architecture/attention/sparse-attention|Sparse and Block-Sparse Attention]]：通过改变 token 连接图控制长序列成本；局部与全局设计见 [[sources/papers/2020-longformer|Longformer 原文解析]]，随机连接、块级实现与理论边界见 [[sources/papers/2020-big-bird|BigBird 原文解析]]。
 
 ## Notes
 

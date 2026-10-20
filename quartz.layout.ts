@@ -27,7 +27,7 @@ const explorerSort = (a: FileTrieNode, b: FileTrieNode): number => {
 }
 
 const researchSort = (a: FileTrieNode, b: FileTrieNode): number => {
-  const rootOrder = ["projects", "papers", "blogs", "reports"]
+  const rootOrder = ["papers", "blogs", "reports", "projects"]
   const aPath = a.slug.endsWith("/index") ? a.slug.slice(0, -"/index".length) : a.slug
   const bPath = b.slug.endsWith("/index") ? b.slug.slice(0, -"/index".length) : b.slug
   const aRank =
@@ -75,6 +75,17 @@ const learningExplorerOptions = {
 const researchExplorerOptions = {
   title: "探索",
   sortFn: researchSort,
+  mapFn: (node: FileTrieNode): void => {
+    const path = node.slug.endsWith("/index") ? node.slug.slice(0, -"/index".length) : node.slug
+    const displayNames: Record<string, string> = {
+      "sources/papers": "Papers",
+      "sources/blogs": "Blogs",
+      "sources/reports": "Reports",
+      projects: "Projects",
+    }
+    const displayName = displayNames[path]
+    if (displayName) node.displayName = displayName
+  },
   filterFn: (node: FileTrieNode): boolean => {
     const roots = ["projects", "sources/papers", "sources/blogs", "sources/reports"]
     const path = node.slug.endsWith("/index") ? node.slug.slice(0, -"/index".length) : node.slug
