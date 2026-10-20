@@ -9,11 +9,13 @@ import RecentPapers from "../RecentPapers"
 // @ts-ignore
 import sourcePanelScript from "../scripts/sourcePanel.inline"
 
-const RecentPapersBlock = RecentPapers({ limit: 8 })
+const RecentPapersBlock = RecentPapers()
 
 function nodeText(node: Node): string {
-  if (node.type === "text") return node.value
-  if ("children" in node) return node.children.map(nodeText).join("")
+  if ("value" in node && typeof node.value === "string") return node.value
+  if ("children" in node && Array.isArray(node.children)) {
+    return node.children.map((child) => nodeText(child as Node)).join("")
+  }
   return ""
 }
 

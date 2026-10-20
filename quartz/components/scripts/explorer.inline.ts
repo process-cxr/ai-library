@@ -60,7 +60,9 @@ function toggleFolder(evt: MouseEvent) {
   const childFolderContainer = folderContainer.nextElementSibling as MaybeHTMLElement
   if (!childFolderContainer) return
 
-  const currentExplorerState = explorerStates.get(folderContainer.closest(".explorer") as HTMLElement)
+  const currentExplorerState = explorerStates.get(
+    folderContainer.closest(".explorer") as HTMLElement,
+  )
   if (!currentExplorerState) return
 
   childFolderContainer.classList.toggle("open")
@@ -165,6 +167,7 @@ function createFolderNode(
 
 async function setupExplorer(currentSlug: FullSlug) {
   const allExplorers = document.querySelectorAll("div.explorer") as NodeListOf<HTMLElement>
+  const savedSidebarScrollTop = sessionStorage.getItem("sidebarScrollTop")
 
   for (const explorer of allExplorers) {
     const dataFns = JSON.parse(explorer.dataset.dataFns || "{}")
@@ -218,8 +221,7 @@ async function setupExplorer(currentSlug: FullSlug) {
     // existing visitors receive the new default once without clearing their
     // broader explorer preferences manually.
     const homeDefaultsKey = `homeExplorerDefaultsV5:${opts.stateKey}`
-    const shouldApplyHomeDefaults =
-      isHome && localStorage.getItem(homeDefaultsKey) !== "true"
+    const shouldApplyHomeDefaults = isHome && localStorage.getItem(homeDefaultsKey) !== "true"
 
     if (shouldApplyHomeDefaults) {
       for (const path of folderPaths) {
@@ -254,7 +256,9 @@ async function setupExplorer(currentSlug: FullSlug) {
     const fragment = document.createDocumentFragment()
     const flattenPaths = new Set(opts.flattenPaths)
     const rootNodes = trie.children.flatMap((child) => {
-      const childPath = child.slug.endsWith("/index") ? child.slug.slice(0, -"/index".length) : child.slug
+      const childPath = child.slug.endsWith("/index")
+        ? child.slug.slice(0, -"/index".length)
+        : child.slug
       return flattenPaths.has(childPath) ? child.children : [child]
     })
     for (const child of rootNodes) {
@@ -266,11 +270,8 @@ async function setupExplorer(currentSlug: FullSlug) {
     }
     explorerUl.insertBefore(fragment, explorerUl.firstChild)
 
-    // restore explorer scrollTop position if it exists
-    const scrollTop = sessionStorage.getItem("explorerScrollTop")
-    if (scrollTop) {
-      explorerUl.scrollTop = parseInt(scrollTop)
-    } else {
+    // Restore the active item when the shared sidebar has no saved position.
+    if (!savedSidebarScrollTop) {
       // try to scroll to the active element if it exists
       const activeElement = explorerUl.querySelector(".active")
       if (activeElement) {
@@ -306,13 +307,18 @@ async function setupExplorer(currentSlug: FullSlug) {
       window.addCleanup(() => icon.removeEventListener("click", toggleFolder))
     }
   }
+
+  const sidebar = document.querySelector(".sidebar.left") as HTMLElement | null
+  if (sidebar && savedSidebarScrollTop) {
+    sidebar.scrollTop = parseInt(savedSidebarScrollTop)
+  }
 }
 
 document.addEventListener("prenav", async () => {
-  // save explorer scrollTop position
-  const explorer = document.querySelector(".explorer-ul")
-  if (!explorer) return
-  sessionStorage.setItem("explorerScrollTop", explorer.scrollTop.toString())
+  // Save the shared desktop sidebar scroll position.
+  const sidebar = document.querySelector(".sidebar.left") as HTMLElement | null
+  if (!sidebar) return
+  sessionStorage.setItem("sidebarScrollTop", sidebar.scrollTop.toString())
 })
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
