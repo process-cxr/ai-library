@@ -7,7 +7,7 @@ description: 将英文个人 AI 技术博客整理为 AI Library 的中文翻译
 
 Use this skill for English personal AI and machine learning blogs that the user wants to read in Chinese and archive under `content/sources/blogs/`.
 
-The source may be a URL, pasted plain text, Markdown, or a saved HTML page. For HTML, use the article body (`<article>` or the page's structured article content) rather than translating navigation, scripts, styles, metadata boilerplate, or duplicate JSON-LD text. Resolve relative image URLs against the page's canonical URL and keep the article's original asset links.
+The source may be a URL, pasted plain text, Markdown, or a saved HTML page. For HTML, use the article body (`<article>` or the page's structured article content), including scripts and styles needed for its interactive content. Exclude navigation, analytics, unrelated page scripts, metadata boilerplate, and duplicate JSON-LD text. Resolve relative image URLs against the page's canonical URL and keep the article's original asset links.
 
 ## Default translation mode
 
@@ -64,13 +64,22 @@ _Figure N: Translated caption. Image source: [Original source](SOURCE_URL)._
 
 Do not silently replace remote images with generated diagrams. If an image URL is unavailable, keep the original caption and link and mark the missing asset clearly.
 
+## Interactive content
+
+- Preserve simulations, sliders, calculators, and interactive charts at their original positions. Static hosting on GitHub Pages supports browser JavaScript; do not omit an interaction or replace it with prose merely because the article is Markdown.
+- Inspect the supplied source before executing its widget code. Keep the original numerical model, parameters, inputs, outputs, and interaction behavior; translate visible labels, captions, tooltips, and accessibility text. If source defects need repair, keep the correction minimal and document it in code and the handoff.
+- For self-contained widgets, prefer a standalone page at `quartz/static/widgets/<slug>/index.html` embedded in a sandboxed iframe. Quartz's Static emitter preserves the file; its Assets emitter strips `.html` from files under `content/`. In Markdown, use a vault-root source such as `src="static/widgets/<slug>/"`; verify the generated URL works under the GitHub Pages `/ai-library/` prefix.
+- Reuse `iframe.blog-widget` and `quartz/components/scripts/blogWidgets.inline.ts` for automatic height and theme synchronization. Handle a full page load, Quartz SPA navigation, mobile widths, and light/dark mode. Remove page-specific listeners through Quartz's cleanup mechanism.
+- Do not add implementation commentary to the translated article. If an interaction depends on unavailable APIs, credentials, or assets, explain the concrete limitation to the user instead of silently omitting it.
+- Validate in a browser: the chart renders, each control changes the expected output, the original source and adapted calculations agree for representative inputs, and the widget still works after navigating away and back.
+
 ## Workflow
 
 1. Establish the canonical article URL, title, author, date, reading time, and available figures.
 2. Determine whether the user supplied the text for full translation or only a URL for a reading note.
 3. Create or update `content/sources/blogs/<slug>.md` using the metadata block above.
 4. Translate or summarize according to the applicable mode without changing the source’s structure.
-5. Preserve source links, image URLs, citations, formulas, tables, and code.
+5. Preserve source links, image URLs, citations, formulas, tables, code, and functional interactive content.
 6. Add the note to `content/sources/index.md` when it is a new public source.
 7. Run Prettier on changed Markdown files and validate with `npm run quartz -- build -d content`.
 
@@ -82,3 +91,4 @@ Do not silently replace remote images with generated diagrams. If an image URL i
 - Technical terms and proper nouns are consistent throughout the note.
 - The original source URL is visible in `## 基本信息` and frontmatter.
 - The generated Quartz page builds successfully.
+- Original interactive content works in the generated page, including on mobile and after SPA navigation.

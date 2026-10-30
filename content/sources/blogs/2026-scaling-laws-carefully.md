@@ -2,7 +2,7 @@
 title: "Scaling Laws, Carefully"
 created: 2026-10-19
 published: 2026-10-19
-modified: 2026-10-19
+modified: 2026-10-22
 type: source
 status: growing
 area: sources
@@ -401,7 +401,7 @@ $$
 - **损失噪声**：只用千分之一损失（0.001）量级的乘法扰动损失值，也会导致不同的拟合结果。
 - **拟合区域敏感性**：只拟合小模型、只拟合中等模型，或拟合全部模型，会得到不同的表面 scaling laws。
 
-原文此处提供一个交互式模拟器，包含以下可见控件：拟合区域（仅小模型 / 仅中等模型 / 所有测量模型）、损失精度、损失噪声、外推目标，以及拟合后的 $\alpha$、$\beta$、$E$、$N_\text{opt}$ 指数、$D_\text{opt}$ 指数、预测损失、真实损失和误差读数。由于该控件依赖原文页面中的 JavaScript，本文保留其数学设定和控件语义，不在静态 Markdown 页面中重复嵌入脚本。
+<iframe class="blog-widget" src="static/widgets/scaling-laws-carefully/" title="Scaling Law 拟合交互实验" sandbox="allow-scripts" loading="lazy"></iframe>
 
 # 引用（Citation）
 

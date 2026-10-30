@@ -32,8 +32,8 @@
 
 .recent-papers-groups {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.35rem 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.35rem;
 }
 
 .recent-papers-group {
@@ -142,10 +142,6 @@
   }
 
   .recent-papers-list {
-    grid-template-columns: 1fr;
-  }
-
-  .recent-papers-groups {
     grid-template-columns: 1fr;
   }
 

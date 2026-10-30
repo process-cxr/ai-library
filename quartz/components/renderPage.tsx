@@ -10,6 +10,7 @@ import { Root, Element, ElementContent } from "hast"
 import { GlobalConfiguration } from "../cfg"
 import { i18n } from "../i18n"
 import { styleText } from "util"
+import { preparePageTitle } from "../util/pageTitle"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -230,8 +231,7 @@ export function renderPage(
   const visited = new Set<FullSlug>([slug])
   renderTranscludes(root, cfg, slug, componentData, visited)
 
-  // set componentData.tree to the edited html that has transclusions rendered
-  componentData.tree = root
+  componentData = { ...componentData, ...preparePageTitle(root, componentData.fileData) }
 
   const {
     head: Head,

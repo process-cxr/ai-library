@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Scaling Law 拟合实验台</title>
+    <!-- Adapted from the HTML supplied by the user for Lilian Weng's
+       Scaling Laws, Carefully (2026-06-24).
+       Source: https://lilianweng.github.io/posts/2026-06-24-scaling-laws/
+       Original numerical algorithms are retained. UI labels are translated;
+       the duplicated displayed constant and D=20N label are corrected to
+       match the source's existing trueLoss() and optimalDForN() calculations. -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .slw-subtitle {
+        overflow-wrap: anywhere;
+      }
+      input,
+      select {
+        accent-color: var(--slw-fit);
+      }
+      select {
+        color: var(--slw-text);
+        background: var(--slw-bg);
+        padding: 0.35rem;
+        border: 1px solid var(--slw-border);
+        border-radius: 4px;
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+      }
+      :root[data-theme="light"] {
+        color-scheme: light;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slw-widget"></div>
+    <script>
+      ;(() => {
+        const root = document.currentScript.previousElementSibling
+        const uid = "slw-" + Math.random().toString(36).slice(2)
+
+        root.innerHTML = `
+    <style>
+      .slw-widget {
+        --slw-bg: #ffffff;
+        --slw-border: #d9d9d9;
+        --slw-muted: #666;
+        --slw-text: #222;
+        --slw-grid: #e9e9e9;
+        --slw-fit: #1f77b4;
+        --slw-true: #777;
+        --slw-point: #999;
+        --slw-selected: #d62728;
+        --slw-target: #2ca02c;
+
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+
+        border: 1px solid var(--slw-border);
+        border-radius: 12px;
+        padding: 16px;
+        margin: 0;
+        background: var(--slw-bg);
+        color: var(--slw-text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .slw-title {
+        font-weight: 650;
+        margin-bottom: 4px;
+      }
+
+      .slw-subtitle {
+        color: var(--slw-muted);
+        font-size: 0.92rem;
+        margin-bottom: 14px;
+        line-height: 1.35;
+      }
+
+      .slw-plot-wrap {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .slw-plot {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .slw-bottom {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(200px, 245px);
+        gap: 16px;
+        align-items: start;
+        margin-top: 14px;
+      }
+
+      .slw-controls {
+        display: grid;
+        gap: 12px;
+        font-size: 0.88rem;
+      }
+
+      .slw-control label {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .slw-control label span {
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .slw-control small {
+        display: block;
+        color: var(--slw-muted);
+        line-height: 1.3;
+        margin-top: 2px;
+      }
+
+      .slw-control input,
+      .slw-control select {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .slw-readout {
+        border-left: 1px solid var(--slw-border);
+        padding-left: 14px;
+        display: grid;
+        gap: 7px;
+        font-variant-numeric: tabular-nums;
+        font-size: 0.75rem;
+      }
+
+      .slw-readout-title {
+        font-weight: 650;
+        margin-bottom: 2px;
+        font-size: 0.88rem;
+      }
+
+      .slw-readout div:not(.slw-readout-title) {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .slw-readout span:first-child {
+        color: var(--slw-muted);
+      }
+
+      .slw-caption {
+        margin-top: 12px;
+        color: var(--slw-muted);
+        font-size: 0.88rem;
+        line-height: 1.35;
+      }
+
+      :root[data-theme="dark"] .slw-widget {
+          --slw-bg: #111;
+          --slw-border: #333;
+          --slw-muted: #aaa;
+          --slw-text: #eee;
+          --slw-grid: #2a2a2a;
+          --slw-point: #aaa;
+          --slw-true: #aaa;
+      }
+
+      @media (max-width: 720px) {
+        .slw-bottom {
+          grid-template-columns: 1fr;
+        }
+
+        .slw-readout {
+          border-left: none;
+          border-top: 1px solid var(--slw-border);
+          padding-left: 0;
+          padding-top: 12px;
+        }
+      }
+    </style>
+
+    <div class="slw-title">Scaling Law 拟合实验台</div>
+    <div class="slw-subtitle">
+      真实函数：
+      <code>L̂(N,D) = 482.01N<sup>-0.3478</sup> + 2085.43D<sup>-0.3658</sup> + 1.8172</code>.
+      <br/>因此 <code>N<sub>opt</sub> ∝ C<sup>0.5126</sup></code>，
+      <code>D<sub>opt</sub> ∝ C<sup>0.4874</sup></code>.
+    </div>
+
+    <div class="slw-plot-wrap">
+      <svg class="slw-plot" viewBox="0 0 760 380" role="img" aria-label="Scaling law 真实曲线、拟合曲线与外推结果对比"></svg>
+    </div>
+
+    <div class="slw-bottom">
+      <div class="slw-controls">
+        <div class="slw-control">
+          <label for="${uid}-region">拟合区域</label>
+          <select id="${uid}-region">
+            <option value="small">仅小模型</option>
+            <option value="medium">仅中等模型</option>
+            <option value="all" selected>所有测量模型</option>
+          </select>
+          <small>改变拟合的规模范围，会改变表面上的幂律指数。</small>
+        </div>
+
+        <div class="slw-control">
+          <label for="${uid}-precision">
+            损失精度
+            <span><span id="${uid}-precision-value"></span> 位小数</span>
+          </label>
+          <input id="${uid}-precision" type="range" min="0" max="4" step="1" value="4">
+          <small>拟合前，先对观测损失进行舍入。</small>
+        </div>
+
+        <div class="slw-control">
+          <label for="${uid}-noise">
+            损失噪声
+            <span id="${uid}-noise-value"></span>
+          </label>
+          <input id="${uid}-noise" type="range" min="-200" max="200" step="5" value="0">
+          <small>在拟合区域内加入相关的损失估计偏差。</small>
+        </div>
+
+        <div class="slw-control">
+          <label for="${uid}-target">
+            外推目标
+            <span id="${uid}-target-value"></span>
+          </label>
+          <input id="${uid}-target" type="range" min="11" max="15" step="1" value="15">
+          <small>在真实函数的计算最优数据量 <code>D = D<sub>opt</sub>(N)</code> 处评估预测。</small>
+        </div>
+      </div>
+
+      <div class="slw-readout">
+        <div class="slw-readout-title">拟合结果</div>
+        <div><span>拟合 α</span><strong id="${uid}-alpha"></strong></div>
+        <div><span>拟合 β</span><strong id="${uid}-beta"></strong></div>
+        <div><span>拟合 E</span><strong id="${uid}-floor"></strong></div>
+        <div><span>拟合 N<sub>opt</sub> 指数</span><strong id="${uid}-nexp"></strong></div>
+        <div><span>拟合 D<sub>opt</sub> 指数</span><strong id="${uid}-dexp"></strong></div>
+        <div><span>预测损失</span><strong id="${uid}-pred"></strong></div>
+        <div><span>真实损失</span><strong id="${uid}-true"></strong></div>
+        <div><span>误差</span><strong id="${uid}-error"></strong></div>
+      </div>
+    </div>
+
+    <div class="slw-caption">
+      红点参与拟合，灰点为留出点。同一模型规模下的点使用不同的 token 预算。
+      灰色虚线表示合成数据的真实曲线。
+    </div>
+  `
+
+        const svg = root.querySelector(".slw-plot")
+
+        const regionEl = root.querySelector(`#${uid}-region`)
+        const precisionEl = root.querySelector(`#${uid}-precision`)
+        const noiseEl = root.querySelector(`#${uid}-noise`)
+        const targetEl = root.querySelector(`#${uid}-target`)
+
+        const precisionValueEl = root.querySelector(`#${uid}-precision-value`)
+        const noiseValueEl = root.querySelector(`#${uid}-noise-value`)
+        const targetValueEl = root.querySelector(`#${uid}-target-value`)
+
+        const alphaEl = root.querySelector(`#${uid}-alpha`)
+        const betaEl = root.querySelector(`#${uid}-beta`)
+        const floorEl = root.querySelector(`#${uid}-floor`)
+        const nexpEl = root.querySelector(`#${uid}-nexp`)
+        const dexpEl = root.querySelector(`#${uid}-dexp`)
+        const predEl = root.querySelector(`#${uid}-pred`)
+        const trueEl = root.querySelector(`#${uid}-true`)
+        const errorEl = root.querySelector(`#${uid}-error`)
+
+        function optimalDForN(params, N) {
+          const G = Math.pow(
+            (params.alpha * params.A) / (params.beta * params.B),
+            1 / (params.alpha + params.beta),
+          )
+
+          const a = params.beta / (params.alpha + params.beta)
+          const b = params.alpha / (params.alpha + params.beta)
+
+          const K = Math.pow(N / G, 1 / a)
+
+          return Math.pow(G, -1) * Math.pow(K, b)
+        }
+
+        const TRUE = {
+          gamma1: 1.8172,
+          A: 482.01,
+          B: 2085.43,
+          alpha: 0.3478,
+          beta: 0.3658,
+        }
+
+        const TRUE_N_EXP = TRUE.beta / (TRUE.alpha + TRUE.beta)
+        const TRUE_D_EXP = TRUE.alpha / (TRUE.alpha + TRUE.beta)
+
+        const modelSizes = [1e8, 3e8, 7e8, 1e9, 3e9, 7e9, 1e10, 3e10, 7e10]
+        const tokenRatios = [5, 10, 20, 40]
+
+        const points = []
+
+        for (let ni = 0; ni < modelSizes.length; ni++) {
+          for (let ri = 0; ri < tokenRatios.length; ri++) {
+            const N = modelSizes[ni]
+            const D = tokenRatios[ri] * N
+
+            points.push({
+              id: `${ni}-${ri}`,
+              nIndex: ni,
+              ratioIndex: ri,
+              N,
+              D,
+              ratio: tokenRatios[ri],
+            })
+          }
+        }
+
+        function trueLoss(N, D) {
+          return TRUE.gamma1 + TRUE.A * Math.pow(N, -TRUE.alpha) + TRUE.B * Math.pow(D, -TRUE.beta)
+        }
+
+        function log10(x) {
+          return Math.log(x) / Math.LN10
+        }
+
+        function baseRunNoise(p) {
+          return (
+            0.01 * Math.sin((p.nIndex + 1) * 1.91 + (p.ratioIndex + 1) * 2.67) +
+            0.004 * ((p.nIndex + p.ratioIndex) % 2 === 0 ? 1 : -1)
+          )
+        }
+
+        function structuredNoiseProfile(p) {
+          const minLogN = log10(modelSizes[0])
+          const maxLogN = log10(modelSizes[modelSizes.length - 1])
+
+          const allDs = points.map((q) => q.D)
+          const minLogD = log10(Math.min(...allDs))
+          const maxLogD = log10(Math.max(...allDs))
+
+          const n = (log10(p.N) - minLogN) / (maxLogN - minLogN)
+          const d = (log10(p.D) - minLogD) / (maxLogD - minLogD)
+
+          return (
+            1.15 * (n - 0.5) -
+            0.95 * (d - 0.5) +
+            0.8 * (n - 0.5) * (d - 0.5) +
+            0.2 * Math.sin(8 * n + 5 * d)
+          )
+        }
+
+        function rounded(y, decimals) {
+          const f = Math.pow(10, decimals)
+          return Math.round(y * f) / f
+        }
+
+        function selectedPoints(region) {
+          if (region === "small") {
+            return points.filter((p) => p.nIndex <= 3)
+          }
+
+          if (region === "medium") {
+            return points.filter((p) => p.nIndex >= 2 && p.nIndex <= 5)
+          }
+
+          return points.slice()
+        }
+
+        function observedPoints(decimals, noiseMilliLoss, selected) {
+          const selectedIds = new Set(selected.map((p) => p.id))
+
+          return points.map((p) => {
+            const structuredNoise = (noiseMilliLoss / 1000) * structuredNoiseProfile(p)
+
+            const y = trueLoss(p.N, p.D) + baseRunNoise(p) + structuredNoise
+
+            return {
+              ...p,
+              selected: selectedIds.has(p.id),
+              y: rounded(y, decimals),
+            }
+          })
+        }
+
+        function evaluateFit(data, alpha, beta, gamma) {
+          let Sxx = 0
+          let Szz = 0
+          let Sxz = 0
+          let Sxt = 0
+          let Szt = 0
+
+          for (const p of data) {
+            const t = p.y - gamma
+
+            if (t <= 0) {
+              return null
+            }
+
+            const x = Math.pow(p.N, -alpha)
+            const z = Math.pow(p.D, -beta)
+
+            Sxx += x * x
+            Szz += z * z
+            Sxz += x * z
+            Sxt += x * t
+            Szt += z * t
+          }
+
+          const det = Sxx * Szz - Sxz * Sxz
+
+          if (!Number.isFinite(det) || Math.abs(det) < 1e-40) {
+            return null
+          }
+
+          const A = (Sxt * Szz - Szt * Sxz) / det
+          const B = (Sxx * Szt - Sxz * Sxt) / det
+
+          if (!Number.isFinite(A) || !Number.isFinite(B) || A <= 0 || B <= 0) {
+            return null
+          }
+
+          let sse = 0
+
+          for (const p of data) {
+            const pred = gamma + A * Math.pow(p.N, -alpha) + B * Math.pow(p.D, -beta)
+
+            sse += Math.pow(pred - p.y, 2)
+          }
+
+          return { gamma, A, B, alpha, beta, sse }
+        }
+
+        function searchBox(data, ranges, steps) {
+          let best = null
+
+          for (let ai = 0; ai < steps.alpha; ai++) {
+            const alpha =
+              ranges.alphaMin +
+              ((ranges.alphaMax - ranges.alphaMin) * ai) / Math.max(1, steps.alpha - 1)
+
+            for (let bi = 0; bi < steps.beta; bi++) {
+              const beta =
+                ranges.betaMin +
+                ((ranges.betaMax - ranges.betaMin) * bi) / Math.max(1, steps.beta - 1)
+
+              for (let gi = 0; gi < steps.gamma; gi++) {
+                const gamma =
+                  ranges.gammaMin +
+                  ((ranges.gammaMax - ranges.gammaMin) * gi) / Math.max(1, steps.gamma - 1)
+
+                const fit = evaluateFit(data, alpha, beta, gamma)
+
+                if (!fit) continue
+
+                if (!best || fit.sse < best.sse) {
+                  best = fit
+                }
+              }
+            }
+          }
+
+          return best
+        }
+
+        function fitScalingLaw(data) {
+          const ys = data.map((p) => p.y)
+          const minY = Math.min(...ys)
+          const maxY = Math.max(...ys)
+          const span = Math.max(maxY - minY, 0.1)
+
+          const gammaMax = minY - 1e-6
+          const gammaMin = Math.max(0, minY - Math.max(1.2 * span, 6.0))
+
+          let best = searchBox(
+            data,
+            {
+              alphaMin: 0.2,
+              alphaMax: 0.55,
+              betaMin: 0.2,
+              betaMax: 0.55,
+              gammaMin,
+              gammaMax,
+            },
+            { alpha: 29, beta: 29, gamma: 45 },
+          )
+
+          if (!best) return null
+
+          const refinements = [
+            { da: 0.05, db: 0.05, dg: 0.5, steps: { alpha: 25, beta: 25, gamma: 31 } },
+            { da: 0.015, db: 0.015, dg: 0.16, steps: { alpha: 25, beta: 25, gamma: 31 } },
+            { da: 0.004, db: 0.004, dg: 0.04, steps: { alpha: 21, beta: 21, gamma: 25 } },
+          ]
+
+          for (const r of refinements) {
+            const candidate = searchBox(
+              data,
+              {
+                alphaMin: Math.max(0.01, best.alpha - r.da),
+                alphaMax: Math.min(1.2, best.alpha + r.da),
+                betaMin: Math.max(0.01, best.beta - r.db),
+                betaMax: Math.min(1.2, best.beta + r.db),
+                gammaMin: Math.max(0, best.gamma - r.dg),
+                gammaMax: Math.min(gammaMax, best.gamma + r.dg),
+              },
+              r.steps,
+            )
+
+            if (candidate && candidate.sse <= best.sse) {
+              best = candidate
+            }
+          }
+
+          return best
+        }
+
+        function fittedLoss(fit, N, D) {
+          return fit.gamma + fit.A * Math.pow(N, -fit.alpha) + fit.B * Math.pow(D, -fit.beta)
+        }
+
+        function formatPowerOfTen(x) {
+          const e = Math.round(log10(x))
+          const m = x / Math.pow(10, e)
+
+          if (Math.abs(m - 1) < 1e-8) {
+            return `10^${e}`
+          }
+
+          return `${m.toFixed(1)}×10^${e}`
+        }
+
+        function fmt(x, digits = 4) {
+          return Number.isFinite(x) ? x.toFixed(digits) : "—"
+        }
+
+        function svgPath(pointsForPath, xScale, yScale) {
+          return pointsForPath
+            .map((p, i) => `${i === 0 ? "M" : "L"} ${xScale(p[0])} ${yScale(p[1])}`)
+            .join(" ")
+        }
+
+        function update() {
+          const region = regionEl.value
+          const decimals = Number(precisionEl.value)
+          const noise = Number(noiseEl.value)
+          const targetLogN = Number(targetEl.value)
+          const targetN = Math.pow(10, targetLogN)
+          const targetD = optimalDForN(TRUE, targetN)
+
+          const selected = selectedPoints(region)
+          const observed = observedPoints(decimals, noise, selected)
+          const fitData = observed.filter((p) => p.selected)
+          const fit = fitScalingLaw(fitData)
+
+          precisionValueEl.textContent = String(decimals)
+          noiseValueEl.textContent = `${noise >= 0 ? "+" : ""}${noise} mL`
+          targetValueEl.textContent = `N=${formatPowerOfTen(targetN)}`
+
+          if (!fit) {
+            svg.innerHTML = `<text x="24" y="40">拟合失败，请提高精度、降低噪声或选择其他区域。</text>`
+            return
+          }
+
+          const predictedTarget = fittedLoss(fit, targetN, targetD)
+          const trueTarget = trueLoss(targetN, targetD)
+          const error = predictedTarget - trueTarget
+
+          const fittedNExp = fit.beta / (fit.alpha + fit.beta)
+          const fittedDExp = fit.alpha / (fit.alpha + fit.beta)
+
+          alphaEl.textContent = fmt(fit.alpha, 4)
+          betaEl.textContent = fmt(fit.beta, 4)
+          floorEl.textContent = fmt(fit.gamma, 4)
+          nexpEl.textContent = `${fmt(fittedNExp, 4)} / 真实值 ${fmt(TRUE_N_EXP, 4)}`
+          dexpEl.textContent = `${fmt(fittedDExp, 4)} / 真实值 ${fmt(TRUE_D_EXP, 4)}`
+          predEl.textContent = fmt(predictedTarget, 4)
+          trueEl.textContent = fmt(trueTarget, 4)
+          errorEl.textContent = `${error >= 0 ? "+" : ""}${fmt(error, 4)}`
+
+          const W = 760
+          const H = 380
+          const m = { left: 58, right: 24, top: 24, bottom: 52 }
+
+          const xMin = log10(Math.min(...modelSizes))
+          const xMax = Math.max(targetLogN, log10(Math.max(...modelSizes)))
+
+          const sample = []
+          const steps = 180
+
+          for (let i = 0; i <= steps; i++) {
+            const t = i / steps
+            const logN = xMin + t * (xMax - xMin)
+            const N = Math.pow(10, logN)
+            const D = optimalDForN(TRUE, N)
+
+            sample.push({ N, D })
+          }
+
+          const trueCurve = sample.map((p) => [p.N, trueLoss(p.N, p.D)])
+          const fitCurve = sample.map((p) => [p.N, fittedLoss(fit, p.N, p.D)])
+
+          const allY = [
+            ...observed.map((p) => p.y),
+            ...trueCurve.map((p) => p[1]),
+            ...fitCurve.map((p) => p[1]),
+            predictedTarget,
+            trueTarget,
+          ].filter(Number.isFinite)
+
+          let yMin = Math.min(...allY)
+          let yMax = Math.max(...allY)
+          const yPad = 0.08 * (yMax - yMin || 1)
+
+          yMin -= yPad
+          yMax += yPad
+
+          const xScale = (N) => {
+            const x = log10(N)
+            return m.left + ((x - xMin) / (xMax - xMin)) * (W - m.left - m.right)
+          }
+
+          const yScale = (y) => {
+            return H - m.bottom - ((y - yMin) / (yMax - yMin)) * (H - m.top - m.bottom)
+          }
+
+          const xTicks = []
+          const xTickStep = xMax - xMin > 7 ? 2 : 1
+
+          for (let e = Math.ceil(xMin); e <= Math.floor(xMax); e += xTickStep) {
+            xTicks.push(Math.pow(10, e))
+          }
+
+          const yTicks = []
+
+          for (let i = 0; i <= 4; i++) {
+            yTicks.push(yMin + (i / 4) * (yMax - yMin))
+          }
+
+          const truePath = svgPath(trueCurve, xScale, yScale)
+          const fitPath = svgPath(fitCurve, xScale, yScale)
+
+          const pointSvg = observed
+            .map((p) => {
+              const fill = p.selected ? "var(--slw-selected)" : "var(--slw-point)"
+              const opacity = p.selected ? 1 : 0.45
+
+              const jitter = (p.ratioIndex - 1.5) * 0.018
+              const jitteredN = p.N * Math.pow(10, jitter)
+
+              return `
+        <circle
+          cx="${xScale(jitteredN)}"
+          cy="${yScale(p.y)}"
+          r="${p.selected ? 4.5 : 3.8}"
+          fill="${fill}"
+          opacity="${opacity}"
+        >
+          <title>N=${p.N.toExponential(1)}, D=${p.D.toExponential(1)}, 观测损失=${p.y}</title>
+        </circle>
+      `
+            })
+            .join("")
+
+          svg.innerHTML = `
+      <rect x="0" y="0" width="${W}" height="${H}" fill="transparent"></rect>
+
+      ${yTicks
+        .map(
+          (y) => `
+        <line
+          x1="${m.left}"
+          x2="${W - m.right}"
+          y1="${yScale(y)}"
+          y2="${yScale(y)}"
+          stroke="var(--slw-grid)"
+        />
+        <text
+          x="${m.left - 8}"
+          y="${yScale(y) + 4}"
+          text-anchor="end"
+          font-size="11"
+          fill="var(--slw-muted)"
+        >${y.toFixed(2)}</text>
+      `,
+        )
+        .join("")}
+
+      ${xTicks
+        .map(
+          (N) => `
+        <line
+          x1="${xScale(N)}"
+          x2="${xScale(N)}"
+          y1="${m.top}"
+          y2="${H - m.bottom}"
+          stroke="var(--slw-grid)"
+        />
+        <text
+          x="${xScale(N)}"
+          y="${H - m.bottom + 20}"
+          text-anchor="middle"
+          font-size="11"
+          fill="var(--slw-muted)"
+        >${formatPowerOfTen(N)}</text>
+      `,
+        )
+        .join("")}
+
+      <line
+        x1="${m.left}"
+        x2="${W - m.right}"
+        y1="${H - m.bottom}"
+        y2="${H - m.bottom}"
+        stroke="var(--slw-muted)"
+      />
+
+      <line
+        x1="${m.left}"
+        x2="${m.left}"
+        y1="${m.top}"
+        y2="${H - m.bottom}"
+        stroke="var(--slw-muted)"
+      />
+
+      <text
+        x="${(W + m.left - m.right) / 2}"
+        y="${H - 14}"
+        text-anchor="middle"
+        font-size="12"
+        fill="var(--slw-muted)"
+      >模型规模 N（对数坐标）</text>
+
+      <text
+        x="14"
+        y="${(H + m.top - m.bottom) / 2}"
+        transform="rotate(-90 14 ${(H + m.top - m.bottom) / 2})"
+        text-anchor="middle"
+        font-size="12"
+        fill="var(--slw-muted)"
+      >损失</text>
+
+      <path
+        d="${truePath}"
+        fill="none"
+        stroke="var(--slw-true)"
+        stroke-width="2"
+        stroke-dasharray="5 5"
+      />
+
+      <path
+        d="${fitPath}"
+        fill="none"
+        stroke="var(--slw-fit)"
+        stroke-width="2.5"
+      />
+
+      ${pointSvg}
+
+      <line
+        x1="${xScale(targetN)}"
+        x2="${xScale(targetN)}"
+        y1="${m.top}"
+        y2="${H - m.bottom}"
+        stroke="var(--slw-target)"
+        stroke-width="1.5"
+        stroke-dasharray="4 4"
+      />
+
+      <circle
+        cx="${xScale(targetN)}"
+        cy="${yScale(predictedTarget)}"
+        r="5"
+        fill="var(--slw-fit)"
+      >
+        <title>拟合外推： ${predictedTarget.toFixed(4)}</title>
+      </circle>
+
+      <circle
+        cx="${xScale(targetN)}"
+        cy="${yScale(trueTarget)}"
+        r="5"
+        fill="var(--slw-target)"
+      >
+        <title>合成数据的真实损失： ${trueTarget.toFixed(4)}</title>
+      </circle>
+
+      <g transform="translate(${m.left + 8}, ${m.top + 8})">
+        <rect
+          x="0"
+          y="0"
+          width="250"
+          height="88"
+          rx="8"
+          fill="var(--slw-bg)"
+          stroke="var(--slw-border)"
+          opacity="0.92"
+        ></rect>
+
+        <line x1="10" x2="34" y1="17" y2="17" stroke="var(--slw-true)" stroke-width="2" stroke-dasharray="5 5"></line>
+        <text x="42" y="21" font-size="12" fill="var(--slw-muted)">真实曲线</text>
+
+        <line x1="10" x2="34" y1="39" y2="39" stroke="var(--slw-fit)" stroke-width="2.5"></line>
+        <text x="42" y="43" font-size="12" fill="var(--slw-muted)">拟合的 scaling law</text>
+
+        <circle cx="22" cy="61" r="4" fill="var(--slw-selected)"></circle>
+        <text x="42" y="65" font-size="12" fill="var(--slw-muted)">参与拟合的点</text>
+
+        <circle cx="22" cy="79" r="4" fill="var(--slw-point)" opacity="0.45"></circle>
+        <text x="42" y="83" font-size="12" fill="var(--slw-muted)">留出的测量点</text>
+      </g>
+    `
+        }
+
+        let pending = false
+
+        function scheduleUpdate() {
+          if (pending) return
+
+          pending = true
+
+          window.requestAnimationFrame(() => {
+            pending = false
+            update()
+          })
+        }
+
+        ;[regionEl, precisionEl, noiseEl, targetEl].forEach((el) => {
+          el.addEventListener("input", scheduleUpdate)
+          el.addEventListener("change", scheduleUpdate)
+        })
+
+        // Quartz integration: resize to content and follow the parent page's theme.
+        function reportHeight() {
+          if (window.parent !== window) {
+            window.parent.postMessage(
+              {
+                type: "ai-library:widget-size",
+                height: Math.ceil(root.getBoundingClientRect().height),
+              },
+              "*",
+            )
+          }
+        }
+
+        document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
+          ? "dark"
+          : "light"
+        window.addEventListener("message", (event) => {
+          if (event.source !== window.parent || event.data?.type !== "ai-library:widget-theme")
+            return
+          if (event.data.theme !== "light" && event.data.theme !== "dark") return
+          document.documentElement.dataset.theme = event.data.theme
+          reportHeight()
+        })
+        new ResizeObserver(reportHeight).observe(root)
+        update()
+        reportHeight()
+      })()
+    </script>
+  </body>
+</html>

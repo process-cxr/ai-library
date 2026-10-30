@@ -4,10 +4,13 @@ import { htmlToJsx } from "../../util/jsx"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import sourcePanelStyle from "../styles/sourcePanel.scss"
 import recentPapersStyle from "../styles/recentPapers.scss"
+import blogWidgetsStyle from "../styles/blogWidgets.scss"
 import { concatenateResources } from "../../util/resources"
 import RecentPapers from "../RecentPapers"
 // @ts-ignore
 import sourcePanelScript from "../scripts/sourcePanel.inline"
+// @ts-ignore
+import blogWidgetsScript from "../scripts/blogWidgets.inline"
 
 const RecentPapersBlock = RecentPapers()
 
@@ -205,7 +208,7 @@ const Content: QuartzComponent = (props: QuartzComponentProps) => {
   )
 }
 
-Content.css = concatenateResources(sourcePanelStyle, recentPapersStyle)
-Content.afterDOMLoaded = sourcePanelScript
+Content.css = concatenateResources(sourcePanelStyle, recentPapersStyle, blogWidgetsStyle)
+Content.afterDOMLoaded = concatenateResources(sourcePanelScript, blogWidgetsScript)
 
 export default (() => Content) satisfies QuartzComponentConstructor

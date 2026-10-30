@@ -2,7 +2,7 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-10-20
+modified: 2026-10-29
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
@@ -96,3 +96,7 @@ modified: 2026-10-20
 - [[sources/papers/2026-dive-into-claude-code-design-space-ai-agent-systems|Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems]]
 - [[sources/papers/2026-tqs-quality-not-just-outcome-coding-agent-trajectories|Quality, Not Just Outcome: A Structural Scoring Framework for Selecting Coding-Agent Trajectories for Supervised Fine-Tuning]]
 - [[sources/papers/2026-dosa-dots-sparse-attention|DoSA: Dots Sparse Attention]]
+- [[sources/papers/2026-programbench-rebuild-programs-from-scratch|ProgramBench: Can Language Models Rebuild Programs From Scratch?]]
+- [[sources/papers/2026-iterative-merging-multi-teacher-on-policy-distillation|No Pain, More Gain: Iterative Merging for Effective Multi-Teacher On-Policy Distillation]]
+- [[sources/papers/2026-fisher-geometric-multi-teacher-on-policy-distillation|A Fisher-Geometric View of Multi-Teacher On-Policy Distillation]]
+- [[sources/papers/2026-roadmopd-cross-teacher-guarding|Beyond Domain-Routed Supervision: Cross-Teacher Guarding for Multi-Teacher On-Policy Distillation]]

@@ -2,7 +2,7 @@
 title: On-policy KD
 created: 2026-03-08
 published: 2026-03-08
-modified: 2026-09-14
+modified: 2026-10-29
 type: topic
 status: mature
 area: training
@@ -431,6 +431,26 @@ $$
 
 On-policy self-distillation 让同一个模型在不同上下文下扮演 teacher 和 student：teacher 可以看到 privileged solution 或 reference trace，student 只看到问题。Multi-teacher OPD 则让不同 domain 的 specialist teachers 负责不同 prompt，再在 student rollout 上做 token-level distillation。两种变体都保留了 student-state coverage，但分别引入 privileged context 或 teacher routing 的新问题。
 
+### 同轨迹辅助教师与更新兼容性
+
+领域路由决定学生向哪个教师学习，但各领域更新仍作用于共享参数。[[sources/papers/2026-roadmopd-cross-teacher-guarding|ROADMOPD]] 让未被路由的教师也对同一条学生回答评分：相对冻结 reference 的偏好用于调制主教师的 token reward，辅助 OPD loss 的梯度则用于约束主梯度中的冲突分量。
+
+这里辅助教师不生成新回答、不接管当前领域任务，其梯度也不直接加入最终更新。它提供的是“对当前行为的修正是否相容”的局部代理信号，与辅助领域自己数据上的训练梯度不同。token agreement、局部梯度相容和最终跨领域能力，是需要分别验证的三个层次。
+
+### 初始化质量还包括前缀兼容性
+
+学生当前 benchmark 分数高，并不保证它更容易接受教师后续监督。两个学生即使独立解题表现接近，生成的前缀也可能让同一教师接着完成任务的成功率不同。因此，OPD 初始化需要同时考虑当前能力，以及教师在学生所访问状态上的可用性。
+
+[[sources/papers/2026-iterative-merging-multi-teacher-on-policy-distillation|IM-MOPD]] 在同架构、共同 reference 的教师设置中，先均匀合并教师 task vectors，再根据验证集领域恢复率，在蒸馏过程中给学生加入固定向量增量。它组合了权重空间修正和逐 token 行为蒸馏；不是改变教师路由概率，也不是只在训练结束后再合并一次。
+
+可用 student-prefix teacher-continuation 作诊断：先让学生生成部分前缀，再由教师续写，比较最终任务完成率。这能观察状态兼容性，但不直接等价于训练 log-probability 信号的质量，更不能替代完整蒸馏实验。参数修正方案还要求读取同源教师权重，适用条件比仅调用教师输出的 OPD 更严格。
+
+### 局部 Fisher 近似与后续蒸馏
+
+对同源且接近的教师，学生到教师的 reverse KL 在教师附近展开，其二阶项由 Fisher 信息矩阵决定。因此，多教师 OPD 的一个局部近似可以与 Fisher 加权参数合并联系起来。但真实训练还受非线性余项、状态访问分布和跨领域更新影响，不能由这个关系推出“合并普遍等于完整 OPD”。
+
+[[sources/papers/2026-fisher-geometric-multi-teacher-on-policy-distillation|RGBM]] 将这一思路用于先合并、再筛选独立蒸馏分支。其结果强调：一个分支能在自己领域继续进步，不代表把它写回统一学生就能提高多域表现。也应分别检查合并后的当前能力、继续蒸馏的必要性，以及更新写回后的跨域影响。
+
 ## Agent 和长轨迹中的 OPD
 
 在 tool-use agent 中，状态可能包含 system / user request、assistant reasoning、tool call、external observation、workspace 和 environment state。若 action 会改变环境，真正的 on-policy state 需要执行 action 后再获得 next observation；只在离线拼接文本上采样，不能完全等价于真实环境 rollout。
@@ -493,6 +513,9 @@ OPD 可以理解为：**让 student 先走自己的路，再让 teacher 在 stud
 - [[sources/papers/2026-on-policy-delta-distillation|On-Policy Delta Distillation]]
 - [[sources/papers/2026-self-distilled-reasoner-on-policy-self-distillation-for-large-language-models|Self-Distilled Reasoner]]
 - [[sources/papers/2026-mopd-multi-teacher-on-policy-distillation-for-capability-integration|MOPD]]
+- [[sources/papers/2026-iterative-merging-multi-teacher-on-policy-distillation|IM-MOPD: Iterative Merging for Multi-Teacher On-Policy Distillation]]
+- [[sources/papers/2026-fisher-geometric-multi-teacher-on-policy-distillation|A Fisher-Geometric View of Multi-Teacher On-Policy Distillation]]
+- [[sources/papers/2026-roadmopd-cross-teacher-guarding|ROADMOPD: Cross-Teacher Guarding for MOPD]]
 - [[sources/papers/2020-learning-to-summarize-from-human-feedback|Learning to summarize from human feedback]]
 - [[sources/papers/2022-instructgpt|Training language models to follow instructions with human feedback]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]
