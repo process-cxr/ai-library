@@ -2,7 +2,7 @@
 title: On-policy KD
 created: 2026-03-08
 published: 2026-03-08
-modified: 2026-10-29
+modified: 2026-11-02
 type: topic
 status: mature
 area: training
@@ -451,6 +451,16 @@ On-policy self-distillation 让同一个模型在不同上下文下扮演 teache
 
 [[sources/papers/2026-fisher-geometric-multi-teacher-on-policy-distillation|RGBM]] 将这一思路用于先合并、再筛选独立蒸馏分支。其结果强调：一个分支能在自己领域继续进步，不代表把它写回统一学生就能提高多域表现。也应分别检查合并后的当前能力、继续蒸馏的必要性，以及更新写回后的跨域影响。
 
+### 学生状态上的教师接续
+
+学生状态覆盖不一定要求教师只对既有 rollout 评分。[[sources/papers/2026-olive-learning-from-teacher-continuations-at-student-states|OLIVE]] 先让当前学生生成前缀，再让教师从该位置自回归接续；学生只对教师后缀计算交叉熵，之后刷新学生前缀并重复。它提供的是可执行的纠正路径，而不只是某个 sampled token 的局部分布偏好。
+
+这个方法需要区分状态与监督来源：接管点来自学生，后缀内的新状态沿教师自己的选择推进。其优化是固定文本上的 suffix CE，不是原学生完整轨迹上的 reverse-KL 等价实现；没有教师 logits 也能训练，不同 tokenizer 可通过文本重新编码对接。
+
+多轮环境中，教师接管学生实际执行后的环境，新的 observations 必须来自教师动作执行，而不能用静态文本编造。学生 turns 和 observations 只作上下文，教师动作 tokens 才作目标。接管不等于回滚，无法保证已经不可恢复的状态重新可解。
+
+持续刷新前缀与收集一次旧学生前缀后离线训练也不同。异步实现可以用有界 policy lag 重叠生成和更新，但应记录前缀 policy version、交接位置和 lag，不能将所有监督位置都描述为严格当前学生分布。
+
 ## Agent 和长轨迹中的 OPD
 
 在 tool-use agent 中，状态可能包含 system / user request、assistant reasoning、tool call、external observation、workspace 和 environment state。若 action 会改变环境，真正的 on-policy state 需要执行 action 后再获得 next observation；只在离线拼接文本上采样，不能完全等价于真实环境 rollout。
@@ -516,6 +526,7 @@ OPD 可以理解为：**让 student 先走自己的路，再让 teacher 在 stud
 - [[sources/papers/2026-iterative-merging-multi-teacher-on-policy-distillation|IM-MOPD: Iterative Merging for Multi-Teacher On-Policy Distillation]]
 - [[sources/papers/2026-fisher-geometric-multi-teacher-on-policy-distillation|A Fisher-Geometric View of Multi-Teacher On-Policy Distillation]]
 - [[sources/papers/2026-roadmopd-cross-teacher-guarding|ROADMOPD: Cross-Teacher Guarding for MOPD]]
+- [[sources/papers/2026-olive-learning-from-teacher-continuations-at-student-states|OLIVE: Learning from Teacher Continuations at Student States]]
 - [[sources/papers/2020-learning-to-summarize-from-human-feedback|Learning to summarize from human feedback]]
 - [[sources/papers/2022-instructgpt|Training language models to follow instructions with human feedback]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]

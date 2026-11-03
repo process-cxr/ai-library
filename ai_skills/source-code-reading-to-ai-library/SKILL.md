@@ -1,6 +1,6 @@
 ---
 name: source-code-reading-to-ai-library
-description: Read and analyze large software repositories and turn them into durable AI Library source-reading projects. Use when the user asks to study a framework or codebase, establish an index and roadmap under content/projects, trace a real runtime path, explain control/data/tensor/process-group flows, compare execution backends, create reproducible labs, or update existing source-reading notes from code evidence.
+description: Read and analyze large software repositories and turn them into durable AI Library source-reading projects. Use when the user asks to study a framework or codebase, establish a reader-facing index and learning guide under content/projects, trace a real runtime path, explain control/data/tensor/process-group flows, compare execution backends, create reproducible labs, or update existing source-reading notes from code evidence.
 ---
 
 # Source Code Reading To AI Library
@@ -49,7 +49,7 @@ Read the page once as a learner and check:
 - Static source conclusions, runtime observations, and engineering explanations remain distinguishable in natural prose.
 - Changing English headings to Chinese is not sufficient: check explanation order, causal links, and concrete examples, not only vocabulary.
 
-The project index and roadmap may contain navigation and learning-order language. Topic pages should spend most of their space teaching the mechanism. Labs are the appropriate place for reproducibility records and operational checklists.
+The project index and learning guide may contain navigation and learning-order language. A separate roadmap is optional. Topic pages should spend most of their space teaching the mechanism. Labs are the appropriate place for reproducibility records and operational checklists.
 
 ## Workflow
 
@@ -90,13 +90,13 @@ Use:
 ```text
 content/projects/<project>/
 ├── index.md
-├── roadmap.md
+├── 00-learning-guide.md  (optional)
 ├── focused-topic-pages.md
 └── labs/
 ```
 
 - `index.md` explains what the project is, why its architecture matters, the system map, the canonical runtime chain, the note map and the fixed reading baseline.
-- `roadmap.md` contains only learning order, dependencies, core questions, source entrances, expected notes and completion criteria.
+- Keep one authoritative learning route. A short route can live in `index.md`; use a learning guide when prerequisites and reading order need more space. Do not create both a guide and a separate roadmap by default. A separate roadmap is appropriate only when it materially improves navigation; in that case, link to it instead of repeating the route in the guide.
 - Topic pages explain one runtime boundary, mechanism or comparison.
 - Labs preserve commands, environment, traces, observations and acceptance criteria.
 

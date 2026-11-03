@@ -2,7 +2,7 @@
 title: Sequence-level Distillation
 created: 2026-03-08
 published: 2026-03-08
-modified: 2026-05-29
+modified: 2026-11-02
 type: topic
 status: mature
 area: training
@@ -12,7 +12,7 @@ tags:
   - sequence-level
 ---
 
-Sequence-level Distillation 是让 teacher model 生成完整输出序列，再用这些序列训练 student model 的蒸馏方法。它不同于 [[training/post-training/logits-distillation|Logits Distillation]] 对齐每个 token 的完整概率分布，而是把 teacher 的一个或多个生成结果当作 supervised target。
+Sequence-level Distillation 是让 teacher model 生成输出序列，再用这些文本训练 student model 的蒸馏方法。常见目标是完整回答，也可以是在给定上下文上生成的一段接续。它不同于 [[training/post-training/logits-distillation|Logits Distillation]] 对齐每个 token 的完整概率分布，而是把 teacher 的一个或多个生成结果当作 supervised target。
 
 在后训练中，sequence-level distillation 非常常见，因为它简单、可扩展、对 tokenizer 要求低，并且天然适合 instruction answers、reasoning traces、tool-use demonstrations 和 safety responses。
 
@@ -53,6 +53,27 @@ Sequence-level distillation 的核心质量控制发生在第 2-4 步。Teacher 
 | 后训练常用性 | 模型压缩时常见 | instruction/reasoning KD 常见 |
 
 Sequence-level KD 丢失了 teacher 对替代 token 的概率判断，但换来了可扩展性。
+
+## 在线教师接续与 Suffix CE
+
+文本蒸馏不一定先离线生成固定数据。[[sources/papers/2026-olive-learning-from-teacher-continuations-at-student-states|OLIVE]] 在线收集当前学生前缀，再由教师生成后缀，学生用普通交叉熵学习教师文本：
+
+$$
+\mathcal L_{\mathrm{suffix}}
+=-\sum_j\log\pi_\theta(\widetilde y_j\mid x,p,\widetilde y_{<j}),
+$$
+
+其中 $p$ 是学生前缀，$\widetilde y$ 是教师接续。问题和学生前缀参与 attention，但不作 loss target。数据来源在线刷新，优化形式仍是 teacher-forced CE；这是与完整学生 rollout 上逐 token 分布匹配不同的一条轴。
+
+```text
+student-generated prefix: conditioning only
+teacher-generated suffix: supervised target
+environment observations: conditioning only
+```
+
+它让示范覆盖学生自己造成的失败或偏离状态，并且只需教师文本，可以重新编码到学生词表。教师后缀不一定完整或正确，采样预算和正确性过滤仍需按具体配方说明，不能把“能用文本学习”误解为数据天然可靠。
+
+同样的文本收集一次后反复训练，仍是固定状态分布的离线学习；持续让更新后的学生重新生成前缀，才会跟随 evolving policy。对于多轮 Agent，接续还需要真实环境执行和相应 observations。
 
 ## Reasoning Trace 蒸馏
 
@@ -117,6 +138,7 @@ train student on selected sequences
 
 - [[sources/papers/2016-sequence-level-knowledge-distillation|Sequence-Level Knowledge Distillation]]
 - [[sources/papers/2023-distilling-step-by-step|Distilling Step-by-Step]]
+- [[sources/papers/2026-olive-learning-from-teacher-continuations-at-student-states|OLIVE: Learning from Teacher Continuations at Student States]]
 - [[sources/papers/2024-deepseekmath|DeepSeekMath]]
 
 ## 相关概念

@@ -7,7 +7,7 @@ Use this reference when creating or restructuring a source-reading project.
 ```text
 content/projects/<project>/
 ├── index.md
-├── roadmap.md
+├── 00-learning-guide.md  (optional)
 ├── 01-<first-runtime-trace>.md
 ├── <focused-topic-pages>.md
 └── labs/
@@ -30,19 +30,19 @@ The index is the reader's system map. It should normally contain:
 7. repository, pinned revision and implementation scope;
 8. links to reusable topic knowledge.
 
-The index should not become a second roadmap. Describe the knowledge landscape, not a sequence of assignments.
+Keep the detailed reading sequence in one place. A short project can include it in the index; when a learning guide exists, the index links to it and focuses on the system overview.
 
-## Roadmap
+## Learning guide and optional roadmap
 
-The roadmap is the dependency-aware learning route. For each phase, record:
+Keep the reading route in the index or learning guide according to its length. Explain:
 
 - the question that becomes answerable;
 - prerequisites from earlier phases;
 - source entrances;
-- focused notes or labs produced;
-- completion criteria.
+- related articles and labs;
+- what the reader should be able to explain afterward.
 
-Do not repeat the full project introduction. Link back to the index for repository and baseline information.
+Do not repeat the full project introduction. Link back to the index for repository and baseline information. If the project is large enough to need a separate `roadmap.md`, keep it as the only detailed route and make the learning guide link to it; do not duplicate the route across both pages.
 
 ## Topic Pages
 
@@ -79,7 +79,7 @@ Labs may contain commands, instrumentation plans, trace schemas, acceptance crit
 ## Navigation Rules
 
 - The index links to every main topic group.
-- The roadmap links to the notes and labs produced in each phase.
+- The page that owns the reading route links to the notes and labs for each phase.
 - Topic pages link back to the main run when their role is otherwise ambiguous.
 - Labs link to the claims they verify.
 - Removed pages must have all incoming wikilinks updated in the same change.

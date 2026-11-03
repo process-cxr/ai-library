@@ -2,7 +2,7 @@
 title: Papers
 created: 2026-05-28
 published: 2026-05-28
-modified: 2026-10-29
+modified: 2026-11-03
 ---
 
 论文阅读分析，记录论文的研究问题、核心方法、实验依据、局限和可以回填到主题笔记的稳定知识。
@@ -100,3 +100,5 @@ modified: 2026-10-29
 - [[sources/papers/2026-iterative-merging-multi-teacher-on-policy-distillation|No Pain, More Gain: Iterative Merging for Effective Multi-Teacher On-Policy Distillation]]
 - [[sources/papers/2026-fisher-geometric-multi-teacher-on-policy-distillation|A Fisher-Geometric View of Multi-Teacher On-Policy Distillation]]
 - [[sources/papers/2026-roadmopd-cross-teacher-guarding|Beyond Domain-Routed Supervision: Cross-Teacher Guarding for Multi-Teacher On-Policy Distillation]]
+- [[sources/papers/2026-olive-learning-from-teacher-continuations-at-student-states|Learning from Teacher Continuations at Student States]]
+- [[sources/papers/2026-harbor-harness-agentic-robot-reinforcement-learning|HARBOR: A Harness Framework for Agentic Robot Reinforcement Learning]]

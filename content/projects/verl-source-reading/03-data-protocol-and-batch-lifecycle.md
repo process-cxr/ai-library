@@ -1,8 +1,8 @@
 ---
-title: 03 Data Protocol and Batch Lifecycle
+title: 03 From Prompts to Trajectories
 created: 2026-09-02
 published: 2026-09-02
-modified: 2026-09-03
+modified: 2026-11-03
 type: project
 status: growing
 tags:
@@ -10,350 +10,256 @@ tags:
   - source-reading
   - verl
   - dataflow
-  - batching
+  - rollout
 ---
 
-本页把 verl V1 中一次 sync GRPO update 看成一条字段生命周期：数据集中的 prompt 如何进入 TransferQueue，AgentLoop 如何产生 trajectory，reward、log-prob 和 advantage 如何逐步写回，以及 actor update 完成后这些字段如何被消费和清理。
+上一章结束时，trainer 已经取出 128 道题，为它们分配 `uid`，并把整批 prompt 交给 AgentLoopManager。TransferQueue 中的 `P0` 还只是一个标记为 `pending` 的 prompt key，没有回答，也没有训练用的 reward。
 
-重点不是罗列所有字段，而是区分四种职责：训练数据协议、TransferQueue 的存储与状态管理、算法字段的逐步补全，以及 dispatch 到 model engine 时的 batch 形态转换。
+这一章让 P0 真正生成回答。我们依次进入接收 prompt 的 Ray worker、四个独立 session、负责 tokenization 的 AgentLoop，再跟着一次请求走到 vLLM，最后拿回 `AgentLoopOutput`。到章末，P0 已经有四条长度不同的回答；下一章再给它们评分并组成训练批次。
 
-## Data Representation
+继续使用 [[projects/verl-source-reading/01-sync-grpo-run-overview|01 Sync GRPO Run Overview]] 中的固定案例：两台机器，每台 4 张 GPU；rollout 使用 vLLM，`TP=2、DP=1、PP=1`，共 4 个生成副本；actor 使用 FSDP，训练 DP 为 8。`train_batch_size=128`、`rollout.n=4`。这里的调用和字段来自固定源码 revision；回答内容与小矩阵是教学构造，没有进行这套多机训练。
 
-### Dataset row
+## P0 到达生成侧时，还保留着一道完整的题
 
-`RLHFDataset` 读取 parquet、json 或 jsonl 数据，并在 `__getitem__` 中返回面向 agent loop 的原始消息，而不是提前完成最终 chat-template tokenization。一个 row 主要可能包含：
+把其中一个真实 UUID 简写为 `P0`，它携带的主要信息可以写成下面这样。题目是教学自造的，`data_source` 选择 `openai/gsm8k`，是为了使用仓库内的 GSM8K 规则评分器。
 
-```text
-raw_prompt       原始 message list
-data_source      数据来源标识
-extra_info       index / tools_kwargs / interaction_kwargs 等运行参数
-dummy_tensor     兼容旧 DataProto.batch 的占位 tensor
-multimodal data  图像、视频或音频等可选输入
+```python
+{
+    "uid": "P0",
+    "raw_prompt": [{
+        "role": "user",
+        "content": "盒中有3袋铅笔，每袋4支，一共多少支？请把最终答案写在 #### 后面。",
+    }],
+    "data_source": "openai/gsm8k",
+    "reward_model": {"style": "rule", "ground_truth": "12"},
+    # 另有 index、global_steps、extra_info 等字段
+}
 ```
 
-超长 prompt 的过滤和长度计算发生在 dataset 预处理阶段；具体 prompt 如何套用 chat template 则由 AgentLoop / processor 路径决定。`collate_fn` 将 tensor 字段沿 batch 维 stack，将非 tensor 字段转为 object array。
+`raw_prompt` 是一组 chat messages。模型不能直接计算这些 Python 字典，后面还需要应用 chat template 并编码成 token。`ground_truth` 则留给下一章的评分器；SingleTurnAgentLoop 构造模型输入时读取的是 `raw_prompt`，不会把整份样本字典拼进 prompt。因此把答案保存在 `reward_model` 中，不等于把答案提供给模型。
 
-源码入口：
+现在先区分两个容易都被称为 worker 的对象。**AgentLoopWorker 调度会话，rollout replica 执行模型推理。** 前者会处理 messages、调用服务和接收结果；后者持有 vLLM 模型并在 GPU 上运行。AgentLoop worker 的数量不等于 GPU 数，也不等于模型副本数。
 
-- [`RLHFDataset` 初始化与文件读取](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/utils/dataset/rl_dataset.py#L72)
-- [`RLHFDataset.__getitem__`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/utils/dataset/rl_dataset.py#L386)
-- [`collate_fn`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/utils/dataset/rl_dataset.py#L41)
+[`AgentLoopManagerTQ.generate_sequences`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L243) 首先按 AgentLoop worker 数量切分 prompt batch：
 
-### DataProto、TensorDict 和 KVBatchMeta
-
-- `DataProto` 是通用函数间数据协议，包含 `batch: TensorDict`、`non_tensor_batch` 和 `meta_info`；
-- `TensorDict` 是 tensor 容器，具有相同 batch size 的张量放在其中，可以整体索引、切分和移动；
-- `KVBatchMeta` 是 V1 controller 侧的轻量批次描述，主要记录 TransferQueue 的 `partition_id`、trajectory `keys` 和 `tags`；
-- TransferQueue 将 tag 与 value 分开存储：tag 用于状态、长度、global step 和版本元数据，value 承载 `prompts`、`responses`、mask、log-prob 等真实字段。
-
-因此 V1 中常见的路径不是一个 batch 对象贯穿所有阶段，而是：controller 持有 `KVBatchMeta`，计算阶段按 keys 从 TQ 取出 `TensorDict`，必要时转换成 `DataProto` 或 padded tensor，再把新增字段写回 TQ。
-
-源码入口：
-
-- [`DataProto`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/protocol.py#L318)
-- [`ReplayBuffer` 数据模型](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/replay_buffer.py#L63)
-- [TransferQueue 工具封装](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/utils/transferqueue_utils.py)
-
-### Protocol 与 backend 的分界
-
-从 dataset 到 advantage 写回的主要字段 contract 不依赖 actor 使用 FSDP 还是 Megatron：`uid`、trajectory key、`response_mask`、reward、old/reference log-prob 和 advantage 的 producer / consumer 关系由 trainer、AgentLoop 和 TransferQueue 决定。
-
-```text
-backend-independent:
-  dataset -> rollout -> TQ -> reward -> advantage
-
-backend-dependent:
-  KVBatchMeta -> worker dispatch -> model engine
-              -> micro-batches -> forward/backward
-              -> gradient synchronization -> optimizer step
+```python
+chunkes = prompts.chunk(len(self.agent_loop_workers))
+ray.get([
+    worker.generate_sequences.remote(chunk)
+    for worker, chunk in zip(self.agent_loop_workers, chunkes, strict=False)
+])
 ```
 
-这条边界位于 `ActorRolloutRefWorker.update_actor -> TrainingWorker.train_mini_batch -> actor.train_batch`。同一组 trajectory fields 可以送入不同 backend，但本地 batch 布局、需要参与同一次计算的 ranks 和通信方式会改变。
+保持当前配置的 8 个 AgentLoop worker 时，128 道题分成 8 份，每份 16 道。这里切的是 **prompt 数**，还没有复制成 512 条回答。假设 P0 落到第一个 worker，它随后由该 worker 的事件循环处理；不能由此推断 P0 的模型 forward 就运行在 GPU 0 上。
 
-## Field Lineage
+这一处 `ray.get` 等待远端 `generate_sequences` 返回。远端方法的工作是创建后台任务，因此它返回时，实际回答可能仍在生成。同步训练中的“同步”，体现在后面必须收齐本批可采样 group 才能更新，并不要求每个提交函数都一直阻塞到生成结束。
 
-### 总体字段链
+## `rollout.n=4` 在哪里变成四次独立生成
 
-```text
-dataset row
-  -> raw_prompt / extra_info / index
-  -> uid
-  -> prompt tag in TransferQueue
-  -> trajectory keys: {uid}_{session_id}_{index}
-  -> prompts / responses / response_mask / loss_mask
-  -> input_ids / position_ids / attention context
-  -> rm_scores
-  -> rollout_log_probs / old_log_probs / entropy
-  -> ref_log_prob
-  -> token_level_scores / token_level_rewards
-  -> advantages / returns
-  -> actor mini-batch
-  -> metrics
-  -> tq.kv_clear
+[`AgentLoopWorkerTQ.generate_sequences`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L59) 从 rollout 配置取出 temperature、top-p、top-k 等采样参数。如果输入没有 `agent_name`，它使用默认的 `single_turn_agent`，随后逐行把 TensorDict 中的张量和非张量字段还原为 prompt 字典，为每一道题创建 `_run_prompt` 后台任务。
+
+P0 的任务开始后，先把 TQ 中 `P0` 的状态更新为 `running`。再看 [`_run_prompt`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L107) 的关键部分：
+
+```python
+n = prompt.pop(
+    "__rollout_n__",
+    config.n if not trajectory["validate"] else config.val_kwargs.n,
+)
+
+for i in range(n):
+    task = asyncio.create_task(
+        self._run_agent_loop(
+            run_sampling_params,
+            trajectory=trajectory,
+            trace=trace,
+            session_id=i,
+            **prompt,
+        )
+    )
+    tasks.append(task)
 ```
 
-### Dataset 到 prompt metadata
+主线没有逐样本覆盖 `__rollout_n__`，也不是 validation，所以 `n=4`。循环创建四个 session，它们都拿到 `uid=P0` 和相同的题目，却拥有不同的 `session_id`：
 
-`_fetch_one_gen_batch` 取出 dataloader batch 后，为每个 raw prompt 创建 UUID 并写入 `uid`。`_submit_batch_to_rollout` 将这些 uid 作为 prompt key 写入 `train` partition 的 TransferQueue，并添加：
+| 本次调用  | 共享的信息                    | 独立的信息                 | 单输出 session 结束后使用的 key |
+| --------- | ----------------------------- | -------------------------- | ------------------------------- |
+| session 0 | P0、题目、标准答案、训练 step | 生成请求、token 序列、耗时 | `P0_0_0`                        |
+| session 1 | 同上                          | 同上                       | `P0_1_0`                        |
+| session 2 | 同上                          | 同上                       | `P0_2_0`                        |
+| session 3 | 同上                          | 同上                       | `P0_3_0`                        |
 
-```text
-is_prompt=True
-status=pending
-global_steps=current trainer step
+最后一个 `_0` 是 session 内 output 的编号。SingleTurnAgentLoop 返回一个 output，所以本例总是 0；它不表示 GPU rank 或 mini-batch 编号。此时这些 trajectory key 尚未写回，表中列的是下一章后处理将使用的名字。
+
+由此可见，四次采样由 AgentLoop 外层显式创建。不能把这一行配置理解成“给一个 vLLM request 设置 `n=4`，返回四条候选”。这里是四个 session 各自调用一次生成服务，四条回答也不要求互不相同。
+
+## session 0 创建自己的 SingleTurnAgentLoop
+
+接下来只跟踪 session 0，其他三个 session 独立执行同样的代码。
+
+[`AgentLoopWorker._run_agent_loop`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/agent_loop.py#L631) 根据 `agent_name` 查找注册项，实例化对应的 AgentLoop，并调用：
+
+```python
+output = await agent_loop.run(sampling_params, **kwargs)
+return await self._agent_loop_postprocess(
+    output, trajectory["validate"], **kwargs
+)
 ```
 
-sync 模式只把 prompt tag 写入 TQ，完整 prompt fields 随调用传给 AgentLoop；async 模式还会把可用于恢复的 prompt fields 存入 TQ。这体现了 sync / async 在数据持久化和恢复语义上的差异。
+这里有两个阅读源码时很有用的细节。首先，每个 session 获得自己的 AgentLoop 对象，所以它的会话状态不会和 P0 的另外三次采样混在一起。其次，代码虽然写在基类中，当前 `self` 是 `AgentLoopWorkerTQ`，因此最后调用的是 V1 的 TQ 后处理实现。基类里另一份把全部输出 padding 成大 batch 的后处理，不是本篇的主路径。
 
-源码入口：
+实例化参数中的 `server_manager=self.llm_client` 也容易误导。SingleTurnAgentLoop 后面调用的 `self.server_manager.generate`，在这里实际指向 `LLMServerClient`。这个对象负责选择推理 server，自己不执行 Transformer forward。
 
-- [`_fetch_one_gen_batch`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1373)
-- [`_submit_batch_to_rollout`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1403)
+## messages 怎样变成模型真正读入的 token
 
-### AgentLoop 到 trajectory value
+[`SingleTurnAgentLoop.run`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/single_turn_agent_loop.py#L38) 先取 `messages = list(kwargs["raw_prompt"])`。当前样本只有文本，多模态提取不会为它增加图片或音频输入，然后进入：
 
-数据层级需要先固定为：
-
-```text
-uid                         一个 dataset prompt group
-uid + session_id            该 prompt 的一次独立 rollout / episode
-uid + session_id + index    该 session 返回的一个 AgentLoopOutput
+```python
+prompt_ids = await self.ct_build_initial_tokens(
+    messages,
+    images=images,
+    videos=videos,
+    audios=audios,
+)
 ```
 
-`rollout.n` 决定每个 uid 的 session 数。一个 tool-agent session 可以包含多轮模型生成和环境 observation，但仍是一条 rollout；当前内置 single-turn / tool AgentLoop 通常各返回一个完整 output，多个 `index` 主要服务于可返回 output list 的自定义实现。
+`ct_build_initial_tokens` 委托 Continuous Token builder 应用 chat template。文本 builder 的底层操作包含 `tokenize=True` 和 `add_generation_prompt=True`：题目前后的 role 标记、模型要求的对话分隔符、等待 assistant 续写的前缀都会影响最终 token 序列。实际 token 数不能用题目的字数直接估算。
 
-AgentLoop output 的基础字段为：
-
-```text
-prompt_ids
-response_ids
-response_mask
-response_logprobs (optional)
-reward_score (optional)
-num_turns
-extra_fields
-```
-
-TQ postprocess 为每个 output 构造：
+为了把后面的矩阵写得可手算，全套文章把 P0 的 prompt **缩尺画成 6 个 token**：
 
 ```text
-prompts       prompt_ids tensor
-responses     response_ids tensor
-input_ids     concat(prompts, responses)
-position_ids  derived from input_ids / attention / multimodal inputs
-loss_mask     response_mask 的当前实现别名
-multi_modal_inputs
+messages                   角色与文本组成的 Python 对象
+    ↓ chat template + tokenizer
+prompt_ids                 [p0, p1, p2, p3, p4, p5]
+逻辑长度                    6
+此处的类型                  list[int]，还不是 GPU 上的 [batch, length] 张量
 ```
 
-每个 output 的 tag 还记录 `prompt_len`、`response_len`、`seq_len`、生成时的 `global_steps`，以及 trajectory 的 `min_global_steps` / `max_global_steps`。后两类字段为后续 off-policy staleness 判断提供版本边界。
+`p0 … p5` 是位置示意，既不是实测 token id，也不表示一个 token 对应一个字。真实运行保留 `prompt_length=1024` 的上限，模型与 tokenizer 仍是固定案例的 Qwen3-4B。小图只缩小画出的有效长度，不修改全套训练配置。
 
-源码入口：
+[`ct_build_initial_tokens`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/agent_loop.py#L315) 还会检查最终长度：纯文本超过上限时保留末尾的 `prompt_length` 个 token；带图像、视频或音频的过长 prompt 会报错，避免直接切 token 破坏特征对齐。此前 dataset 的过滤与这里的检查发生在不同位置，不能因为 dataset 已过滤，就忽略 AgentLoop 最终 template 产生的长度。
 
-- [`AgentLoopOutput` 字段定义](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/agent_loop.py#L88)
-- [`_agent_loop_postprocess` 字段写入](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L150)
+本例不触发截断。session 0 带着完整的六位置示意 prompt 继续请求生成。
 
-### response mask 的语义
+## 一次生成请求怎样抵达两张 GPU
 
-在多轮 tool-use trajectory 中，`responses` 是完整交互 token 序列，但不等于所有 token 都由 policy 产生：
+SingleTurnAgentLoop 的下一段调用为：
+
+```python
+output = await self.server_manager.generate(
+    request_id=request_id,
+    prompt_ids=prompt_ids,
+    sampling_params=sampling_params,
+    # 纯文本案例的多模态参数为空
+)
+```
+
+普通采样时 `request_id` 是新生成的 UUID。它用于服务路由，与 `uid=P0`、`session_id=0` 承担不同用途：P0 标识训练问题，session 标识该问题的一次尝试，request id 标识服务请求。不要把它们当作同一个字段的不同写法。
+
+[`LLMServerClient.generate`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/rollout/llm_server.py#L98) 做的核心工作是申请 server、发起 Ray RPC，并在 `finally` 中释放负载计数：
+
+```python
+server_id, server = await self._acquire_server(
+    request_id,
+    prompt_ids=prompt_ids,
+    sampling_params=sampling_params,
+    # 省略纯文本案例不需要的附加参数
+)
+try:
+    output = await server.generate.remote(
+        request_id=self._vllm_request_id(request_id),
+        prompt_ids=prompt_ids,
+        sampling_params=sampling_params,
+        # 省略附加参数
+    )
+    return output
+finally:
+    self._release_server(server_id, request_id=request_id)
+```
+
+这是省略附加参数的调用节选。实际函数还会把 server 返回的权重版本补成 `min_global_steps` 和 `max_global_steps`，随输出保留。关闭 full determinism 时，发给 vLLM 的 request id 还会重新生成；用于 sticky routing 的 id 和引擎请求 id 不必相同。
+
+现在再看请求可选的四个副本。它们在初始化阶段已经建好；根据 [`_initialize_llm_servers`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/rollout/llm_server.py#L399)，关闭 prefill/decode 分离时：
 
 ```text
-response_ids:  LLM generation + tool response / observation
-response_mask: 1 for LLM generation
-               0 for tool response / observation / padding
-loss_mask:     当前实现直接等于 response_mask
+每个 rollout replica 所需 GPU = TP × DP × PP = 2 × 1 × 1 = 2
+rollout replica 数量           = 8 / 2 = 4
 ```
 
-它至少影响三处：
+一种与此配置相符的布局是 node 0 的 GPU 0–1、2–3 各组成一个副本，node 1 同样组成两个副本。两张 TP GPU 共同计算同一个副本处理的请求；P0 的一条回答不会因此变成两条训练样本。实际 rank 到物理设备的映射还取决于资源放置，不能把示意布局当作运行日志。
 
-1. actor policy loss 只应在有效 policy token 上累计；
-2. GRPO 的 scalar advantage broadcast 后需要乘 response mask；
-3. padded batch 转成 dense tensor 时不能把 observation 或 padding 误当成 action。
+负载均衡器在副本之间选择 server；服务内部再安排请求的执行。`rollout.n=4` 恰好等于副本数，只是这个例子的数值巧合，不保证 P0 的四个 session 各落一个副本。它们还会与其余 127 道题的请求交错，vLLM 的运行 batch 也不等同于训练时的 PPO mini-batch。
 
-源码入口：
+## vLLM 返回 token，而不是一整块训练矩阵
 
-- [`AgentLoopOutput.response_mask`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/agent_loop.py#L91)
-- [`generate_sequences` 的 mask 说明](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/agent_loop.py#L537)
-- [`loss_mask = response_mask`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L198)
+在 [`vLLMAsyncServer.generate`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/rollout/vllm_rollout/vllm_async_server.py#L585) 中，prompt token 被装进 `TokensPrompt`，采样配置被装进 `SamplingParams`，然后交给引擎。server 依据剩余上下文空间限制 `max_tokens`；本例 response 上限为 1024，但上限不是实际生成长度。
 
-### reward、log-prob 与 advantage
-
-在 rule-based reward 路径中，`RewardLoopWorker.compute_score` 调用注册的 reward manager，并返回 trajectory-level `reward_score`；`RewardLoopManager.compute_rm_score` 将结果组装为 `rm_scores`，trainer 再写回原 trajectory keys。
-
-`_compute_old_log_prob` 有两种语义：
+假设 session 0 返回文本“`3 × 4 = 12。#### 12`”。继续采用缩尺示意，把其生成 token 画成三个位置：
 
 ```text
-normal mode:
-  actor engine recompute -> log_probs -> old_log_probs + entropy
-
-bypass mode:
-  rollout_log_probs -> old_log_probs
+TokenOutput.token_ids     [a0, a1, a2]            长度 3
+TokenOutput.log_probs     [ℓ0, ℓ1, ℓ2]            若开启，长度同为 3
+TokenOutput.extra_fields  包含生成时的 global_steps 等信息
 ```
 
-`_compute_ref_log_prob` 通过独立 reference worker 或 actor no-LoRA 路径写入 `ref_log_prob`。`_compute_advantage` 随后读取 `uid`、`response_mask`、`rm_scores`、`rollout_log_probs`、`old_log_probs`、`ref_log_prob` 和可选 `values`，在 padded `DataProto` 中计算，再将 `advantages`、`returns` 转换回 nested representation，写回 TQ。
+`ℓj` 是生成服务对实际采样 token 给出的 log-prob。它不会因为这个 session 的答案正确就变大，也不是 reward。后面训练端还会重算 `old_log_probs`；这两个概率来源的区别留到 05 展开。
 
-源码入口：
+这份输出还没有 `input_ids` 的训练 TensorDict，没有 `advantages`，也没有评分结果。它先回到 SingleTurnAgentLoop，完成 token 与 mask 的对齐。
 
-- [`RewardLoopWorker` 的 reward 分支](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/reward_loop/reward_loop.py#L93)
-- [`RewardLoopManager.compute_rm_score`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/reward_loop/reward_loop.py#L343)
-- [`_compute_old_log_prob`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1541)
-- [`_compute_advantage`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1650)
+## 把 token 与 mask 一起接回 session
 
-## TransferQueue Lifecycle
+SingleTurnAgentLoop 调用 `ct_merge_assistant_token`，传入原 prompt、刚生成的 token，以及初始为空的 response mask。对当前纯文本单轮路径，builder 中的合并就是：
 
-### Prompt 状态
+```python
+merged_token_ids = list(runtime_token_ids) + list(assistant_token_ids)
+```
 
-prompt key 与 trajectory key 是两套对象。prompt key 只用于跟踪一个 GRPO group 是否完成：
+同时 [`align_response_metadata`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/utils/tokenizer/continuous_token.py#L333) 为这些 assistant token 追加 mask 1，并按同样的顺序追加 log-probs。把这几步一起画出，才能看清字段怎样对齐：
 
 ```text
-pending  已取出，尚未启动 session
-running  该 uid 的 session 正在执行
-finished 所有 session 成功结束
-failure  至少一个 session 出错
+合并前 runtime tokens     p0 p1 p2 p3 p4 p5                 长度 6
+新生成 assistant tokens                     a0 a1 a2       长度 3
+合并后 runtime tokens     p0 p1 p2 p3 p4 p5 a0 a1 a2       长度 9
+
+response_mask                                1  1  1       长度 3
+response_logprobs                           ℓ0 ℓ1 ℓ2       长度 3
 ```
 
-`ReplayBuffer` 周期性同步 TQ metadata，将 prompt 分入上述状态集合；只有 terminal group 才能进入 sampleable 集合。trajectory key 携带具体 output 的 fields 和长度 / version tags。
+mask 没有为六个 prompt token 分配位置，它只覆盖 response 区域。三个 1 表示三个位置都是模型生成的 action。稍后补齐矩阵时产生的 padding 不应参与 loss；在工具场景，环境返回的 observation 也不应作为模型采样的 action。两者都需要 mask，但原因不同。
 
-### sync sample 的实际语义
+Continuous Token 在本例看起来只是拼接，仍然有必要从这里认识它：后续工具调用会在已经生成的 token 后追加非 assistant 内容，有些模型还需要补边界 token。如果重新把整段对话 decode 再 encode，既有 token 可能变化，已记录的采样概率就会失去原来的对应位置。工具路径怎样保持对齐，见 [[projects/verl-source-reading/11-agentic-rl-extension|11 Agentic RL Extension]]。
 
-`ReplayBuffer.sample` 在 sync mode 下：
+## 返回的 `AgentLoopOutput` 已经可以描述一条回答
 
-1. 同步 TQ metadata；
-2. 处理 terminal group 的过滤或失败状态；
-3. 等待可采样 prompt group 数量达到 `batch_size`；
-4. 按 prompt global step 选择 group，并物化对应 trajectory keys；
-5. 返回 `KVBatchMeta`，而不是将所有 trajectory fields 复制到 controller 返回值中。
+合并后，代码按 response mask 的长度重新切开 prompt 与 response：
 
-因此 sync mode 虽然使用 TransferQueue 和后台 AgentLoop，但没有 async replay backlog 的训练含义：trainer 仍等待当前生成批次形成足够的 terminal groups。TQ 在这里主要解决跨 worker 的数据存储、状态管理和字段回写。
-
-源码入口：
-
-- [`ReplayBuffer` 的状态和 key 约定](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/replay_buffer.py#L63)
-- [`_sync_metadata_from_transfer_queue`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/replay_buffer.py#L188)
-- [`ReplayBuffer.sample`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/replay_buffer.py#L404)
-
-## Batch Shape Transitions
-
-AgentLoop output 的 response 长度可以不同，因此 TQ 中的 `prompts`、`responses`、`rm_scores` 和 log-prob 通常保留为 jagged / nested representation。进入 reward、advantage 或 engine dispatch 时，trainer 按阶段需要转成 padded tensor；写回 TQ 时再使用有效长度转换回 nested representation。
-
-```text
-per-trajectory variable length
-  -> nested TensorDict in TransferQueue
-  -> padded DataProto for algorithm / model call
-  -> nested fields written back by trajectory key
+```python
+response_ids = merge_result.token_ids[-len(response_mask):] if response_mask else []
+prompt_ids = merge_result.token_ids[:len(merge_result.token_ids) - len(response_mask)]
 ```
 
-以下长度不能混淆：
+在本例中是从长度 9 的序列中取出最后 3 个位置，得到 `[a0,a1,a2]`；前 6 个位置恢复为 prompt。随后创建 `AgentLoopOutput`，将 response、mask 和可选 log-probs 同步裁剪到 `response_length` 上限：
 
-```text
-prompt_len   prompt token 数
-response_len response 容器长度，可能含 observation token
-seq_len      prompt_len + response_len
-policy_len   response_mask 中有效 policy token 数
-```
+| session 0 的输出字段 | 缩尺示意内容         | 下一步为何需要                             |
+| -------------------- | -------------------- | ------------------------------------------ |
+| `prompt_ids`         | `[p0,…,p5]`          | 与回答拼成训练模型输入                     |
+| `response_ids`       | `[a0,a1,a2]`         | decode 评分，也作为预测目标                |
+| `response_mask`      | `[1,1,1]`            | 指出哪些 response 位置参与 policy loss     |
+| `response_logprobs`  | `[ℓ0,ℓ1,ℓ2]`，若开启 | 保留 rollout 概率，与训练端计算比较        |
+| `reward_score`       | 尚未计算             | 下一章由规则函数产生                       |
+| `num_turns`          | `2`                  | 单轮路径固定记为一次 user 与一次 assistant |
+| `extra_fields`       | 版本与生成统计等     | 后续状态检查和指标计算                     |
 
-对于 agent 数据，`response_len` 较大并不意味着同样数量的 token 会产生 policy gradient；trace 需要同时记录 `response_mask.sum()`。
+这里的字段主体仍是 Python list。不能在这个阶段写成“全局 response tensor 形状 `[512,1024]`”：其他 session 可能还没生成完，每条 response 长度也不同，而且 V1 不要求先把全局回答补齐后才写入 TQ。
 
-### DP batch balance 与 padding
+把视野拉回 P0 的四个 session，教学中使用下面四条回答。长度列继续是人工缩尺，**不对应这些文本的实际 tokenizer 结果**：
 
-`_balance_batch` 先依据 actor data-parallel size 计算下游需要的 batch multiple，再通过 padding sample 使 batch 可被 mini-batch 和 DP 结构整除，随后依据 `seq_len` 估计 workload，重新排列样本，让各 DP rank 获得更接近的 token workload。
+| 后续 trajectory key | 回答文本                  | 示意 response 长度 |
+| ------------------- | ------------------------- | -----------------: |
+| `P0_0_0`            | `3 × 4 = 12。#### 12`     |                  3 |
+| `P0_1_0`            | `3 + 4 = 7。#### 7`       |                  5 |
+| `P0_2_0`            | `4 + 4 + 4 = 12。#### 12` |                  4 |
+| `P0_3_0`            | `4 × 4 = 16。#### 16`     |                  2 |
 
-该步骤改变的是 dispatch 顺序，不是 group 关系。padding sample 由 tag 标识，metrics 统计通过 `is_padding` 排除。
+每条回答返回后，会立即进入自己那次 `_agent_loop_postprocess`；它不需要等 P0 的四条回答都返回才开始评分。外层 `_run_prompt` 仍然等待全部 session 完成，包括各自的后处理和写回。
 
-源码入口：
-
-- [`_balance_batch`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1496)
-- [`_compute_metrics` 的 non-padding 过滤](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1775)
-
-### Training backend 中的 batch mapping
-
-设配置中的 `ppo_mini_batch_size=M`、`rollout.n=G`，trainer 传给 actor 的全局 PPO mini-batch 为 `M × G` 条 trajectory。worker 使用 model engine 报告的 DP size 划分这批样本，但 DP 的来源因 backend 而异。
-
-FSDP baseline 中：
-
-```text
-world_size = trainer.nnodes × trainer.n_gpus_per_node
-actor DP   = world_size / Ulysses SP
-```
-
-`fsdp_size=-1` 表示使用全部可用 ranks 作为 FSDP shard group；设置更小的 `fsdp_size` 会形成二维 DDP × FSDP mesh，但当前 FSDP engine 的 actor batch dispatch 仍通过 `get_data_parallel_size()` 按 `world_size / Ulysses SP` 计算 logical DP。
-
-Megatron 的 process groups 由 MCore 使用 TP、PP、CP、EP 等配置建立。关闭 dynamic context parallel 时，普通 actor DP 可写为：
-
-```text
-actor DP = world_size / (TP × PP × CP)
-```
-
-一个 DP replica 内的 TP / PP / CP ranks 共同处理同一份样本，其中 PP 还要把本地 batch 组织成 pipeline micro-batches。EP 会进一步改变 MoE expert 参数使用的通信组；dynamic context parallel 则在 verl 中显式返回 logical `DP=1`，不能继续套用静态公式。
-
-因此 `M × G / DP` 表示每个 DP replica 的逻辑样本份额，而不是所有 backend 下“每张 GPU 独立拥有的样本数”。rollout backend 的 TP 只决定生成副本如何占用 GPU，也不参与 actor DP 的推导。
-
-源码入口：
-
-- [`TrainingWorker.train_mini_batch`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine_workers.py#L241)
-- [FSDP device mesh 与 DP](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine/fsdp/transformer_impl.py#L230)
-- [Megatron model-parallel 初始化](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine/megatron/transformer_impl.py#L239)
-- [Megatron pipeline forward-backward schedule](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine/megatron/transformer_impl.py#L930)
-
-## Batch Cleanup
-
-actor update、metrics 和可选 rollout dump 完成后，`fit` 使用本次返回的 `KVBatchMeta.keys` 调用 `tq.kv_clear`，清除当前 partition 的 trajectory fields 和 tags。
-
-```text
-sample keys
-  -> reward / log-prob / advantage write-back
-  -> actor update
-  -> metrics read
-  -> tq.kv_clear(keys, partition_id)
-```
-
-如果真实运行中出现字段不存在、旧 batch 污染下一轮或 TQ 存储持续增长，应首先检查 cleanup 是否覆盖了合并后的 `batch.keys`，以及 AgentLoop 是否仍有未完成任务向已清理 group 写回。
-
-源码入口：
-
-- [`fit` 中的 TQ cleanup](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L488)
-
-## Field Invariants
-
-- 每条 trajectory 的 `prompts`、`responses`、`response_mask` 和 `loss_mask` 在有效长度上对齐；
-- `input_ids` 的长度等于 `prompt_len + response_len`，`position_ids` 与其形状兼容；
-- 同一 prompt 的 sampled trajectories 共享稳定 `uid`，trajectory key 的 session / index 能还原层级关系；
-- `response_mask=0` 的 observation / padding token 不被当作 policy action；
-- padding sample 有明确 `is_padding` tag，并从有效 reward、metrics 和样本计数中排除；
-- batch reorder 不改变 uid、trajectory key 和 version tags；
-- 全局 PPO mini-batch 能被 backend 报告的 logical DP size 正确划分；
-- topology 记录区分 actor TP / PP / CP / SP 与 rollout TP，不用 rollout 并行度推导 actor DP；
-- nested -> padded -> nested 转换不丢失每条样本的真实长度；
-- `advantages` 和 `returns` 的有效区域与 response mask 对齐；
-- cleanup 使用完整的合并 key 集合，不把 trajectory 残留到下一轮。
-
-## Evidence Status
-
-- **Source fact**：字段名称、TQ key / tag 格式、状态集合、nested / padded 转换和 cleanup 位置来自固定 revision 的源码。
-- **Tested behavior**：尚未运行真实 example，因此 FSDP 与 Megatron 下的实际 dtype、device、nested tensor 布局、DP dispatch 和动态 batch shape 仍待分别 trace 确认。
-- **Engineering interpretation**：关于 `response_mask` 对 policy token 统计的影响、sync TQ 的 bufferless 语义和 cleanup 竞态风险，是基于字段 lineage 的工程解释。
-
-## Trace Entry
-
-最小 trace 只需对一个 prompt group 记录：
-
-```text
-stage
-field
-producer
-consumer
-shape / nested length
-dtype / device
-valid length
-response_mask.sum()
-uid / trajectory key
-global_steps / min_global_steps / max_global_steps
-is_padding
-```
-
-实验设计见 [[projects/verl-source-reading/labs/01-trace-config-and-batch|Lab 01: Trace Config and Batch]]；主运行时序见 [[projects/verl-source-reading/01-sync-grpo-run-overview|01 Sync GRPO Run Overview]]。
-
-## 相关知识
-
-- [[training/post-training/grpo|GRPO]]
-- [[training/post-training/ppo|PPO]]
-- [[training/distributed-training/fsdp|FSDP]]
-- [[projects/megatron-lm-source-reading/01-training-run-overview|Megatron training run]]
+[[projects/verl-source-reading/04-rollout-reward-and-agent-loop|04 Reward and Training Batch]] 从这个精确位置接续：`AgentLoopWorkerTQ._agent_loop_postprocess` 已经收到 session 0 的 output，正要执行 `await self._compute_score(outputs, kwargs=kwargs)`。那段文字回答会先变成分数 `1`，再变成 `[0,0,1]` 的 token reward，最终连同原始 `uid=P0` 写入 `P0_0_0`。

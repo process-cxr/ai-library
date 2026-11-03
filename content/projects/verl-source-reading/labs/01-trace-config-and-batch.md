@@ -2,7 +2,7 @@
 title: Lab 01 - Trace Config and Batch
 created: 2026-09-02
 published: 2026-09-02
-modified: 2026-09-03
+modified: 2026-11-03
 type: project
 status: growing
 tags:
@@ -32,7 +32,7 @@ tags:
 - Training backend：`FSDP`
 - Reward path：优先验证 reward model 关闭时的 rule-based reward
 
-模型路径、数据路径、GPU 数量、Ray runtime 和实际 tokenizer 由运行环境提供，不在知识库中写死。
+与正文对应的教学基线见 [[projects/verl-source-reading/01-sync-grpo-run-overview#贯穿全文的案例|01 的案例]]，配置命令见 [[projects/verl-source-reading/02-config-and-hydra|02 Launch and First Batch]]：2 节点 × 4 GPU，B=128、G=4、M=32、actor DP=8、本地 micro-batch=4。实际执行时记录设备型号、数据路径、Ray 集群和 tokenizer；若缩小规模，明确保存改动后的参数，不把正文的示意长度当成 trace 结果。
 
 ## Trace Stages
 
@@ -42,11 +42,11 @@ config resolve
   -> uid assignment
   -> prompt tag in TransferQueue
   -> rollout.n sessions
+  -> rule reward / rm_scores
   -> trajectory fields and tags
   -> terminal prompt group
   -> ReplayBuffer.sample
   -> batch balance / optional padding
-  -> rm_scores
   -> old_log_probs / entropy
   -> ref_log_prob
   -> advantages / returns
@@ -94,8 +94,8 @@ transfer_queue.enable
 逐项标注三个来源：
 
 ```text
-script override
-  -> Hydra config default
+Hydra config default
+  -> script / CLI override
   -> resolved runtime value
 ```
 
@@ -128,7 +128,7 @@ world_size = trainer.nnodes × trainer.n_gpus_per_node
 actor DP   = world_size / Ulysses SP
 ```
 
-同时验证 `rollout.tensor_model_parallel_size` 没有被用于计算 actor DP。以默认 8 GPU、Ulysses SP=1、rollout TP=2 为例，预期 topology 是 actor DP=8，而不是 4；rollout TP=2 描述的是生成侧副本布局。
+同时验证 `rollout.tensor_model_parallel_size` 没有被用于计算 actor DP。沿用正文两节点共 8 GPU、Ulysses SP=1、rollout TP=2，预期 actor DP=8；生成侧在 DP=PP=1、无 prefill/decode 分离的配置下应有 4 个双卡 replica。
 
 后续用同一组 controller-level batch 参数切换 Megatron backend 时，应增加：
 
@@ -293,7 +293,7 @@ mask_sum=<response_mask.sum if applicable>
 - resolved config 可以从日志或保存文件复查，并能区分 script override 与 default；
 - 至少一个有效 prompt group 的 uid、session、trajectory key 全链路一致；
 - `rollout.n`、实际 session 数和 terminal prompt 状态能够相互印证；
-- 至少一条多轮或带 observation 的 trajectory 能区分 `response_len` 与 `response_mask.sum()`；
+- 单轮基线中核对真实 response 长度与有效 policy token 数；增加工具交互对照时，再验证 observation 位置保留而 policy mask 为 0；
 - reward、old/ref log-prob、advantage 的 producer 和 consumer 与源码一致；
 - padding sample 不进入有效 reward、metrics 和 loss 统计；
 - actor update 的 mini-batch metadata 可追溯到 `_update_actor`；
@@ -307,7 +307,7 @@ mask_sum=<response_mask.sum if applicable>
 
 - **已完成**：固定 revision、入口脚本、调用链、字段 lineage 和 hook 位置的静态追踪。
 - **待运行**：resolved config、真实 tensor shape / dtype / device、实际 rollout session 数、TQ 状态变化、reward 数值、actor update metrics 和权重同步耗时。
-- **待回填页面**：运行成功后，将字段级结果补入 [[projects/verl-source-reading/03-data-protocol-and-batch-lifecycle|03 Data Protocol and Batch Lifecycle]]，将真实时序和 performance 观察补入 [[projects/verl-source-reading/01-sync-grpo-run-overview|01 Sync GRPO Run Overview]]。
+- **待回填页面**：运行成功后，将生成输出核对结果补入 [[projects/verl-source-reading/03-data-protocol-and-batch-lifecycle|03 From Prompts to Trajectories]]，将 TQ 字段和采样结果补入 [[projects/verl-source-reading/04-rollout-reward-and-agent-loop|04 Reward and Training Batch]]，将实际分发与更新数量核对结果补入 [[projects/verl-source-reading/06-single-controller-and-ray|06 Single Controller and Ray]]。
 
 ## 相关知识
 

@@ -50,6 +50,19 @@ const researchSort = (a: FileTrieNode, b: FileTrieNode): number => {
     return (aRank < 0 ? rootOrder.length : aRank) - (bRank < 0 ? rootOrder.length : bRank)
   }
 
+  // Keep numbered verl chapters together, followed by supplements and the labs folder.
+  const verlRoot = "projects/verl-source-reading"
+  if (
+    aPath.slice(0, aPath.lastIndexOf("/")) === verlRoot &&
+    bPath.slice(0, bPath.lastIndexOf("/")) === verlRoot
+  ) {
+    const aSection =
+      aPath === `${verlRoot}/labs` ? 2 : !a.isFolder && /^\d+-/.test(a.slugSegment) ? 0 : 1
+    const bSection =
+      bPath === `${verlRoot}/labs` ? 2 : !b.isFolder && /^\d+-/.test(b.slugSegment) ? 0 : 1
+    if (aSection !== bSection) return aSection - bSection
+  }
+
   if ((!a.isFolder && !b.isFolder) || (a.isFolder && b.isFolder)) {
     return a.displayName.localeCompare(b.displayName, undefined, {
       numeric: true,
@@ -82,6 +95,9 @@ const researchExplorerOptions = {
       "sources/blogs": "Blogs",
       "sources/reports": "Reports",
       projects: "Projects",
+      "projects/verl-source-reading/00-learning-guide": "00 Learning Guide",
+      "projects/verl-source-reading/verl-sft-training-path": "SFT Training Path",
+      "projects/verl-source-reading/labs": "Labs",
     }
     const displayName = displayNames[path]
     if (displayName) node.displayName = displayName

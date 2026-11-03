@@ -36,5 +36,4 @@ tags:
 - reward function 有单元测试；
 - score 与 extra info 可在 rollout dump 中审计；
 - 异常不会静默变成高 reward；
-- 结果回填 [[projects/verl-source-reading/04-rollout-reward-and-agent-loop|04 Rollout, Reward and AgentLoop]]。
-
+- 结果回填 [[projects/verl-source-reading/04-rollout-reward-and-agent-loop|04 Reward and Training Batch]]。

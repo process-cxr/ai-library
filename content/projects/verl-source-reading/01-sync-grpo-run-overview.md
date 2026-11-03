@@ -2,7 +2,7 @@
 title: 01 Sync GRPO Run Overview
 created: 2026-09-02
 published: 2026-09-02
-modified: 2026-10-10
+modified: 2026-11-03
 type: project
 status: growing
 tags:
@@ -12,347 +12,197 @@ tags:
   - grpo
 ---
 
-这篇文章只讲一件事：在当前固定 revision 中，一条 prompt 怎样经过 `sync GRPO + FSDP + vLLM + rule-based reward`，最后变成一次 actor update。
+假设要训练一个模型回答数学问题。数据集提供题目和标准答案，模型先为每道题尝试四种回答，评分函数检查结果，再用这些回答更新模型。下一轮生成应当使用更新后的参数。verl 把这个循环分配给数据加载器、生成服务、奖励 worker 和训练 worker；阅读源码时，需要把它们处理的同一批样本认出来。
 
-可以把它当成后面所有专题的底图。先看懂这条最小闭环，再去理解 PPO、MOPD、Agentic RL 或 async trainer，会容易很多。文中涉及的调用关系来自固定源码；GPU shape、显存和耗时等运行现象，需要实际运行后再确认。
+本篇跟踪一轮同步 GRPO。先建立贯穿后文的机器配置和样本，再沿 trainer 的实际执行顺序走完一次训练 step。02–06 分别深入这条路径的局部，继续使用这里的配置、样本标识和数值。
 
-## 从哪里开始
+## 贯穿全文的案例
 
-第一轮使用 [examples/grpo_trainer/run_qwen3_4b_fsdp.sh](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/examples/grpo_trainer/run_qwen3_4b_fsdp.sh) 作为入口。脚本通过环境变量接收模型、数据和设备配置，再组织成 Hydra overrides。与本页相关的配置意图包括：
+源码固定在 [revision 5b79827](https://github.com/process-cxr/verl-upstream/tree/5b79827b04cee6e4b7b5ff737e047f1d72d50433)。以下是基于这份源码选择的教学配置，未执行多机 GPU 训练。配置数量用于推导控制流；后面的短 token 序列是便于手算的示意，不是 Qwen tokenizer 的实测输出。
 
-- `algorithm.adv_estimator=grpo`：使用 GRPO advantage estimator；
-- `data.train_batch_size`、`data.max_prompt_length`、`data.max_response_length`：控制 prompt 取样规模和长度边界；
-- `data.filter_overlong_prompts=True`、`data.truncation=error`：超长 prompt 在数据阶段过滤，超过配置边界的序列不静默截断；
-- `actor_rollout_ref.actor.use_kl_loss=True`：actor update 中保留 reference-policy KL loss，因此需要 reference log-prob；
-- `actor_rollout_ref.actor.fsdp_config.*_offload=False`：主 actor FSDP 路径不启用参数和 optimizer offload；
-- `actor_rollout_ref.actor.use_dynamic_bsz=True`：训练侧按 token workload 使用动态 batch 控制；
-- `actor_rollout_ref.rollout.name=vllm`、`rollout.n`：由 vLLM 生成每个 prompt 的多条候选 trajectory；
-- `actor_rollout_ref.rollout.free_cache_engine=True`：同步权重前后配合 rollout replica 的 sleep / wake 生命周期；
-- `actor_rollout_ref.ref.fsdp_config.param_offload=True`：reference 路径可以使用参数 offload。
+| 设置        | 固定值                                                                 | 对这轮训练的影响                                              |
+| ----------- | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 模型、输入  | Qwen3-4B，纯文本数学问答                                               | 从同一个初始模型创建 actor 和 reference                       |
+| trainer     | V1 `sync`，GRPO                                                        | 生成完成后训练，再同步权重                                    |
+| 机器        | 2 个节点，每节点 4 张 GPU                                              | 全部使用同一个 8-GPU 训练资源池                               |
+| 训练        | FSDP，`fsdp_size=-1`，Ulysses SP=1                                     | actor logical DP=8；8 个 rank 处理不同样本并协作维护模型      |
+| 生成        | vLLM，TP=2、DP=1、PP=1，无 prefill/decode 分离                         | 4 个生成 replica，每个使用 2 张 GPU；与 actor 共用上述资源池  |
+| 会话调度    | `rollout.agent.num_workers=8`                                          | 8 个 AgentLoop worker 各接收 16 道题，不代表 8 个模型副本     |
+| 取样        | `train_batch_size=128`，`gen_batch_size=null`                          | 每轮一次取出 128 个 prompt                                    |
+| 每题采样    | `rollout.n=4`                                                          | 单轮内置 AgentLoop 下产生 512 条 trajectory                   |
+| actor 更新  | `ppo_mini_batch_size=32`，`ppo_epochs=1`，`shuffle=false`              | 全局每次更新消费 128 条 trajectory，共 4 次 optimizer update  |
+| micro-batch | actor、old/ref log-prob 的本地 micro-batch 均为 4；关闭 dynamic batch  | 固定每次 forward/backward 的样本数                            |
+| 梯度同步    | `use_no_sync_for_gradient_accumulation=false`                          | 每个 micro-batch 正常同步，累计四次 backward 后再更新一次参数 |
+| token 表示  | `use_remove_padding=true`，`pad_to_length=false`                       | 模型使用有效 token 的 packed 输入，不额外补齐到固定 bucket    |
+| reward      | GSM8K 规则评分，无 reward model                                        | CPU reward worker 评分，无额外 GPU 奖励模型                   |
+| loss        | GRPO 按组标准差归一化；vanilla、token-mean、clip=0.2、dual-clip=3      | 同组回答互相提供 baseline                                     |
+| KL 与采样   | temperature=1；actor KL=0.001，`low_var_kl`；entropy 系数=0            | reference 参与 actor loss，不向 task reward 加 KL             |
+| 其他分支    | 无 critic、teacher、rollout correction、group filtering、失败组 refill | 先追踪全部 session 正常结束的路径                             |
 
-这些参数告诉我们这次阅读关注哪条路径。真正运行时的值还要以 Hydra resolve 后的完整 config 为准。
+`rollout.n=4` 和“4 个 vLLM replica”恰好都是 4。前者是每道题的采样次数，后者是服务容量，负载均衡器不保证把同一道题的四次请求各分配给一个 replica。
 
-### 这一轮有哪些角色
+这里固定的每卡样本数也不保证任意 GPU 都有足够显存。显存取决于设备型号、序列长度、模型状态和实现；这套数字的用途是让每章的分批关系一致。完整配置入口见 [[projects/verl-source-reading/02-config-and-hydra|02 Launch and First Batch]]。
 
-```text
-Hydra driver
-  └─ Ray TaskRunnerV1
-       ├─ PPOTrainerSync                 training orchestration
-       ├─ ActorRolloutRefWorker          actor / reference model engine
-       ├─ AgentLoopWorkerTQ              vLLM-backed agent generation
-       ├─ RewardLoopWorker               rule-based reward
-       └─ CheckpointEngineManager        actor -> rollout weight lifecycle
+## 从 128 道题里选出 P0
+
+选定这条人为构造的输入，使用与 GSM8K 数据相同的字段：
+
+```python
+{
+    "prompt": [{
+        "role": "user",
+        "content": "盒中有3袋铅笔，每袋4支，一共多少支？请把最终答案写在 #### 后面。"
+    }],
+    "data_source": "openai/gsm8k",
+    "reward_model": {"style": "rule", "ground_truth": "12"},
+    "extra_info": {"index": 0}
+}
 ```
 
-`sync` 描述的是训练节奏和权重更新顺序，不代表所有步骤都在同一个 Python 进程中执行。driver、Ray actor、训练 worker、rollout worker 和 TransferQueue 各自承担不同的工作。
+模型看到题目，评分函数读取标准答案。`ground_truth` 不会自动拼到发给模型的 prompt 中。trainer 取出这一行时会生成 UUID；后文将该 UUID 简写为 `P0`。P0 是本轮样本身份，不是数据集永不变化的主键。
 
-### 为什么先固定 FSDP
+四个 session 的示例结果固定如下：
 
-为了先把主链看清楚，这里固定使用 FSDP。`actor_rollout_wg.update_actor(batch)` 之前的 prompt、trajectory、reward 和 advantage 属于 trainer 的公共语义；进入 model engine 之后，batch dispatch、forward/backward、梯度同步、optimizer 和 checkpoint 则按 FSDP 的执行方式展开。
+| trajectory key 的简写 | 示例回答                  | 规则得分 | 画图时的 response token 数 |
+| --------------------- | ------------------------- | -------- | -------------------------- |
+| `P0_0_0`              | `3 × 4 = 12。#### 12`     | 1        | 3                          |
+| `P0_1_0`              | `3 + 4 = 7。#### 7`       | 0        | 5                          |
+| `P0_2_0`              | `4 + 4 + 4 = 12。#### 12` | 1        | 4                          |
+| `P0_3_0`              | `4 × 4 = 16。#### 16`     | 0        | 2                          |
 
-```text
-train_batch_size                     prompt group 数
-train_batch_size × rollout.n         常规情况下的 trajectory 数
-ppo_mini_batch_size × rollout.n      actor 的全局 PPO mini-batch
+表中最后一列只给后续张量图规定行长，不是对前一列字符串的真实分词结果。画图时再规定 prompt 有 6 个符号 token，因此四条完整序列长度为 `[9,11,10,8]`。
+
+这些 key 分别表示 `{uid}_{session_id}_{output_index}`。单轮 AgentLoop 一次 session 返回一个 output，所以最后一位均为 0。四个独立 session 共享同一个 uid，后续 GRPO 据此找回一组回答。
+
+## 启动阶段还没有回答
+
+[main_ppo.main](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/main_ppo.py#L166) 接收 Hydra 组合好的配置，检查 micro-batch 和角色需求，再选择 `TaskRunnerV1`。Ray 把这个 TaskRunner 放到远程 actor 进程，里面创建 `PPOTrainerSync`。
+
+trainer 初始化时先准备 tokenizer、数据加载器和资源池，再初始化 actor/reference、reward worker、vLLM 服务和权重同步管理器。到这里模型已经可调用，但 P0 的回答还不存在。
+
+reference 与 actor 从同一模型初始化，在本例中 reference 保持固定，actor 参与优化。rollout 是 actor 权重在生成 runtime 中的另一份执行表示：FSDP 训练出的参数需要被同步到 vLLM，生成服务才会使用它们。初始化末尾的 `PPOTrainerSync.on_init_end` 先做一次同步，避免第一轮从未加载的权重开始生成。
+
+这一部分的代码在 [PPOTrainer.\_setup](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L232) 与 [同步 trainer hooks](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_sync.py#L24)。多节点进程和资源池的细节留到 06；下面先进入第一轮训练。
+
+## 先把 128 个 prompt 交给生成侧
+
+`prepare_step` 调用 `_next_train_batch`，得到 128 行原始消息和 metadata。此时是 128 个问题，还没有 512 个回答。`_submit_batch_to_rollout` 的 sync 分支做两件事：
+
+```python
+tq.kv_batch_put(
+    keys=list(batch["uid"]),
+    partition_id="train",
+    tags=tags,
+)
+self.agent_loop_manager.generate_sequences(batch)
 ```
 
-进入 model engine 后，同一个全局 PPO mini-batch 会依据 backend topology 形成不同的本地执行布局：
+这是 [源码 sync 分支的节选](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1403)。第一处给每个问题登记状态，P0 对应 `is_prompt=True, status=pending`；第二处把包含实际消息的 batch 交给 AgentLoop。
+
+TransferQueue（下文简称 TQ）在这里既有“问题是否完成”的状态，又会保存后续 trajectory 的真实张量。两者有不同的 key：`P0` 跟踪整组状态，`P0_0_0` 保存第一条回答及其训练字段。controller 不必把每个新字段都通过一次 Python 返回值传回来，只需持续持有这些 key。
+
+## 每道题开始四次独立生成
+
+生成侧的 `_run_prompt` 读取 `rollout.n=4`，为同一道题创建四个 session task。每个 task 进入 `SingleTurnAgentLoop`，将原始消息转换成 prompt token，向 vLLM 发起生成，再把输出包装成 `AgentLoopOutput`。
 
 ```text
-FSDP:
-  actor DP = world_size / Ulysses SP
-
-Megatron, static CP:
-  actor DP = world_size / (TP × PP × CP)
+P0
+ ├─ session 0 → prompt token → generate → response 0
+ ├─ session 1 → prompt token → generate → response 1
+ ├─ session 2 → prompt token → generate → response 2
+ └─ session 3 → prompt token → generate → response 3
 ```
 
-FSDP 的 `fsdp_size` 控制参数 shard group，不能直接等同于 actor 的 logical DP；Megatron 的 TP、PP、CP 会占用 model-parallel 维度，EP 还会建立 expert-specific groups。`actor_rollout_ref.rollout.tensor_model_parallel_size` 则属于 rollout backend，不参与上述 actor DP 计算。FSDP 与 Megatron 的完整对照放在 [[projects/verl-source-reading/07-model-engine-and-backend|07 Model Engine and Backend]]。
+这个图描述逻辑任务，不规定它们实际的完成顺序或 server 分配。整批 128 个 prompt 同样展开为 512 个 session；本例每个 session 生成一个 output。
 
-源码入口：
-
-- [FSDP `get_data_parallel_size`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine/fsdp/transformer_impl.py#L646)
-- [Megatron process-group 初始化](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine/megatron/transformer_impl.py#L239)
-- [Megatron `get_data_parallel_size`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine/megatron/transformer_impl.py#L750)
-
-## 一次训练是怎样启动的
-
-### 启动与 trainer 构造
+生成结果进入后处理时，规则 reward worker 解码回答，取出 `####` 后的数字，与 `ground_truth="12"` 比较，P0 得到 `[1,0,1,0]`。随后 `AgentLoopOutput.as_dict` 将 score 写到 response 长度的最后一个位置，再将各条 output 的字段写入 TQ。此时已有：
 
 ```text
-run_qwen3_4b_fsdp.sh
-  -> python3 -m verl.trainer.main_ppo
-  -> @hydra.main(config_path="config", config_name="ppo_trainer")
-  -> main(config)
-  -> validate_config(...)
-  -> run_ppo(config, TaskRunnerV1)
-  -> ray.init(...)
-  -> TaskRunnerV1.remote().run(config)
-  -> get_trainer_cls(config.trainer.v1.trainer_mode)
-  -> PPOTrainerSync(config)
+P0_0_0:
+  prompts          6 个示意 token
+  responses        3 个示意 token
+  input_ids        9 个示意 token
+  response_mask    [1,1,1]
+  rm_scores        [0,0,1]
 ```
 
-`main` 先检查当前配置是否需要 reference policy 和 critic，再根据 `trainer.use_v1` 选择 V1 或 legacy trainer。当前主线进入 V1：`run_ppo` 初始化 Ray，随后由 Ray actor 执行 `TaskRunnerV1.run`。
+四个 session 的任务都 settle 后，P0 的状态才成为 `finished`。这里先假设全部成功；有失败任务时状态与可采样轨迹的关系需要额外处理，04 会展开。
 
-源码入口：
+生成本身见 [[projects/verl-source-reading/03-data-protocol-and-batch-lifecycle|03 From Prompts to Trajectories]]，评分、写回和组成训练 batch 见 [[projects/verl-source-reading/04-rollout-reward-and-agent-loop|04 Reward and Training Batch]]。
 
-- [`main_ppo.py::run_ppo`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/main_ppo.py#L34)
-- [`main_ppo.py::TaskRunnerV1.run`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/main_ppo.py#L133)
-- [`main_ppo.py::main`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/main_ppo.py#L166)
+## Trainer 收齐数据后，先算概率再算 advantage
 
-### 初始化时会准备什么
+`ReplayBuffer.sample` 等待本轮所需的 prompt group，返回 512 条 trajectory 的 `KVBatchMeta`。它描述 partition、keys 和 tags；计算所需的 tensor 由下游按 key 从 TQ 取出。
 
-启动之后，系统依次准备 tokenizer、dataloader、资源池、模型 worker、reward loop、rollout server 和 checkpoint engine：
+[\_step_once](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L540) 在本例实际走的主干可节选为：
+
+```python
+batch = self._balance_batch(batch, metrics=metrics)
+batch = self._compute_old_log_prob(batch, metrics=metrics)
+batch = self._compute_ref_log_prob(batch, metrics=metrics)
+batch = self._compute_advantage(batch, metrics=metrics)
+batch = self._update_actor(batch, metrics=metrics)
+```
+
+这里省略了计时和条件判断：reference 分支因 actor KL 开启而执行，critic 分支因本例关闭而跳过。rule reward 已经在生成后处理阶段完成；只有奖励模型与训练资源共用时，trainer 才要另外调用 colocated reward 分支。
+
+`_balance_batch` 按序列长度重排，使八个训练 rank 的 token 工作量更接近。P0 的四条回答可能因此不再相邻。接着 actor engine 在更新前重算 sampled tokens 的概率并保存为 `old_log_probs`，reference 计算 `ref_log_prob`，最后才计算 advantage。
+
+为什么 reward 已有 0/1 还要 advantage？因为 GRPO 要问的是某条回答相对于同题其他回答表现如何。P0 的组内均值为 0.5，源码默认使用样本标准差，四个 advantage 约为：
 
 ```text
-tq.init(config.transfer_queue)
-  -> trainer = PPOTrainerSync(config)
-  -> trainer.init()
-       -> _init_tokenizer()
-       -> _init_dataloader()
-       -> create_resource_pool()
-       -> spawn worker groups
-       -> init actor / reference engine
-       -> init RewardLoopManager
-       -> init LLMServerManager
-       -> init CheckpointEngineManager
-       -> sleep rollout replicas
-       -> load checkpoint
-  -> init_agent_loop_manager()
-  -> trainer.fit(agent_loop_manager)
+[+0.866, -0.866, +0.866, -0.866]
 ```
 
-`PPOTrainer._setup()` 先准备 tokenizer 和 dataloader，再建立 resource pool 与 worker group。actor / rollout worker 随后初始化 model engine；如果当前配置需要 reference policy，它会复用 colocated worker 或使用独立 reference worker。最后创建 reward loop、LLM server 和 checkpoint engine。
+每条回答的值再扩展到它的有效 policy token。05 会从 `rm_scores` 的矩阵开始手算，并解释它怎样与 `old_log_probs`、current log-prob 组成 loss。
 
-sync trainer 将 checkpoint backend 强制设为 `naive`。初始化结束后，`PPOTrainerSync.on_init_end()` 立即把 actor checkpoint 的权重同步给 rollout replica。
+## 512 条 trajectory 怎样变成四次参数更新
 
-源码入口：
+`_update_actor` 中有两行决定更新粒度：
 
-- [`TaskRunnerV1.run`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/main_ppo.py#L133)
-- [`PPOTrainer.init / _setup`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L219)
-- [`PPOTrainer._setup` 的 checkpoint backend](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L352)
-- [`PPOTrainerSync.on_init_end`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_sync.py#L24)
+```python
+ppo_mini_batch_size = self.config.actor_rollout_ref.actor.ppo_mini_batch_size
+ppo_mini_batch_size = ppo_mini_batch_size * self.config.actor_rollout_ref.rollout.n
+```
 
-## 一轮 update 怎样运行
+因此配置的 32 变为传给 worker 的全局 `mini_batch_size=128`。这说明一次逻辑优化消费 128 条 trajectory，却不表示 controller 发起四次各带 128 条数据的调用。
+
+实际顺序是整批 dispatch，再在 worker 内切分：
 
 ```text
-fit
-  -> step
-       -> prepare_step
-            -> _add_batch_to_generate
-                 -> _next_train_batch
-                 -> _submit_batch_to_rollout
-       -> _step_once
-            -> ReplayBuffer.sample
-            -> reward (when colocated path is active)
-            -> _balance_batch
-            -> _compute_old_log_prob
-            -> _compute_ref_log_prob
-            -> _compute_advantage
-            -> _update_actor
-       -> save checkpoint (if scheduled)
-       -> on_step_end
-            -> update rollout weights
-       -> metrics / rollout dump
-       -> tq.kv_clear
+controller: update_actor(512 条 trajectory 的 metadata)
+  │
+  ├─ rank 0: 64 条 → 4 个本地 mini-batch，每个 16 条
+  ├─ rank 1: 64 条 → 4 个本地 mini-batch，每个 16 条
+  ├─ ...
+  └─ rank 7: 64 条 → 4 个本地 mini-batch，每个 16 条
+
+同一 mini-batch 迭代：
+  每个 rank 的 16 条 → 4 个 micro-batch，每个 4 条
+  八个 rank 合计消费 8 × 16 = 128 条
+  累积梯度，并通过 FSDP 通信完成一次逻辑 optimizer update
 ```
 
-`prepare_step` 先把下一批 prompt 交给 AgentLoop。它不会在这里同步等待所有 response，而是先把 prompt 注册到 TransferQueue，再让后台 rollout 逐步写回结果；`_step_once` 随后从 ReplayBuffer 取得已经结束的 prompt group。
+整个 step 有四次这样的更新。每个 rank 上调用四次 optimizer，并不等于全局独立更新 32 次；它们共同更新同一个分布式 actor。
 
-训练和 validation 都通过 `agent_loop_manager.generate_sequences(batch)` 提交生成，但默认并不是多轮工具调用。默认 `agent_name` 是 `single_turn_agent`，普通单轮 response 也会经过 AgentLoop；只有数据或配置指定 `tool_agent` 时，才会进入 tool call 和 observation 的多轮交互。
+P0 的四条回答用于 advantage 分组时必须能关联，但 actor 训练不要求它们留在同一个 mini-batch。advantage 已经按 key 写回，训练时每条 trajectory 携带自己需要的数值。不同 mini-batch 之间 current actor 参数会变，预先保存的 old log-prob、reference log-prob 和 advantage 不变。
 
-源码入口：
+具体代码见 [\_update_actor](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1734) 与 [TrainingWorker.train_mini_batch](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine_workers.py#L241)。
 
-- [`PPOTrainer.fit`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L389)
-- [`PPOTrainer.step`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L511)
-- [`PPOTrainer._step_once`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L540)
-- [`prepare_step / _submit_batch_to_rollout`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1403)
-- [`TaskRunnerV1.init_agent_loop_manager`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/main_ppo.py#L111)
-- [`AgentLoopWorkerTQ.generate_sequences` 的默认 agent](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L59)
+## 更新完训练模型，生成服务还需要换权重
 
-## Prompt 如何变成一组 trajectory
+用 `θ₀` 表示本 step 开始时 actor 的参数，四次 optimizer update 得到 `θ₁、θ₂、θ₃、θ₄`。这些下标只用于本文说明更新次数，不是源码中的 `global_steps`：
 
-`_fetch_one_gen_batch` 从 `RLHFDataset` 取出一个 dataloader batch，为每个 `raw_prompt` 生成一个 UUID 作为 `uid`。`_submit_batch_to_rollout` 把这个 uid 注册到 TransferQueue，并写入 `is_prompt=True`、`status=pending` 和 `global_steps`，随后调用 `AgentLoopManagerTQ.generate_sequences`。
+| 时刻                         | actor 参数 | 本轮训练数据                     | rollout              |
+| ---------------------------- | ---------- | -------------------------------- | -------------------- |
+| 生成阶段                     | θ₀         | 逐步产生 512 条 trajectory       | 使用与 θ₀ 同步的权重 |
+| old/reference/advantage 计算 | θ₀         | 逐步补齐字段                     | sample 结束后 sleep  |
+| 第一次 mini-batch 更新后     | θ₁         | 保留原 old log-prob 和 advantage | 仍处于暂停阶段       |
+| 第四次 mini-batch 更新后     | θ₄         | 本 step 的优化完成               | 尚需同步新权重       |
+| `on_step_end` 后             | θ₄         | 统计指标并清理本批字段           | 使用新权重准备下一轮 |
 
-```text
-dataset row
-  -> raw_prompt + extra_info
-  -> uid = UUID per prompt
-  -> prompt key in TransferQueue
-  -> AgentLoopManagerTQ
-  -> AgentLoopWorkerTQ
-  -> rollout.n parallel sessions
-```
+[PPOTrainerSync.on_sample_end](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_sync.py#L39) 让 rollout replicas sleep，`on_step_end` 则调用 checkpoint manager 同步权重。本例的 sync trainer 使用 naive 同步路径。传入同步管理器的 step 标记不等于本 step 内四个 optimizer 更新的编号。
 
-在 `AgentLoopWorkerTQ._run_prompt` 中，同一个 uid 的多个 session 会并行启动，每个 session 由 `session_id` 标识。所有 session 结束后，prompt tag 才会变为 `finished`；出现错误时则变为 `failure`。因此，GRPO group 由一个 `uid` 以及这个 uid 下的 `rollout.n` 个 session 构成。
+最后，[fit](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L389) 在必要的 checkpoint、权重同步和验证之后读取指标、按配置导出 rollout，再用本批 trajectory keys 清理 TQ。样本的内容生命周期到这里结束；更新后的模型参数则留给下一轮。
 
-一个 session 就是同一 prompt 的一次独立 rollout / episode。它可以只生成一次 response，也可以经历多轮“生成、工具执行、环境反馈”。`rollout.n=G` 表示每个 uid 启动 G 个独立 session，而不是让一个 session 重复生成 G 次。
-
-源码入口：
-
-- [`_fetch_one_gen_batch`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1373)
-- [`AgentLoopManagerTQ.generate_sequences`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L243)
-- [`AgentLoopWorkerTQ._run_prompt`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L107)
-
-### 一条 trajectory 如何表示
-
-AgentLoop 的每个输出写入 TransferQueue 时使用：
-
-```text
-{uid}_{session_id}_{index}
-```
-
-`index` 用来区分一个 session 返回的多个 `AgentLoopOutput`。当前 revision 的内置 `SingleTurnAgentLoop` 和 `ToolAgentLoop` 通常每个 session 返回一个 output，所以常见 key 是 `{uid}_{session_id}_0`。它不表示同一 session 内又做了一次独立 rollout。每条 output 至少会转换成：
-
-```text
-prompt_ids + response_ids -> input_ids
-response_mask            -> loss_mask
-input_ids + attention    -> position_ids
-AgentLoopOutput.extra_fields -> trajectory metadata
-```
-
-`response_ids` 可能同时包含模型生成 token 和 tool response / observation token。`response_mask` 用 1 标出由 policy 生成、可以进入 policy loss 的 token，用 0 标出 observation 或 padding token。
-
-源码入口：
-
-- [`AgentLoopOutput`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/agent_loop.py#L88)
-- [`AgentLoopOutput` 后处理与 TQ 写入](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/agent_loop_tq.py#L150)
-- [`generate_sequences` 的 response / response_mask 约定](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/agent_loop.py#L537)
-- [内置 `SingleTurnAgentLoop`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/single_turn_agent_loop.py#L28)
-- [内置 `ToolAgentLoop`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/agent_loop/tool_agent_loop.py#L98)
-
-## Reward 怎样变成 actor update
-
-当 ReplayBuffer 取出一组已经完成的 trajectory 后，`_step_once` 按下面的顺序处理：
-
-```text
-1. ReplayBuffer.sample()
-2. optional colocated reward
-3. _balance_batch()
-4. _compute_old_log_prob()
-5. optional _compute_ref_log_prob()
-6. optional _compute_values()
-7. _compute_advantage()
-8. optional _update_critic()
-9. _update_actor()
-```
-
-GRPO 配置通常不需要 critic，因此 `values`、GAE 和 `update_critic` 分支会被跳过。若开启 actor KL loss，reference policy 仍可能存在：它服务于 actor loss 的 KL 项，不等同于 GRPO 的 group-relative baseline。
-
-在 rule-based reward 路径中，`RewardLoopWorker.compute_score` 调用注册的 reward manager，再把结果写回 output。`_compute_advantage` 将 `rm_scores` 变成 token-level reward；如果打开 `use_kl_in_reward`，还会把 KL penalty 加进这条 reward 路径。本入口脚本关闭了 `algorithm.use_kl_in_reward`，因此这里的任务 reward 与 actor loss 中的 policy KL 是两条不同的路径。
-
-普通 GRPO outcome advantage 先为每条 response 得到一个 scalar score，再按 uid 计算 group mean 和可选 std，把相对分数 broadcast 到 response token，最后乘上 `response_mask`。V1 的 multi-trajectory helper 以每个 session 的最终 output 参与 group 比较，再把这个 session 的结果广播回它的 output。
-
-如果自定义 AgentLoop 把一个 session 表示成多个 output，helper 会用最大 `index` 对应的最终结果参与同一 uid 下的 session 比较，再把 session-level advantage 回填给这个 session 的所有 output。默认内置 AgentLoop 每个 session 只有一个 output，因此多轮对话不会被额外切成多个 group；完整 trajectory 中的有效 policy token 会共享同一个 outcome advantage。
-
-源码入口：
-
-- [`RewardLoopWorker.compute_score`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/experimental/reward_loop/reward_loop.py#L145)
-- [`PPOTrainer._compute_advantage`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1650)
-- [`compute_grpo_outcome_advantage`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/core_algos.py#L267)
-- [`compute_advantage_for_multi_trajectories`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/utils.py#L148)
-
-### 三个 policy 角色
-
-`_compute_old_log_prob` 默认让 actor engine 对 sampled batch 重新计算 log-prob，并将结果写为 `old_log_probs`；只有 rollout correction 的 bypass mode 才会直接把 `rollout_log_probs` 作为 `old_log_probs`。`_compute_ref_log_prob` 则通过独立 reference worker 或 actor no-LoRA 路径写入 `ref_log_prob`。
-
-可以这样区分：
-
-- `old_log_probs` 是 PPO ratio 的 proximal anchor；
-- `ref_log_prob` 是 reference KL 的参照；
-- current actor 在 `train_mini_batch` 中更新；
-- rollout policy 负责产生 trajectory，但不必与 old policy 完全相同。
-
-### actor 怎样更新
-
-`_update_actor` 将 actor 的 `ppo_mini_batch_size` 乘以 `rollout.n`，把 mini-batch size、epoch、shuffle、temperature 等信息写入 `batch.extra_info`，再调用 `ActorRolloutRefWorker.update_actor`。worker 侧的 `TrainingWorker.train_mini_batch` 按 DP size 拆分 batch，按 epoch 构造 iterator，逐个执行 `train_batch`，最后聚合 metrics。
-
-设 `B=train_batch_size`、`M=ppo_mini_batch_size`、`G=rollout.n`、`E=ppo_epochs`。普通 sync GRPO 且每个 session 只有一个 output 时：
-
-```text
-一次 step 的 prompt groups       = B
-一次 step 的 trajectories        = B × G
-一个全局 PPO mini-batch          = M × G trajectories
-每个 PPO epoch 的 mini-batches   = B / M
-一次 step 的 actor mini-batch updates = E × B / M
-```
-
-因此两个配置值都以 prompt-group 规模表达，`rollout.n` 在进入 actor 前将它们扩展为 trajectory 数。`train_batch_size` 控制本轮采样和 advantage 计算的数据规模，`ppo_mini_batch_size` 控制 advantage 固定后每次 actor optimization 消费的数据规模；通常应满足 `M <= B`，并使 `B` 能被 `M` 整除。
-
-`update_actor` 是 trainer 把公共 batch 交给 training backend 的位置。FSDP 下，一个 DP rank 对应一个 FSDP worker rank，必要时再与 Ulysses SP 协同；Megatron 下，一个 DP replica 由 TP / PP / CP ranks 共同组成，batch 还会进入 pipeline forward-backward schedule。因此 `mini_batch_size_per_gpu = mini_batch_size / DP` 更准确地表示每个 DP replica 的样本份额，不能简单理解成每张 GPU 都独立拿到一份样本。
-
-源码入口：
-
-- [`PPOTrainer._compute_old_log_prob`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1541)
-- [`PPOTrainer._compute_ref_log_prob`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1602)
-- [`PPOTrainer._update_actor`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_base.py#L1734)
-- [`TrainingWorker.train_mini_batch`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine_workers.py#L241)
-
-## 更新后的权重怎样回到 rollout
-
-```text
-on_sample_end
-  -> sleep rollout replicas
-  -> ReplayBuffer returns terminal trajectories
-  -> actor update
-  -> on_step_end
-       -> update_weights(..., mode="naive")
-       -> actor worker directly updates colocated rollout
-       -> next rollout uses new actor weights
-```
-
-`PPOTrainerSync.on_sample_end` 让 rollout replica 进入休眠；`on_step_end` 调用 checkpoint manager。sync 模式的 `naive` backend 直接调用 actor worker group 的 `update_weights`，worker 侧恢复必要权重、更新 rollout 参数、清理 KV cache，再恢复下一轮生成。
-
-这给出了 sync 的版本边界：一轮采样得到的 batch 先完成 actor update，actor update 结束后才把新权重交给下一轮 rollout。它与 async trainer 允许 rollout 跨越多个 actor version 的语义不同。
-
-源码入口：
-
-- [`PPOTrainerSync.on_sample_end / on_step_end`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/trainer/ppo/v1/trainer_sync.py#L35)
-- [`CheckpointEngineManager.update_weights`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/checkpoint_engine/base.py#L505)
-- [`ActorRolloutRefWorker.update_weights`](https://github.com/process-cxr/verl-upstream/blob/5b79827b04cee6e4b7b5ff737e047f1d72d50433/verl/workers/engine_workers.py#L726)
-
-## 读完这条路径应该记住什么
-
-### sync 的关键顺序
-
-AgentLoop 可以在后台并行推进，TransferQueue 也保存生成过程中的状态；但对 trainer 来说，一轮 update 仍然要等当前 prompt group 完成，并在 actor update 后统一同步新权重。
-
-### group、trajectory 和 token
-
-- `uid` 连接同一 prompt 的 sampled trajectories；
-- `{uid}_{session_id}_{index}` 连接某条具体 output；
-- `response_mask` 区分 response 容器中的 policy token 与 observation / padding token。
-
-### GRPO 少了哪一部分
-
-GRPO 省略 value inference、GAE 和 critic update，但仍然需要 reward、old log-prob、可选 reference log-prob、advantage、actor mini-batch 和权重同步。
-
-## 证据范围
-
-- 调用链、字段名称、sync hooks、TQ key 格式和分支判断来自 revision `5b79827b04cee6e4b7b5ff737e047f1d72d50433`。
-- 当前还没有在真实 GPU、vLLM、数据集和完整 Ray / TransferQueue 依赖下运行这个 example，因此吞吐、显存、实际 shape 和 runtime timing 仍不能从本文得出。
-- 关于同步版本边界、mask 对 agent policy objective 的意义、TQ 的职责和每个 DP replica 的 batch 含义，属于基于源码关系做出的解释；Lab 01 和后续 backend 对照可以继续检验这些解释。
-
-## 下一步看什么
-
-下一步可以用 Lab 01 保存 resolved Hydra config，并跟踪一个 prompt group 的：
-
-```text
-uid
-  -> trajectory keys
-  -> prompt_len / response_len / seq_len
-  -> response_mask.sum()
-  -> reward / rm_scores
-  -> old_log_probs / ref_log_prob
-  -> advantages / returns
-  -> actor mini-batch metadata
-  -> update_weights global step
-```
-
-实验入口见 [[projects/verl-source-reading/labs/01-trace-config-and-batch|Lab 01: Trace Config and Batch]]；字段级说明见 [[projects/verl-source-reading/03-data-protocol-and-batch-lifecycle|03 Data Protocol and Batch Lifecycle]]。
-
-## 相关知识
-
-- [[training/post-training/grpo|GRPO]]
-- [[training/post-training/ppo|PPO]]
-- [[training/distributed-training/fsdp|FSDP]]
-- [[inference/serving-systems/vllm|vLLM]]
+下一篇 [[projects/verl-source-reading/02-config-and-hydra|02 Launch and First Batch]] 回到这轮运行的起点：把上面的配置落实到 Hydra，读取 P0 所在的第一批数据，并解释为什么提交给 AgentLoop 时仍然是 128 个问题。
